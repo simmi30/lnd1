@@ -61,7 +61,7 @@ type ServerShell struct {
 
 // Server is a sub-server of the main RPC server: the autopilot RPC. This sub
 // RPC server allows external callers to access the status of the autopilot
-// currently active within lnd, as well as configuring it at runtime.
+// currently active within broln, as well as configuring it at runtime.
 type Server struct {
 	started  int32 // To be used atomically.
 	shutdown int32 // To be used atomically.

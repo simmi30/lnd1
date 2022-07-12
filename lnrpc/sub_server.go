@@ -18,7 +18,7 @@ import (
 type MacaroonPerms map[string][]bakery.Op
 
 // SubServer is a child server of the main lnrpc gRPC server. Sub-servers allow
-// lnd to expose discrete services that can be used with or independent of the
+// broln to expose discrete services that can be used with or independent of the
 // main RPC server. The main rpcserver will create, start, stop, and manage
 // each sub-server in a generalized manner.
 type SubServer interface {

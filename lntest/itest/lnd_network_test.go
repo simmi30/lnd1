@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/brolightningnetwork/lnd"
+	"github.com/brolightningnetwork/broln"
 	"github.com/brolightningnetwork/broln/lnrpc"
 	"github.com/brolightningnetwork/broln/lntest"
 	"github.com/stretchr/testify/require"
@@ -267,7 +267,7 @@ func connect(ctxt context.Context, node *lntest.HarnessNode,
 			// If the error is no ErrServerNotActive, return it.
 			// Otherwise, we will retry until timeout.
 			if !strings.Contains(err.Error(),
-				lnd.ErrServerNotActive.Error()) {
+				broln.ErrServerNotActive.Error()) {
 
 				return err
 			}

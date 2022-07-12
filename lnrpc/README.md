@@ -1,11 +1,11 @@
 lnrpc
 =====
 
-[![Build Status](http://img.shields.io/travis/lightningnetwork/lnd.svg)](https://travis-ci.org/lightningnetwork/lnd) 
+[![Build Status](http://img.shields.io/travis/lightningnetwork/broln.svg)](https://travis-ci.org/lightningnetwork/broln) 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/brolightningnetwork/broln/blob/master/LICENSE)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/brolightningnetwork/broln/lnrpc)
 
-This lnrpc package implements both a client and server for `lnd`s RPC system
+This lnrpc package implements both a client and server for `broln`s RPC system
 which is based off of the high-performance cross-platform
 [gRPC](http://www.grpc.io/) RPC framework. By default, only the Go
 client+server libraries are compiled within the package. In order to compile
@@ -26,7 +26,7 @@ description):
      * Returns the daemons' available aggregate channel balance in BTC.
   * GetTransactions
      * Returns a list of on-chain transactions that pay to or are spends from
-       `lnd`.
+       `broln`.
   * SendCoins
      * Sends an amount of satoshis to a specific address.
   * ListUnspent
@@ -116,7 +116,7 @@ description):
      * Creates a stream which receives async notifications upon any changes to the
        channel graph topology from the point of view of the responding node.
   * DebugLevel
-     * Set logging verbosity of lnd programmatically
+     * Set logging verbosity of broln programmatically
   * FeeReport
      * Allows the caller to obtain a report detailing the current fee schedule
        enforced by the node globally for each channel.

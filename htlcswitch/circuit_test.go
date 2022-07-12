@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/brsuite/brond/btcec"
-	bitcoinCfg "github.com/brsuite/brond/chaincfg"
+	brocoinCfg "github.com/brsuite/brond/chaincfg"
 	"github.com/brsuite/bronutil"
 	sphinx "github.com/brolightningnetwork/lightning-onion"
 	"github.com/brolightningnetwork/broln/channeldb"
@@ -86,7 +86,7 @@ func initTestExtracter() {
 func newOnionProcessor(t *testing.T) *hop.OnionProcessor {
 	sphinxRouter := sphinx.NewRouter(
 		&keychain.PrivKeyECDH{PrivKey: sphinxPrivKey},
-		&bitcoinCfg.SimNetParams, sphinx.NewMemoryReplayLog(),
+		&brocoinCfg.SimNetParams, sphinx.NewMemoryReplayLog(),
 	)
 
 	if err := sphinxRouter.Start(); err != nil {

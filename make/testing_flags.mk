@@ -105,9 +105,9 @@ UNIT_RACE := $(UNIT) -race
 endif
 
 
-# Default to btcd backend if not set.
+# Default to brond backend if not set.
 ifeq ($(backend),)
-backend = btcd
+backend = brond
 endif
 
 # Construct the integration test command with the added build flags.

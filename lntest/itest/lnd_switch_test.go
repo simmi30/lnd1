@@ -58,7 +58,7 @@ func testSwitchCircuitPersistence(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -84,7 +84,7 @@ func testSwitchCircuitPersistence(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -333,7 +333,7 @@ func testSwitchOfflineDelivery(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -359,7 +359,7 @@ func testSwitchOfflineDelivery(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -631,7 +631,7 @@ func testSwitchOfflineDeliveryPersistence(net *lntest.NetworkHarness, t *harness
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -658,7 +658,7 @@ func testSwitchOfflineDeliveryPersistence(net *lntest.NetworkHarness, t *harness
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -919,7 +919,7 @@ func testSwitchOfflineDeliveryOutgoingOffline(
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -943,7 +943,7 @@ func testSwitchOfflineDeliveryOutgoingOffline(
 	// intermediary hops before starting the settle.
 	carol := net.NewNode(t.t, "Carol", []string{"--hodl.exit-settle"})
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,

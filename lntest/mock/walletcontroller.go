@@ -25,7 +25,7 @@ var (
 )
 
 // WalletController is a mock implementation of the WalletController
-// interface. It let's us mock the interaction with the bitcoin network.
+// interface. It let's us mock the interaction with the brocoin network.
 type WalletController struct {
 	RootKey               *btcec.PrivateKey
 	PublishedTransactions chan *wire.MsgTx
@@ -45,7 +45,7 @@ func (w *WalletController) FetchInputInfo(
 
 	utxo := &lnwallet.Utxo{
 		AddressType:   lnwallet.WitnessPubKey,
-		Value:         10 * btcutil.SatoshiPerBitcoin,
+		Value:         10 * btcutil.SatoshiPerBrocoin,
 		PkScript:      []byte("dummy"),
 		Confirmations: 1,
 		OutPoint:      *prevOut,
@@ -140,7 +140,7 @@ func (w *WalletController) ListUnspentWitness(int32, int32,
 	// Otherwise create one to return.
 	utxo := &lnwallet.Utxo{
 		AddressType: lnwallet.WitnessPubKey,
-		Value:       btcutil.Amount(10 * btcutil.SatoshiPerBitcoin),
+		Value:       btcutil.Amount(10 * btcutil.SatoshiPerBrocoin),
 		PkScript:    CoinPkScript,
 		OutPoint: wire.OutPoint{
 			Hash:  chainhash.Hash{},

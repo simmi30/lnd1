@@ -267,7 +267,7 @@ var (
 		},
 	}
 
-	// Dummy timeout tx used to test serialization, borrowed from btcd
+	// Dummy timeout tx used to test serialization, borrowed from brond
 	// msgtx_test
 	timeoutTx = &wire.MsgTx{
 		Version: 1,
@@ -501,7 +501,7 @@ func createNurseryTestContext(t *testing.T,
 	ctx.restart = func() bool {
 		return checkStartStop(func() {
 			log.Tracef("Restart sweeper and nursery")
-			// Simulate lnd restart.
+			// Simulate broln restart.
 			ctx.nursery.Stop()
 
 			// Restart sweeper.

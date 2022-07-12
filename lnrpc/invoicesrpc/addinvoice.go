@@ -46,7 +46,7 @@ type AddInvoiceConfig struct {
 	ChainParams *chaincfg.Params
 
 	// NodeSigner is an implementation of the MessageSigner implementation
-	// that's backed by the identity private key of the running lnd node.
+	// that's backed by the identity private key of the running broln node.
 	NodeSigner *netann.NodeSigner
 
 	// DefaultCLTVExpiry is the default invoice expiry if no values is
@@ -236,7 +236,7 @@ func AddInvoice(ctx context.Context, cfg *AddInvoiceConfig,
 
 	// We set the max invoice amount to 100k BTC, which itself is several
 	// multiples off the current block reward.
-	maxInvoiceAmt := btcutil.Amount(btcutil.SatoshiPerBitcoin * 100000)
+	maxInvoiceAmt := btcutil.Amount(btcutil.SatoshiPerBrocoin * 100000)
 
 	switch {
 	// The value of the invoice must not be negative.

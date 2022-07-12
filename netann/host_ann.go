@@ -34,7 +34,7 @@ type HostAnnouncerConfig struct {
 }
 
 // HostAnnouncer is a sub-system that allows a user to specify a set of hosts
-// for lnd that will be continually resolved to notice any IP address changes.
+// for broln that will be continually resolved to notice any IP address changes.
 // If the target IP address for a host changes, then we'll generate a new
 // NodeAnnouncement that includes these new IPs.
 type HostAnnouncer struct {

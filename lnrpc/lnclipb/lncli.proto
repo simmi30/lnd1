@@ -10,6 +10,6 @@ message VersionResponse {
     // The version information for lncli.
     verrpc.Version lncli = 1;
 
-    // The version information for lnd.
-    verrpc.Version lnd = 2;
+    // The version information for broln.
+    verrpc.Version broln = 2;
 };

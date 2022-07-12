@@ -147,7 +147,7 @@ func testRestAPI(net *lntest.NetworkHarness, ht *harnessTest) {
 			err = invokeGET(a, "/v2/versioner/version", res2)
 			require.Nil(t, err, "version")
 			assert.Greater(
-				t, res2.AppMinor, uint32(0), "lnd minor version",
+				t, res2.AppMinor, uint32(0), "broln minor version",
 			)
 
 			// Request a new external address from the wallet kit.
@@ -234,7 +234,7 @@ func testRestAPI(net *lntest.NetworkHarness, ht *harnessTest) {
 		tc := tc
 		ht.t.Run(tc.name, func(t *testing.T) {
 			ht := &harnessTest{
-				t: t, testCase: ht.testCase, lndHarness: net,
+				t: t, testCase: ht.testCase, brolnHarness: net,
 			}
 			tc.run(ht, net)
 		})
@@ -640,7 +640,7 @@ func wsTestPingPongTimeout(ht *harnessTest, net *lntest.NetworkHarness) {
 
 	// The SubscribeInvoices call returns immediately after the gRPC/REST
 	// connection is established. But it can happen that the goroutine in
-	// lnd that actually registers the subscriber in the invoice backend
+	// broln that actually registers the subscriber in the invoice backend
 	// didn't get any CPU time just yet. So we can run into the situation
 	// where we add our first invoice _before_ the subscription client is
 	// registered. If that happens, we'll never get notified about the

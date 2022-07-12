@@ -48,7 +48,7 @@ const (
 	NSWalletDB = "walletdb"
 )
 
-// DB holds database configuration for LND.
+// DB holds database configuration for broln.
 type DB struct {
 	Backend string `long:"backend" description:"The selected database backend."`
 
@@ -219,7 +219,7 @@ func (db *DB) GetBackends(ctx context.Context, chanDBPath,
 		// replicate the same behavior here and use the same etcd
 		// backend for those three sub DBs. But we namespace it properly
 		// to make such a split even easier in the future. This will
-		// break lnd for users that ran on etcd with 0.13.x since that
+		// break broln for users that ran on etcd with 0.13.x since that
 		// code used the root namespace. We assume that nobody used etcd
 		// for mainnet just yet since that feature was clearly marked as
 		// experimental in 0.13.x.
@@ -479,7 +479,7 @@ func (db *DB) GetBackends(ctx context.Context, chanDBPath,
 		DecayedLogDB:  decayedLogBackend,
 		TowerClientDB: towerClientBackend,
 		TowerServerDB: towerServerBackend,
-		// When "running locally", LND will use the bbolt wallet.db to
+		// When "running locally", broln will use the bbolt wallet.db to
 		// store the wallet located in the chain data dir, parametrized
 		// by the active network. The wallet loader has its own cleanup
 		// method so we don't need to add anything to our map (in fact

@@ -4,7 +4,7 @@
 seed scheme (based on [aez](http://web.cs.ucdavis.edu/~rogaway/aez/)).
 
 This new scheme aims to address
-two major features lacking in [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): versioning, and a
+two major features lacking in [BIP39](https://github.com/brocoin/bips/blob/master/bip-0039.mediawiki): versioning, and a
 wallet birthday. The lack a version means that wallets may not
 necessarily know how to re-derive addresses during the recovery
 process. A lack of a birthday means that wallets don’t know how far
@@ -46,8 +46,8 @@ desirable features. First, we start with the following plaintext seed:
 The version field is for wallets to be able to know how to re-derive
 the keys of the wallet.
 
-The 2 byte timestamp is expressed in Bitcoin Days Genesis, meaning that
-the number of days since the timestamp in Bitcoin’s genesis block. This
+The 2 byte timestamp is expressed in Brocoin Days Genesis, meaning that
+the number of days since the timestamp in Brocoin’s genesis block. This
 allow us to save space, and also avoid using a wasteful level of
 granularity. This can currently express time up until 2188.
 

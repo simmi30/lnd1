@@ -20,10 +20,10 @@ var (
 )
 
 // LinkNode stores metadata related to node's that we have/had a direct
-// channel open with. Information such as the Bitcoin network the node
+// channel open with. Information such as the Brocoin network the node
 // advertised, and its identity public key are also stored. Additionally, this
 // struct and the bucket its stored within have store data similar to that of
-// Bitcoin's addrmanager. The TCP address information stored within the struct
+// Brocoin's addrmanager. The TCP address information stored within the struct
 // can be used to establish persistent connections will all channel
 // counterparties on daemon startup.
 //
@@ -31,9 +31,9 @@ var (
 // TODO(roasbeef): add bitfield for supported services
 //  * possibly add a wire.NetAddress type, type
 type LinkNode struct {
-	// Network indicates the Bitcoin network that the LinkNode advertises
+	// Network indicates the Brocoin network that the LinkNode advertises
 	// for incoming channel creation.
-	Network wire.BitcoinNet
+	Network wire.BrocoinNet
 
 	// IdentityPub is the node's current identity public key. Any
 	// channel/topology related information received by this node MUST be
@@ -63,7 +63,7 @@ type LinkNode struct {
 
 // NewLinkNode creates a new LinkNode from the provided parameters, which is
 // backed by an instance of a link node DB.
-func NewLinkNode(db *LinkNodeDB, bitNet wire.BitcoinNet, pub *btcec.PublicKey,
+func NewLinkNode(db *LinkNodeDB, bitNet wire.BrocoinNet, pub *btcec.PublicKey,
 	addrs ...net.Addr) *LinkNode {
 
 	return &LinkNode{
@@ -292,7 +292,7 @@ func deserializeLinkNode(r io.Reader) (*LinkNode, error) {
 	if _, err := io.ReadFull(r, buf[:4]); err != nil {
 		return nil, err
 	}
-	node.Network = wire.BitcoinNet(byteOrder.Uint32(buf[:4]))
+	node.Network = wire.BrocoinNet(byteOrder.Uint32(buf[:4]))
 
 	var pub [33]byte
 	if _, err := io.ReadFull(r, pub[:]); err != nil {

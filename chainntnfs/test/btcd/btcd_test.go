@@ -1,7 +1,7 @@
 //go:build dev
 // +build dev
 
-package btcd_test
+package brond_test
 
 import (
 	"testing"
@@ -9,8 +9,8 @@ import (
 	chainntnfstest "github.com/brolightningnetwork/broln/chainntnfs/test"
 )
 
-// TestInterfaces executes the generic notifier test suite against a btcd
+// TestInterfaces executes the generic notifier test suite against a brond
 // powered chain notifier.
 func TestInterfaces(t *testing.T) {
-	chainntnfstest.TestInterfaces(t, "btcd")
+	chainntnfstest.TestInterfaces(t, "brond")
 }

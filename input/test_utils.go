@@ -160,7 +160,7 @@ func (m *MockSigner) findKey(needleHash160 []byte, singleTweak []byte,
 	return nil
 }
 
-// pubkeyFromHex parses a Bitcoin public key from a hex encoded string.
+// pubkeyFromHex parses a Brocoin public key from a hex encoded string.
 func pubkeyFromHex(keyHex string) (*btcec.PublicKey, error) {
 	bytes, err := hex.DecodeString(keyHex)
 	if err != nil {
@@ -169,7 +169,7 @@ func pubkeyFromHex(keyHex string) (*btcec.PublicKey, error) {
 	return btcec.ParsePubKey(bytes, btcec.S256())
 }
 
-// privkeyFromHex parses a Bitcoin private key from a hex encoded string.
+// privkeyFromHex parses a Brocoin private key from a hex encoded string.
 func privkeyFromHex(keyHex string) (*btcec.PrivateKey, error) {
 	bytes, err := hex.DecodeString(keyHex)
 	if err != nil {
@@ -180,12 +180,12 @@ func privkeyFromHex(keyHex string) (*btcec.PrivateKey, error) {
 
 }
 
-// pubkeyToHex serializes a Bitcoin public key to a hex encoded string.
+// pubkeyToHex serializes a Brocoin public key to a hex encoded string.
 func pubkeyToHex(key *btcec.PublicKey) string {
 	return hex.EncodeToString(key.SerializeCompressed())
 }
 
-// privkeyFromHex serializes a Bitcoin private key to a hex encoded string.
+// privkeyFromHex serializes a Brocoin private key to a hex encoded string.
 func privkeyToHex(key *btcec.PrivateKey) string {
 	return hex.EncodeToString(key.Serialize())
 }

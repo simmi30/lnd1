@@ -21,7 +21,7 @@ var (
 )
 
 // HealthCheckConfig contains the configuration for the different health checks
-// the lnd runs.
+// the broln runs.
 type HealthCheckConfig struct {
 	ChainCheck *CheckConfig `group:"chainbackend" namespace:"chainbackend"`
 
@@ -98,7 +98,7 @@ func (c *CheckConfig) validate(name string) error {
 // DiskCheckConfig contains configuration for ensuring that our node has
 // sufficient disk space.
 type DiskCheckConfig struct {
-	RequiredRemaining float64 `long:"diskrequired" description:"The minimum ratio of free disk space to total capacity that we allow before shutting lnd down safely."`
+	RequiredRemaining float64 `long:"diskrequired" description:"The minimum ratio of free disk space to total capacity that we allow before shutting broln down safely."`
 
 	*CheckConfig
 }

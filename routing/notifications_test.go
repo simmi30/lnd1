@@ -43,10 +43,10 @@ var (
 	testTime = time.Date(2018, time.January, 9, 14, 00, 00, 0, time.UTC)
 
 	priv1, _    = btcec.NewPrivateKey(btcec.S256())
-	bitcoinKey1 = priv1.PubKey()
+	brocoinKey1 = priv1.PubKey()
 
 	priv2, _    = btcec.NewPrivateKey(btcec.S256())
-	bitcoinKey2 = priv2.PubKey()
+	brocoinKey2 = priv2.PubKey()
 
 	timeout = time.Second * 5
 )
@@ -90,14 +90,14 @@ func randEdgePolicy(chanID *lnwire.ShortChannelID,
 	}
 }
 
-func createChannelEdge(ctx *testCtx, bitcoinKey1, bitcoinKey2 []byte,
+func createChannelEdge(ctx *testCtx, brocoinKey1, brocoinKey2 []byte,
 	chanValue btcutil.Amount, fundingHeight uint32) (*wire.MsgTx, *wire.OutPoint,
 	*lnwire.ShortChannelID, error) {
 
 	fundingTx := wire.NewMsgTx(2)
 	_, tx, err := input.GenFundingPkScript(
-		bitcoinKey1,
-		bitcoinKey2,
+		brocoinKey1,
+		brocoinKey2,
 		int64(chanValue),
 	)
 	if err != nil {
@@ -399,7 +399,7 @@ func TestEdgeUpdateNotification(t *testing.T) {
 	// First we'll create the utxo for the channel to be "closed"
 	const chanValue = 10000
 	fundingTx, chanPoint, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(), bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(), brocoinKey2.SerializeCompressed(),
 		chanValue, 0)
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -432,12 +432,12 @@ func TestEdgeUpdateNotification(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -591,8 +591,8 @@ func TestNodeUpdateNotification(t *testing.T) {
 	// so create one now.
 	const chanValue = 10000
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		chanValue, startingBlockHeight)
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -627,12 +627,12 @@ func TestNodeUpdateNotification(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	// Adding the edge will add the nodes to the graph, but with no info
 	// except the pubkey known.
@@ -786,8 +786,8 @@ func TestNotificationCancellation(t *testing.T) {
 	// We'll create the utxo for a new channel.
 	const chanValue = 10000
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		chanValue, startingBlockHeight)
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -824,12 +824,12 @@ func TestNotificationCancellation(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 	if err := ctx.router.AddEdge(edge); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
 	}
@@ -869,7 +869,7 @@ func TestChannelCloseNotification(t *testing.T) {
 	// First we'll create the utxo for the channel to be "closed"
 	const chanValue = 10000
 	fundingTx, chanUtxo, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(), bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(), brocoinKey2.SerializeCompressed(),
 		chanValue, startingBlockHeight)
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -902,12 +902,12 @@ func TestChannelCloseNotification(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 	if err := ctx.router.AddEdge(edge); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
 	}

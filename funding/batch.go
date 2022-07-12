@@ -134,7 +134,7 @@ type Wallet interface {
 	PsbtFundingFinalize([32]byte, *psbt.Packet, *wire.MsgTx) error
 
 	// PublishTransaction performs cursory validation (dust checks, etc),
-	// then finally broadcasts the passed transaction to the Bitcoin network.
+	// then finally broadcasts the passed transaction to the Brocoin network.
 	PublishTransaction(*wire.MsgTx, string) error
 
 	// CancelFundingIntent allows a caller to cancel a previously registered
@@ -165,7 +165,7 @@ type BatchConfig struct {
 	// Wallet is an instance of the internal lightning wallet.
 	Wallet Wallet
 
-	// NetParams contains the current bitcoin network parameters.
+	// NetParams contains the current brocoin network parameters.
 	NetParams *chaincfg.Params
 
 	// Quit is the channel that is selected on to recognize if the main

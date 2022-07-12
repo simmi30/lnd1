@@ -82,7 +82,7 @@ var bakeMacaroonCommand = cli.Command{
 		},
 		cli.BoolFlag{
 			Name:  "allow_external_permissions",
-			Usage: "whether permissions lnd is not familiar with are allowed",
+			Usage: "whether permissions broln is not familiar with are allowed",
 		},
 	},
 	Action: actionDecorator(bakeMacaroon),

@@ -27,7 +27,7 @@ const (
 )
 
 // ContractResolver is an interface which packages a state machine which is
-// able to carry out the necessary steps required to fully resolve a Bitcoin
+// able to carry out the necessary steps required to fully resolve a Brocoin
 // contract on-chain. Resolvers are fully encodable to ensure callers are able
 // to persist them properly. A resolver may produce another resolver in the
 // case that claiming an HTLC is a multi-stage process. In this case, we may

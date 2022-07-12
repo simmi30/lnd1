@@ -97,8 +97,8 @@ var (
 	testAuthProof = channeldb.ChannelAuthProof{
 		NodeSig1Bytes:    testSig.Serialize(),
 		NodeSig2Bytes:    testSig.Serialize(),
-		BitcoinSig1Bytes: testSig.Serialize(),
-		BitcoinSig2Bytes: testSig.Serialize(),
+		BrocoinSig1Bytes: testSig.Serialize(),
+		BrocoinSig2Bytes: testSig.Serialize(),
 	}
 )
 
@@ -360,8 +360,8 @@ func parseTestGraph(useCache bool, path string) (*testGraphInstance, error) {
 
 		copy(edgeInfo.NodeKey1Bytes[:], node1Bytes)
 		copy(edgeInfo.NodeKey2Bytes[:], node2Bytes)
-		copy(edgeInfo.BitcoinKey1Bytes[:], node1Bytes)
-		copy(edgeInfo.BitcoinKey2Bytes[:], node2Bytes)
+		copy(edgeInfo.BrocoinKey1Bytes[:], node1Bytes)
+		copy(edgeInfo.BrocoinKey2Bytes[:], node2Bytes)
 
 		shortID := lnwire.NewShortChanIDFromInt(edge.ChannelID)
 		links[shortID] = &mockLink{
@@ -673,9 +673,9 @@ func createTestGraphFromChannels(useCache bool, testChannels []*testChannel,
 			Capacity:     testChannel.Capacity,
 
 			NodeKey1Bytes:    node1Vertex,
-			BitcoinKey1Bytes: node1Vertex,
+			BrocoinKey1Bytes: node1Vertex,
 			NodeKey2Bytes:    node2Vertex,
-			BitcoinKey2Bytes: node2Vertex,
+			BrocoinKey2Bytes: node2Vertex,
 		}
 
 		err = graph.AddChannelEdge(&edgeInfo)
@@ -1979,7 +1979,7 @@ func runPathInsufficientCapacity(t *testing.T, useCache bool) {
 	// though we have a 2-hop link.
 	target := graph.aliasMap["sophon"]
 
-	payAmt := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBitcoin)
+	payAmt := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBrocoin)
 	_, err = dbFindPath(
 		graph.graph, nil, &mockBandwidthHints{},
 		noRestrictions, testPathFindingConfig,

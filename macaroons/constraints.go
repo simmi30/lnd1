@@ -15,13 +15,13 @@ import (
 )
 
 const (
-	// CondLndCustom is the first party caveat condition name that is used
-	// for all custom caveats in lnd. Every custom caveat entry will be
+	// CondbrolnCustom is the first party caveat condition name that is used
+	// for all custom caveats in broln. Every custom caveat entry will be
 	// encoded as the string
-	// "lnd-custom <custom-caveat-name> <custom-caveat-condition>"
+	// "broln-custom <custom-caveat-name> <custom-caveat-condition>"
 	// in the serialized macaroon. We choose a single space as the delimiter
 	// between the because that is also used by the macaroon bakery library.
-	CondLndCustom = "lnd-custom"
+	CondbrolnCustom = "broln-custom"
 )
 
 // CustomCaveatAcceptor is an interface that contains a single method for
@@ -29,7 +29,7 @@ const (
 // accepted or not.
 type CustomCaveatAcceptor interface {
 	// CustomCaveatSupported returns nil if a macaroon with the given custom
-	// caveat name can be validated by any component in lnd (for example an
+	// caveat name can be validated by any component in broln (for example an
 	// RPC middleware). If no component is registered to handle the given
 	// custom caveat then an error must be returned. This method only checks
 	// the availability of a validating component, not the validity of the
@@ -139,13 +139,13 @@ func CustomConstraint(name, condition string) func(*macaroon.Macaroon) error {
 			outerCondition = name
 		}
 
-		caveat := checkers.Condition(CondLndCustom, outerCondition)
+		caveat := checkers.Condition(CondbrolnCustom, outerCondition)
 		return mac.AddFirstPartyCaveat([]byte(caveat))
 	}
 }
 
 // CustomChecker returns a Checker function that is used by the macaroon bakery
-// library to check whether a custom caveat is supported by lnd in general or
+// library to check whether a custom caveat is supported by broln in general or
 // not. Support in this context means: An additional gRPC interceptor was set up
 // that validates the content (=condition) of the custom caveat. If such an
 // interceptor is in place then the acceptor should return a nil error. If no
@@ -153,7 +153,7 @@ func CustomConstraint(name, condition string) func(*macaroon.Macaroon) error {
 // then a non-nil error should be returned and the macaroon is rejected as a
 // whole.
 func CustomChecker(acceptor CustomCaveatAcceptor) Checker {
-	// We return the general name of all lnd custom macaroons and a function
+	// We return the general name of all broln custom macaroons and a function
 	// that splits the outer condition to extract the name of the custom
 	// condition and the condition itself. In the bakery library that's used
 	// here, a caveat always has the following form:
@@ -161,8 +161,8 @@ func CustomChecker(acceptor CustomCaveatAcceptor) Checker {
 	// <condition-name> <condition-value>
 	//
 	// Because a checker function needs to be bound to the condition name we
-	// have to choose a static name for the first part ("lnd-custom", see
-	// CondLndCustom. Otherwise we'd need to register a new Checker function
+	// have to choose a static name for the first part ("broln-custom", see
+	// CondbrolnCustom. Otherwise we'd need to register a new Checker function
 	// for each custom caveat that's registered. To allow for a generic
 	// custom caveat handling, we just add another layer and expand the
 	// initial <condition-value> into
@@ -172,7 +172,7 @@ func CustomChecker(acceptor CustomCaveatAcceptor) Checker {
 	// The full caveat string entry of a macaroon that uses this generic
 	// mechanism would therefore look like this:
 	//
-	// "lnd-custom <custom-condition-name> <custom-condition-value>"
+	// "broln-custom <custom-condition-name> <custom-condition-value>"
 	checker := func(_ context.Context, _, outerCondition string) error {
 		if outerCondition != strings.TrimSpace(outerCondition) {
 			return fmt.Errorf("unexpected white space found in " +
@@ -185,7 +185,7 @@ func CustomChecker(acceptor CustomCaveatAcceptor) Checker {
 
 		// The condition part of the original caveat is now name and
 		// condition of the custom caveat (we add a layer of conditions
-		// to allow one custom checker to work for all custom lnd
+		// to allow one custom checker to work for all custom broln
 		// conditions that implement arbitrary business logic).
 		parts := strings.Split(outerCondition, " ")
 		customCaveatName := parts[0]
@@ -194,7 +194,7 @@ func CustomChecker(acceptor CustomCaveatAcceptor) Checker {
 	}
 
 	return func() (string, checkers.Func) {
-		return CondLndCustom, checker
+		return CondbrolnCustom, checker
 	}
 }
 
@@ -206,7 +206,7 @@ func HasCustomCaveat(mac *macaroon.Macaroon, customCaveatName string) bool {
 	}
 
 	caveatPrefix := []byte(fmt.Sprintf(
-		"%s %s", CondLndCustom, customCaveatName,
+		"%s %s", CondbrolnCustom, customCaveatName,
 	))
 	for _, caveat := range mac.Caveats() {
 		if bytes.HasPrefix(caveat.Id, caveatPrefix) {
@@ -227,12 +227,12 @@ func GetCustomCaveatCondition(mac *macaroon.Macaroon,
 	}
 
 	caveatPrefix := []byte(fmt.Sprintf(
-		"%s %s ", CondLndCustom, customCaveatName,
+		"%s %s ", CondbrolnCustom, customCaveatName,
 	))
 	for _, caveat := range mac.Caveats() {
 
 		// The caveat id has a format of
-		// "lnd-custom [custom-caveat-name] [custom-caveat-condition]"
+		// "broln-custom [custom-caveat-name] [custom-caveat-condition]"
 		// and we only want the condition part. If we match the prefix
 		// part we return the condition that comes after the prefix.
 		if bytes.HasPrefix(caveat.Id, caveatPrefix) {

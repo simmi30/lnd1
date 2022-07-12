@@ -1167,7 +1167,7 @@ func TestAddProof(t *testing.T) {
 	// In order to be able to add the edge we should have a valid funding
 	// UTXO within the blockchain.
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(), bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(), brocoinKey2.SerializeCompressed(),
 		100, 0)
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -1184,8 +1184,8 @@ func TestAddProof(t *testing.T) {
 		NodeKey2Bytes: node2.PubKeyBytes,
 		AuthProof:     nil,
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -1267,8 +1267,8 @@ func TestIgnoreChannelEdgePolicyForUnknownChannel(t *testing.T) {
 	// Add the edge between the two unknown nodes to the graph, and check
 	// that the nodes are found after the fact.
 	fundingTx, _, chanID, err := createChannelEdge(
-		ctx, bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(), 10000, 500,
+		ctx, brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(), 10000, 500,
 	)
 	if err != nil {
 		t.Fatalf("unable to create channel edge: %v", err)
@@ -1282,8 +1282,8 @@ func TestIgnoreChannelEdgePolicyForUnknownChannel(t *testing.T) {
 		ChannelID:        chanID.ToUint64(),
 		NodeKey1Bytes:    pub1,
 		NodeKey2Bytes:    pub2,
-		BitcoinKey1Bytes: pub1,
-		BitcoinKey2Bytes: pub2,
+		BrocoinKey1Bytes: pub1,
+		BrocoinKey2Bytes: pub2,
 		AuthProof:        nil,
 	}
 	edgePolicy := &channeldb.ChannelEdgePolicy{
@@ -1353,8 +1353,8 @@ func TestAddEdgeUnknownVertexes(t *testing.T) {
 	// Add the edge between the two unknown nodes to the graph, and check
 	// that the nodes are found after the fact.
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		10000, 500,
 	)
 	if err != nil {
@@ -1369,8 +1369,8 @@ func TestAddEdgeUnknownVertexes(t *testing.T) {
 		ChannelID:        chanID.ToUint64(),
 		NodeKey1Bytes:    pub1,
 		NodeKey2Bytes:    pub2,
-		BitcoinKey1Bytes: pub1,
-		BitcoinKey2Bytes: pub2,
+		BrocoinKey1Bytes: pub1,
+		BrocoinKey2Bytes: pub2,
 		AuthProof:        nil,
 	}
 	if err := ctx.router.AddEdge(edge); err != nil {
@@ -1476,8 +1476,8 @@ func TestAddEdgeUnknownVertexes(t *testing.T) {
 	}
 	copy(edge.NodeKey1Bytes[:], node1Bytes)
 	edge.NodeKey2Bytes = node2Bytes
-	copy(edge.BitcoinKey1Bytes[:], node1Bytes)
-	edge.BitcoinKey2Bytes = node2Bytes
+	copy(edge.BrocoinKey1Bytes[:], node1Bytes)
+	edge.BrocoinKey2Bytes = node2Bytes
 
 	if err := ctx.router.AddEdge(edge); err != nil {
 		t.Fatalf("unable to add edge to the channel graph: %v.", err)
@@ -1622,8 +1622,8 @@ func TestWakeUpOnStaleBranch(t *testing.T) {
 		height := startingBlockHeight + i
 		if i == 5 {
 			fundingTx, _, chanID, err := createChannelEdge(ctx,
-				bitcoinKey1.SerializeCompressed(),
-				bitcoinKey2.SerializeCompressed(),
+				brocoinKey1.SerializeCompressed(),
+				brocoinKey2.SerializeCompressed(),
 				chanValue, height)
 			if err != nil {
 				t.Fatalf("unable create channel edge: %v", err)
@@ -1655,8 +1655,8 @@ func TestWakeUpOnStaleBranch(t *testing.T) {
 		height := uint32(forkHeight) + i
 		if i == 5 {
 			fundingTx, _, chanID, err := createChannelEdge(ctx,
-				bitcoinKey1.SerializeCompressed(),
-				bitcoinKey2.SerializeCompressed(),
+				brocoinKey1.SerializeCompressed(),
+				brocoinKey2.SerializeCompressed(),
 				chanValue, height)
 			if err != nil {
 				t.Fatalf("unable create channel edge: %v", err)
@@ -1691,12 +1691,12 @@ func TestWakeUpOnStaleBranch(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge1.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge1.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge1.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge1.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge1); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -1709,12 +1709,12 @@ func TestWakeUpOnStaleBranch(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge2.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge2.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge2.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge2.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge2); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -1831,8 +1831,8 @@ func TestDisconnectedBlocks(t *testing.T) {
 		height := startingBlockHeight + i
 		if i == 5 {
 			fundingTx, _, chanID, err := createChannelEdge(ctx,
-				bitcoinKey1.SerializeCompressed(),
-				bitcoinKey2.SerializeCompressed(),
+				brocoinKey1.SerializeCompressed(),
+				brocoinKey2.SerializeCompressed(),
 				chanValue, height)
 			if err != nil {
 				t.Fatalf("unable create channel edge: %v", err)
@@ -1865,8 +1865,8 @@ func TestDisconnectedBlocks(t *testing.T) {
 		height := uint32(forkHeight) + i
 		if i == 5 {
 			fundingTx, _, chanID, err := createChannelEdge(ctx,
-				bitcoinKey1.SerializeCompressed(),
-				bitcoinKey2.SerializeCompressed(),
+				brocoinKey1.SerializeCompressed(),
+				brocoinKey2.SerializeCompressed(),
 				chanValue, height)
 			if err != nil {
 				t.Fatalf("unable create channel edge: %v", err)
@@ -1899,17 +1899,17 @@ func TestDisconnectedBlocks(t *testing.T) {
 		ChannelID:        chanID1,
 		NodeKey1Bytes:    node1.PubKeyBytes,
 		NodeKey2Bytes:    node2.PubKeyBytes,
-		BitcoinKey1Bytes: node1.PubKeyBytes,
-		BitcoinKey2Bytes: node2.PubKeyBytes,
+		BrocoinKey1Bytes: node1.PubKeyBytes,
+		BrocoinKey2Bytes: node2.PubKeyBytes,
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge1.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge1.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge1.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge1.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge1); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -1919,17 +1919,17 @@ func TestDisconnectedBlocks(t *testing.T) {
 		ChannelID:        chanID2,
 		NodeKey1Bytes:    node1.PubKeyBytes,
 		NodeKey2Bytes:    node2.PubKeyBytes,
-		BitcoinKey1Bytes: node1.PubKeyBytes,
-		BitcoinKey2Bytes: node2.PubKeyBytes,
+		BrocoinKey1Bytes: node1.PubKeyBytes,
+		BrocoinKey2Bytes: node2.PubKeyBytes,
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge2.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge2.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge2.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge2.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if err := ctx.router.AddEdge(edge2); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
@@ -2030,8 +2030,8 @@ func TestRouterChansClosedOfflinePruneGraph(t *testing.T) {
 	}
 	nextHeight := startingBlockHeight + 1
 	fundingTx1, chanUTXO, chanID1, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		chanValue, uint32(nextHeight))
 	if err != nil {
 		t.Fatalf("unable create channel edge: %v", err)
@@ -2060,12 +2060,12 @@ func TestRouterChansClosedOfflinePruneGraph(t *testing.T) {
 		AuthProof: &channeldb.ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 	}
-	copy(edge1.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge1.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge1.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge1.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 	if err := ctx.router.AddEdge(edge1); err != nil {
 		t.Fatalf("unable to add edge: %v", err)
 	}
@@ -2501,8 +2501,8 @@ func TestIsStaleNode(t *testing.T) {
 	copy(pub2[:], priv2.PubKey().SerializeCompressed())
 
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		10000, 500)
 	if err != nil {
 		t.Fatalf("unable to create channel edge: %v", err)
@@ -2516,8 +2516,8 @@ func TestIsStaleNode(t *testing.T) {
 		ChannelID:        chanID.ToUint64(),
 		NodeKey1Bytes:    pub1,
 		NodeKey2Bytes:    pub2,
-		BitcoinKey1Bytes: pub1,
-		BitcoinKey2Bytes: pub2,
+		BrocoinKey1Bytes: pub1,
+		BrocoinKey2Bytes: pub2,
 		AuthProof:        nil,
 	}
 	if err := ctx.router.AddEdge(edge); err != nil {
@@ -2580,8 +2580,8 @@ func TestIsKnownEdge(t *testing.T) {
 	copy(pub2[:], priv2.PubKey().SerializeCompressed())
 
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		10000, 500)
 	if err != nil {
 		t.Fatalf("unable to create channel edge: %v", err)
@@ -2595,8 +2595,8 @@ func TestIsKnownEdge(t *testing.T) {
 		ChannelID:        chanID.ToUint64(),
 		NodeKey1Bytes:    pub1,
 		NodeKey2Bytes:    pub2,
-		BitcoinKey1Bytes: pub1,
-		BitcoinKey2Bytes: pub2,
+		BrocoinKey1Bytes: pub1,
+		BrocoinKey2Bytes: pub2,
 		AuthProof:        nil,
 	}
 	if err := ctx.router.AddEdge(edge); err != nil {
@@ -2631,8 +2631,8 @@ func TestIsStaleEdgePolicy(t *testing.T) {
 	copy(pub2[:], priv2.PubKey().SerializeCompressed())
 
 	fundingTx, _, chanID, err := createChannelEdge(ctx,
-		bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(),
+		brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(),
 		10000, 500)
 	if err != nil {
 		t.Fatalf("unable to create channel edge: %v", err)
@@ -2656,8 +2656,8 @@ func TestIsStaleEdgePolicy(t *testing.T) {
 		ChannelID:        chanID.ToUint64(),
 		NodeKey1Bytes:    pub1,
 		NodeKey2Bytes:    pub2,
-		BitcoinKey1Bytes: pub1,
-		BitcoinKey2Bytes: pub2,
+		BrocoinKey1Bytes: pub1,
+		BrocoinKey2Bytes: pub2,
 		AuthProof:        nil,
 	}
 	if err := ctx.router.AddEdge(edge); err != nil {
@@ -3391,8 +3391,8 @@ func newChannelEdgeInfo(ctx *testCtx, fundingHeight uint32,
 	}
 
 	fundingTx, _, chanID, err := createChannelEdge(
-		ctx, bitcoinKey1.SerializeCompressed(),
-		bitcoinKey2.SerializeCompressed(), 100, fundingHeight,
+		ctx, brocoinKey1.SerializeCompressed(),
+		brocoinKey2.SerializeCompressed(), 100, fundingHeight,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create edge: %w", err)
@@ -3403,8 +3403,8 @@ func newChannelEdgeInfo(ctx *testCtx, fundingHeight uint32,
 		NodeKey1Bytes: node1.PubKeyBytes,
 		NodeKey2Bytes: node2.PubKeyBytes,
 	}
-	copy(edge.BitcoinKey1Bytes[:], bitcoinKey1.SerializeCompressed())
-	copy(edge.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	copy(edge.BrocoinKey1Bytes[:], brocoinKey1.SerializeCompressed())
+	copy(edge.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 
 	if ecm == edgeCreationNoFundingTx {
 		return edge, nil

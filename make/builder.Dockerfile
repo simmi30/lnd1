@@ -26,9 +26,9 @@ RUN apt-get update && apt-get install -y \
     tar \
     zip \
     bash \
-  && mkdir -p /tmp/build/lnd \
+  && mkdir -p /tmp/build/broln \
   && mkdir -p /tmp/build/.cache \
   && mkdir -p /tmp/build/.modcache \
   && chmod -R 777 /tmp/build/
 
-WORKDIR /tmp/build/lnd
+WORKDIR /tmp/build/broln

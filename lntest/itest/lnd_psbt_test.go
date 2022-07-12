@@ -21,7 +21,7 @@ import (
 )
 
 // testPsbtChanFunding makes sure a channel can be opened between carol and dave
-// by using a Partially Signed Bitcoin Transaction that funds the channel
+// by using a Partially Signed Brocoin Transaction that funds the channel
 // multisig funding output.
 func testPsbtChanFunding(net *lntest.NetworkHarness, t *harnessTest) {
 	// First, we'll create two new nodes that we'll use to open channels
@@ -37,7 +37,7 @@ func testPsbtChanFunding(net *lntest.NetworkHarness, t *harnessTest) {
 }
 
 // runPsbtChanFunding makes sure a channel can be opened between carol and dave
-// by using a Partially Signed Bitcoin Transaction that funds the channel
+// by using a Partially Signed Brocoin Transaction that funds the channel
 // multisig funding output.
 func runPsbtChanFunding(net *lntest.NetworkHarness, t *harnessTest, carol,
 	dave *lntest.HarnessNode) {
@@ -50,7 +50,7 @@ func runPsbtChanFunding(net *lntest.NetworkHarness, t *harnessTest, carol,
 	defer cancel()
 
 	const chanSize = funding.MaxBtcFundingAmount
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	// Before we start the test, we'll ensure both sides are connected so
 	// the funding flow can be properly executed.
@@ -248,7 +248,7 @@ func runPsbtChanFunding(net *lntest.NetworkHarness, t *harnessTest, carol,
 }
 
 // testPsbtChanFundingExternal makes sure a channel can be opened between carol
-// and dave by using a Partially Signed Bitcoin Transaction that funds the
+// and dave by using a Partially Signed Brocoin Transaction that funds the
 // channel multisig funding output and is fully funded by an external third
 // party.
 func testPsbtChanFundingExternal(net *lntest.NetworkHarness, t *harnessTest) {
@@ -344,7 +344,7 @@ func testPsbtChanFundingExternal(net *lntest.NetworkHarness, t *harnessTest) {
 	// Alice. And we assume that Alice is a third party that is not in
 	// direct communication with Carol and won't send the signed TX to her
 	// before broadcasting it. So we cannot call the finalize step but
-	// instead just tell lnd to wait for a TX to be published/confirmed.
+	// instead just tell broln to wait for a TX to be published/confirmed.
 	_, err = carol.FundingStateStep(ctxb, &lnrpc.FundingTransitionMsg{
 		Trigger: &lnrpc.FundingTransitionMsg_PsbtVerify{
 			PsbtVerify: &lnrpc.FundingPsbtVerify{
@@ -478,7 +478,7 @@ func testPsbtChanFundingSingleStep(net *lntest.NetworkHarness, t *harnessTest) {
 	dave := net.NewNode(t.t, "dave", args)
 	defer shutdownAndAssert(net, t, dave)
 
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, net.Alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, net.Alice)
 
 	// Get new address for anchor reserve.
 	reserveAddrReq := &lnrpc.NewAddressRequest{
@@ -651,7 +651,7 @@ func runSignPsbt(t *harnessTest, net *lntest.NetworkHarness,
 	// We test that we can sign a PSBT that spends funds from an input that
 	// the wallet doesn't know about. To set up that test case, we first
 	// derive an address manually that the wallet won't be watching on
-	// chain. We can do that by exporting the account xpub of lnd's main
+	// chain. We can do that by exporting the account xpub of broln's main
 	// account.
 	accounts, err := alice.WalletKitClient.ListAccounts(
 		ctxt, &walletrpc.ListAccountsRequest{},

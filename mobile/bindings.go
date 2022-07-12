@@ -1,7 +1,7 @@
 //go:build mobile
 // +build mobile
 
-package lndmobile
+package brolnmobile
 
 import (
 	"errors"
@@ -11,38 +11,38 @@ import (
 	"sync/atomic"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/brolightningnetwork/lnd"
+	"github.com/brolightningnetwork/broln"
 	"github.com/brolightningnetwork/broln/signal"
 	"google.golang.org/grpc"
 )
 
-// lndStarted will be used atomically to ensure only a singel lnd instance is
+// brolnStarted will be used atomically to ensure only a singel broln instance is
 // attempted to be started at once.
-var lndStarted int32
+var brolnStarted int32
 
-// Start starts lnd in a new goroutine.
+// Start starts broln in a new goroutine.
 //
-// extraArgs can be used to pass command line arguments to lnd that will
+// extraArgs can be used to pass command line arguments to broln that will
 // override what is found in the config file. Example:
-//	extraArgs = "--bitcoin.testnet --lnddir=\"/tmp/folder name/\" --profile=5050"
+//	extraArgs = "--brocoin.testnet --brolndir=\"/tmp/folder name/\" --profile=5050"
 //
-// The rpcReady is called lnd is ready to accept RPC calls.
+// The rpcReady is called broln is ready to accept RPC calls.
 //
-// NOTE: On mobile platforms the '--lnddir` argument should be set to the
-// current app directory in order to ensure lnd has the permissions needed to
+// NOTE: On mobile platforms the '--brolndir` argument should be set to the
+// current app directory in order to ensure broln has the permissions needed to
 // write to it.
 func Start(extraArgs string, rpcReady Callback) {
-	// We only support a single lnd instance at a time (singleton) for now,
+	// We only support a single broln instance at a time (singleton) for now,
 	// so we make sure to return immediately if it has already been
 	// started.
-	if !atomic.CompareAndSwapInt32(&lndStarted, 0, 1) {
-		err := errors.New("lnd already started")
+	if !atomic.CompareAndSwapInt32(&brolnStarted, 0, 1) {
+		err := errors.New("broln already started")
 		rpcReady.OnError(err)
 		return
 	}
 
-	// (Re-)initialize the in-mem gRPC listeners we're going to give to lnd.
-	// This is required each time lnd is started, because when lnd shuts
+	// (Re-)initialize the in-mem gRPC listeners we're going to give to broln.
+	// This is required each time broln is started, because when broln shuts
 	// down, the in-mem listeners are closed.
 	RecreateListeners()
 
@@ -68,7 +68,7 @@ func Start(extraArgs string, rpcReady Callback) {
 	// Hook interceptor for os signals.
 	shutdownInterceptor, err := signal.Intercept()
 	if err != nil {
-		atomic.StoreInt32(&lndStarted, 0)
+		atomic.StoreInt32(&brolnStarted, 0)
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		rpcReady.OnError(err)
 		return
@@ -76,9 +76,9 @@ func Start(extraArgs string, rpcReady Callback) {
 
 	// Load the configuration, and parse the extra arguments as command
 	// line options. This function will also set up logging properly.
-	loadedConfig, err := lnd.LoadConfig(shutdownInterceptor)
+	loadedConfig, err := broln.LoadConfig(shutdownInterceptor)
 	if err != nil {
-		atomic.StoreInt32(&lndStarted, 0)
+		atomic.StoreInt32(&brolnStarted, 0)
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		rpcReady.OnError(err)
 		return
@@ -93,8 +93,8 @@ func Start(extraArgs string, rpcReady Callback) {
 
 	// We call the main method with the custom in-memory listener called by
 	// the mobile APIs, such that the grpc server will use it.
-	cfg := lnd.ListenerCfg{
-		RPCListeners: []*lnd.ListenerWithSignal{{
+	cfg := broln.ListenerCfg{
+		RPCListeners: []*broln.ListenerWithSignal{{
 			Listener: lightningLis,
 			Ready:    rpcListening,
 		}},
@@ -104,10 +104,10 @@ func Start(extraArgs string, rpcReady Callback) {
 	// Call the "real" main in a nested manner so the defers will properly
 	// be executed in the case of a graceful shutdown.
 	go func() {
-		defer atomic.StoreInt32(&lndStarted, 0)
+		defer atomic.StoreInt32(&brolnStarted, 0)
 		defer close(quit)
 
-		if err := lnd.Main(
+		if err := broln.Main(
 			loadedConfig, cfg, implCfg, shutdownInterceptor,
 		); err != nil {
 			if e, ok := err.(*flags.Error); ok &&
@@ -124,7 +124,7 @@ func Start(extraArgs string, rpcReady Callback) {
 	// macaroons.
 	setDefaultDialOption(
 		func() ([]grpc.DialOption, error) {
-			return lnd.AdminAuthOptions(loadedConfig, false)
+			return broln.AdminAuthOptions(loadedConfig, false)
 		},
 	)
 
@@ -133,12 +133,12 @@ func Start(extraArgs string, rpcReady Callback) {
 	// options that don't include them.
 	setWalletUnlockerDialOption(
 		func() ([]grpc.DialOption, error) {
-			return lnd.AdminAuthOptions(loadedConfig, true)
+			return broln.AdminAuthOptions(loadedConfig, true)
 		},
 	)
 	setStateDialOption(
 		func() ([]grpc.DialOption, error) {
-			return lnd.AdminAuthOptions(loadedConfig, true)
+			return broln.AdminAuthOptions(loadedConfig, true)
 		},
 	)
 

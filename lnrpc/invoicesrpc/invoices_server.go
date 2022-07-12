@@ -83,7 +83,7 @@ type ServerShell struct {
 
 // Server is a sub-server of the main RPC server: the invoices RPC. This sub
 // RPC server allows external callers to access the status of the invoices
-// currently active within lnd, as well as configuring it at runtime.
+// currently active within broln, as well as configuring it at runtime.
 type Server struct {
 	// Required by the grpc-gateway/v2 library for forward compatibility.
 	UnimplementedInvoicesServer

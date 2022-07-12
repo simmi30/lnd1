@@ -394,7 +394,7 @@ search:
 	for _, dnsSeedTuple := range d.dnsSeeds {
 		// We'll first query the seed with an SRV record so we can
 		// obtain a random sample of the encoded public keys of nodes.
-		// We use the lndLookupSRV function for this task.
+		// We use the brolnLookupSRV function for this task.
 		primarySeed := dnsSeedTuple[0]
 		_, addrs, err := d.net.LookupSRV(
 			"nodes", "tcp", primarySeed, d.timeout,
@@ -445,7 +445,7 @@ search:
 			// With the SRV target obtained, we'll now perform
 			// another query to obtain the IP address for the
 			// matching bech32 encoded node key. We use the
-			// lndLookup function for this task.
+			// brolnLookup function for this task.
 			bechNodeHost := nodeSrv.Target
 			addrs, err := d.net.LookupHost(bechNodeHost)
 			if err != nil {
@@ -505,7 +505,7 @@ search:
 
 			// Finally we'll convert the host:port peer to a proper
 			// TCP address to use within the lnwire.NetAddress. We
-			// don't need to use the lndResolveTCP function here
+			// don't need to use the brolnResolveTCP function here
 			// because we already have the host:port peer.
 			addr := net.JoinHostPort(
 				addrs[0],

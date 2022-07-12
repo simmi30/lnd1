@@ -444,7 +444,7 @@ func initRevocationWindows(chanA, chanB *LightningChannel) error {
 	return nil
 }
 
-// pubkeyFromHex parses a Bitcoin public key from a hex encoded string.
+// pubkeyFromHex parses a Brocoin public key from a hex encoded string.
 func pubkeyFromHex(keyHex string) (*btcec.PublicKey, error) {
 	bytes, err := hex.DecodeString(keyHex)
 	if err != nil {
@@ -453,7 +453,7 @@ func pubkeyFromHex(keyHex string) (*btcec.PublicKey, error) {
 	return btcec.ParsePubKey(bytes, btcec.S256())
 }
 
-// privkeyFromHex parses a Bitcoin private key from a hex encoded string.
+// privkeyFromHex parses a Brocoin private key from a hex encoded string.
 func privkeyFromHex(keyHex string) (*btcec.PrivateKey, error) {
 	bytes, err := hex.DecodeString(keyHex)
 	if err != nil {
@@ -464,7 +464,7 @@ func privkeyFromHex(keyHex string) (*btcec.PrivateKey, error) {
 
 }
 
-// blockFromHex parses a full Bitcoin block from a hex encoded string.
+// blockFromHex parses a full Brocoin block from a hex encoded string.
 func blockFromHex(blockHex string) (*btcutil.Block, error) {
 	bytes, err := hex.DecodeString(blockHex)
 	if err != nil {
@@ -473,7 +473,7 @@ func blockFromHex(blockHex string) (*btcutil.Block, error) {
 	return btcutil.NewBlockFromBytes(bytes)
 }
 
-// txFromHex parses a full Bitcoin transaction from a hex encoded string.
+// txFromHex parses a full Brocoin transaction from a hex encoded string.
 func txFromHex(txHex string) (*btcutil.Tx, error) {
 	bytes, err := hex.DecodeString(txHex)
 	if err != nil {

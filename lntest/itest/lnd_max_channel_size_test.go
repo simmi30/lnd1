@@ -12,7 +12,7 @@ import (
 	"github.com/brolightningnetwork/broln/lntest"
 )
 
-// testMaxChannelSize tests that lnd handles --maxchansize parameter
+// testMaxChannelSize tests that broln handles --maxchansize parameter
 // correctly. Wumbo nodes should enforce a default soft limit of 10 BTC by
 // default. This limit can be adjusted with --maxchansize config option
 func testMaxChannelSize(net *lntest.NetworkHarness, t *harnessTest) {
@@ -29,7 +29,7 @@ func testMaxChannelSize(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, wumboNode2)
 
 	// We'll send 11 BTC to the wumbo node so it can test the wumbo soft limit.
-	net.SendCoins(t.t, 11*btcutil.SatoshiPerBitcoin, wumboNode)
+	net.SendCoins(t.t, 11*btcutil.SatoshiPerBrocoin, wumboNode)
 
 	// Next we'll connect both nodes, then attempt to make a wumbo channel
 	// funding request, which should fail as it exceeds the default wumbo

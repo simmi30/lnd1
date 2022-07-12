@@ -905,15 +905,15 @@ func testChanRestoreScenario(t *harnessTest, net *lntest.NetworkHarness,
 
 	// Now that our new nodes are created, we'll give them some coins for
 	// channel opening and anchor sweeping.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// For the anchor output case we need two UTXOs for Carol so she can
 	// sweep both the local and remote anchor.
 	if commitTypeHasAnchors(testCase.commitmentType) {
-		net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+		net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 	}
 
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	var from, to *lntest.HarnessNode
 	if testCase.initiator {

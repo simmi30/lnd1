@@ -1,12 +1,12 @@
 zpay32
 =======
 
-[![Build Status](http://img.shields.io/travis/lightningnetwork/lnd.svg)](https://travis-ci.org/lightningnetwork/lnd) 
+[![Build Status](http://img.shields.io/travis/lightningnetwork/broln.svg)](https://travis-ci.org/lightningnetwork/broln) 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/brolightningnetwork/broln/blob/master/LICENSE)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/brolightningnetwork/broln/zpay32)
 
 The zpay32 package implements a basic scheme for the encoding of payment
-requests between two `lnd` nodes within the Lightning Network. The zpay32
+requests between two `broln` nodes within the Lightning Network. The zpay32
 encoding scheme uses the
 [zbase32](https://philzimmermann.com/docs/human-oriented-base-32-encoding.txt)
 scheme along with a checksum to encode a serialized payment request.

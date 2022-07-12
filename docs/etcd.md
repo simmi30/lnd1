@@ -1,18 +1,18 @@
-# Experimental etcd support in LND
+# Experimental etcd support in broln
 
-With the recent introduction of the `kvdb` interface LND can support multiple
+With the recent introduction of the `kvdb` interface broln can support multiple
 database backends allowing experimentation with the storage model as well as
 improving robustness trough eg. replicating essential data.
 
 Building on `kvdb` in v0.11.0 we're adding experimental [etcd](https://etcd.io)
-support to LND. As this is an unstable feature heavily in development, it still
+support to broln. As this is an unstable feature heavily in development, it still
 has *many* rough edges for the time being. It is therefore highly recommended to
-not use LND on `etcd` in any kind of production environment especially not
-on bitcoin mainnet.
+not use broln on `etcd` in any kind of production environment especially not
+on brocoin mainnet.
 
-## Building LND with etcd support
+## Building broln with etcd support
 
-To create a dev build of LND with etcd support use the following command:
+To create a dev build of broln with etcd support use the following command:
 
 ```shell
 ⛰  make tags="kvdb_etcd"
@@ -39,20 +39,20 @@ To start your local etcd instance for testing run:
 ```
 
 The large `max-txn-ops` and `max-request-bytes` values are currently required in
-case of running LND with the full graph in etcd. Upcoming versions will split
+case of running broln with the full graph in etcd. Upcoming versions will split
 the database to local and replicated parts and only essential parts will remain
 in the replicated database, removing the requirement for these additional 
-settings. These parameters have been tested to work with testnet LND.
+settings. These parameters have been tested to work with testnet broln.
 
-## Configuring LND to run on etcd
+## Configuring broln to run on etcd
 
-To run LND with etcd, additional configuration is needed, specified either
-through command line flags or in `lnd.conf`.
+To run broln with etcd, additional configuration is needed, specified either
+through command line flags or in `broln.conf`.
 
 Sample command line:
 
 ```shell
-⛰  ./lnd-debug \
+⛰  ./broln-debug \
     --db.backend=etcd \
     --db.etcd.host=127.0.0.1:2379 \
     --db.etcd.certfile=/home/user/etcd/bin/default.etcd/fixtures/client/cert.pem \
@@ -60,7 +60,7 @@ Sample command line:
     --db.etcd.insecure_skip_verify
 ```
 
-Sample `lnd.conf` (with other setting omitted):
+Sample `broln.conf` (with other setting omitted):
 
 ```text
 [db]

@@ -47,7 +47,7 @@ func testRevokedCloseRetribution(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// Before we make a channel, we'll load up Carol with some coins sent
 	// directly from the miner.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// In order to test Carol's response to an uncooperative channel
 	// closure by Bob, we'll first open up a channel between them with a
@@ -286,7 +286,7 @@ func testRevokedCloseRetributionZeroValueRemoteOutput(net *lntest.NetworkHarness
 
 	// Before we make a channel, we'll load up Dave with some coins sent
 	// directly from the miner.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	// In order to test Dave's response to an uncooperative channel
 	// closure by Carol, we'll first open up a channel between them with a
@@ -501,7 +501,7 @@ func testRevokedCloseRetributionRemoteHodl(net *lntest.NetworkHarness,
 
 	// Before we make a channel, we'll load up Dave with some coins sent
 	// directly from the miner.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	// In order to test Dave's response to an uncooperative channel closure
 	// by Carol, we'll first open up a channel between them with a
@@ -887,7 +887,7 @@ func testRevokedCloseRetributionAltruistWatchtower(net *lntest.NetworkHarness,
 		})
 
 		if !success {
-			// Log failure time to help relate the lnd logs to the
+			// Log failure time to help relate the broln logs to the
 			// failure.
 			t.Logf("Failure time: %v", time.Now().Format(
 				"2006-01-02 15:04:05.000",
@@ -987,7 +987,7 @@ func testRevokedCloseRetributionAltruistWatchtowerCase(
 
 	// Before we make a channel, we'll load up Dave with some coins sent
 	// directly from the miner.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	// In order to test Dave's response to an uncooperative channel
 	// closure by Carol, we'll first open up a channel between them with a

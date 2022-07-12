@@ -127,13 +127,13 @@ func init() {
 	copy(testDescriptionHash[:], testDescriptionHashSlice[:])
 
 	// Initialize litecoin testnet and mainnet params by applying key fields
-	// to copies of bitcoin params.
+	// to copies of brocoin params.
 	// TODO(sangaman): create an interface for chaincfg.params
 	ltcTestNetParams = chaincfg.TestNet3Params
-	ltcTestNetParams.Net = wire.BitcoinNet(litecoinCfg.TestNet4Params.Net)
+	ltcTestNetParams.Net = wire.BrocoinNet(litecoinCfg.TestNet4Params.Net)
 	ltcTestNetParams.Bech32HRPSegwit = litecoinCfg.TestNet4Params.Bech32HRPSegwit
 	ltcMainNetParams = chaincfg.MainNetParams
-	ltcMainNetParams.Net = wire.BitcoinNet(litecoinCfg.MainNetParams.Net)
+	ltcMainNetParams.Net = wire.BrocoinNet(litecoinCfg.MainNetParams.Net)
 	ltcMainNetParams.Bech32HRPSegwit = litecoinCfg.MainNetParams.Bech32HRPSegwit
 }
 

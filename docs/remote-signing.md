@@ -1,13 +1,13 @@
 # Remote signing
 
-Remote signing refers to an operating mode of `lnd` in which the wallet is
-segregated into two parts, each running within its own instance of `lnd`. One
+Remote signing refers to an operating mode of `broln` in which the wallet is
+segregated into two parts, each running within its own instance of `broln`. One
 instance is running in watch-only mode which means it only has **public**
 keys in its wallet. The second instance (in this document referred to as
 "signer" or "remote signer" instance) has the same keys in its wallet, including
 the **private** keys.
 
-The advantage of such a setup is that the `lnd` instance containing the private
+The advantage of such a setup is that the `broln` instance containing the private
 keys (the "signer") can be completely offline except for a single inbound gRPC
 connection.
 The signer instance can run on a different machine with more tightly locked down
@@ -30,11 +30,11 @@ xxx               xx
           |                       |                                  |
           v                       |                                  |
   +----------------+     gRPC     |   +----------------+             |
-  | watch-only lnd +--------------+-->| full seed lnd  |             |
+  | watch-only broln +--------------+-->| full seed broln  |             |
   +-------+--------+              |   +----------------+             |
           |                       |                                  |
   +-------v--------+              +----------------------------------+
-  | bitcoind/btcd  |  
+  | brocoind/brond  |  
   +----------------+ 
 
 ```
@@ -51,7 +51,7 @@ and is not connected to the internet or LN P2P network at all. Ideally only a
 single RPC based connection (that can be firewalled off specifically) can be
 opened to this node from the host on which the node "watch-only" is running.
 
-Recommended entries in `lnd.conf`:
+Recommended entries in `broln.conf`:
 
 ```text
 # We apply some basic "hardening" parameters to make sure no connections to the
@@ -71,15 +71,15 @@ rpclisten=10019
 # The signer node will not look at the chain at all, it only needs to sign
 # things with the keys contained in its wallet. So we don't need to hook it up
 # to any chain backend.
-[bitcoin]
-# We still need to signal that we're using the Bitcoin chain.
-bitcoin.active=true
+[brocoin]
+# We still need to signal that we're using the Brocoin chain.
+brocoin.active=true
 
 # And we're making sure mainnet parameters are used.
-bitcoin.mainnet=true
+brocoin.mainnet=true
 
 # But we aren't using a "real" chain backed but a mocked one.
-bitcoin.node=nochainbackend
+brocoin.node=nochainbackend
 ```
 
 After successfully starting up "signer", the following command can be run to
@@ -91,7 +91,7 @@ signer>  ⛰  lncli wallet accounts list > accounts-signer.json
 
 That `accounts-signer.json` file has to be copied to the machine on which
 "watch-only" will be running. It contains the extended public keys for all of
-`lnd`'s accounts.
+`broln`'s accounts.
 
 A custom macaroon can be baked for the watch-only node so it only gets the
 minimum required permissions on the signer instance:
@@ -110,7 +110,7 @@ The node "watch-only" is the public, internet facing node that does not contain
 any private keys in its wallet but delegates all signing operations to the node
 "signer" over a single RPC connection.
 
-Required entries in `lnd.conf`:
+Required entries in `broln.conf`:
 
 ```text
 [remotesigner]
@@ -149,7 +149,7 @@ To migrate an existing node, follow these steps:
    following the steps [mentioned above](#the-signer-node).
 2. In the configuration of the existing node, add the configuration entries as
    [shown above](#the-watch-only-node). But instead of creating a new wallet
-   (since one already exists), instruct `lnd` to migrate the existing wallet to
+   (since one already exists), instruct `broln` to migrate the existing wallet to
    a watch-only one (by purging all private key material from it) by adding the
   `remotesigner.migrate-wallet-to-watch-only=true` configuration entry.
 
@@ -179,10 +179,10 @@ constants):
 ```javascript
 
 // EDIT ME:
-const WATCH_ONLY_LND_DIR = '/home/watch-only/.lnd';
+const WATCH_ONLY_broln_DIR = '/home/watch-only/.broln';
 const WATCH_ONLY_RPC_HOSTPORT = 'localhost:10018';
 const WATCH_ONLY_WALLET_PASSWORD = 'testnet3';
-const LND_SOURCE_DIR = '.';
+const broln_SOURCE_DIR = '.';
 
 const fs = require('fs');
 const grpc = require('@grpc/grpc-js');
@@ -195,14 +195,14 @@ const loaderOptions = {
     oneofs: true
 };
 const packageDefinition = protoLoader.loadSync([
-    LND_SOURCE_DIR + '/lnrpc/walletunlocker.proto',
+    broln_SOURCE_DIR + '/lnrpc/walletunlocker.proto',
 ], loaderOptions);
 
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA'
 
 // build ssl credentials using the cert the same as before
-let lndCert = fs.readFileSync(WATCH_ONLY_LND_DIR + '/tls.cert');
-let sslCreds = grpc.credentials.createSsl(lndCert);
+let brolnCert = fs.readFileSync(WATCH_ONLY_broln_DIR + '/tls.cert');
+let sslCreds = grpc.credentials.createSsl(brolnCert);
 
 let lnrpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 let lnrpc = lnrpcDescriptor.lnrpc;

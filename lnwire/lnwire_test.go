@@ -605,12 +605,12 @@ func TestLightningWireProtocol(t *testing.T) {
 				t.Fatalf("unable to parse sig: %v", err)
 				return
 			}
-			req.BitcoinSig1, err = NewSigFromSignature(testSig)
+			req.BrocoinSig1, err = NewSigFromSignature(testSig)
 			if err != nil {
 				t.Fatalf("unable to parse sig: %v", err)
 				return
 			}
-			req.BitcoinSig2, err = NewSigFromSignature(testSig)
+			req.BrocoinSig2, err = NewSigFromSignature(testSig)
 			if err != nil {
 				t.Fatalf("unable to parse sig: %v", err)
 				return
@@ -626,12 +626,12 @@ func TestLightningWireProtocol(t *testing.T) {
 				t.Fatalf("unable to generate key: %v", err)
 				return
 			}
-			req.BitcoinKey1, err = randRawKey()
+			req.BrocoinKey1, err = randRawKey()
 			if err != nil {
 				t.Fatalf("unable to generate key: %v", err)
 				return
 			}
-			req.BitcoinKey2, err = randRawKey()
+			req.BrocoinKey2, err = randRawKey()
 			if err != nil {
 				t.Fatalf("unable to generate key: %v", err)
 				return
@@ -760,7 +760,7 @@ func TestLightningWireProtocol(t *testing.T) {
 				return
 			}
 
-			req.BitcoinSignature, err = NewSigFromSignature(testSig)
+			req.BrocoinSignature, err = NewSigFromSignature(testSig)
 			if err != nil {
 				t.Fatalf("unable to parse sig: %v", err)
 				return

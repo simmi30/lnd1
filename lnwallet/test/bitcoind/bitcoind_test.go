@@ -1,4 +1,4 @@
-package bitcoind_test
+package brocoind_test
 
 import (
 	"testing"
@@ -6,8 +6,8 @@ import (
 	lnwallettest "github.com/brolightningnetwork/broln/lnwallet/test"
 )
 
-// TestLightningWallet tests LightningWallet powered by bitcoind against our
+// TestLightningWallet tests LightningWallet powered by brocoind against our
 // suite of interface tests.
 func TestLightningWallet(t *testing.T) {
-	lnwallettest.TestLightningWallet(t, "bitcoind")
+	lnwallettest.TestLightningWallet(t, "brocoind")
 }

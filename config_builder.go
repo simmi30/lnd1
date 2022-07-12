@@ -45,10 +45,10 @@ import (
 )
 
 // GrpcRegistrar is an interface that must be satisfied by an external subserver
-// that wants to be able to register its own gRPC server onto lnd's main
+// that wants to be able to register its own gRPC server onto broln's main
 // grpc.Server instance.
 type GrpcRegistrar interface {
-	// RegisterGrpcSubserver is called for each net.Listener on which lnd
+	// RegisterGrpcSubserver is called for each net.Listener on which broln
 	// creates a grpc.Server instance. External subservers implementing this
 	// method can then register their own gRPC server structs to the main
 	// server instance.
@@ -56,10 +56,10 @@ type GrpcRegistrar interface {
 }
 
 // RestRegistrar is an interface that must be satisfied by an external subserver
-// that wants to be able to register its own REST mux onto lnd's main
+// that wants to be able to register its own REST mux onto broln's main
 // proxy.ServeMux instance.
 type RestRegistrar interface {
-	// RegisterRestSubserver is called after lnd creates the main
+	// RegisterRestSubserver is called after broln creates the main
 	// proxy.ServeMux instance. External subservers implementing this method
 	// can then register their own REST proxy stubs to the main server
 	// instance.
@@ -81,7 +81,7 @@ type ExternalValidator interface {
 }
 
 // DatabaseBuilder is an interface that must be satisfied by the implementation
-// that provides lnd's main database backend instances.
+// that provides broln's main database backend instances.
 type DatabaseBuilder interface {
 	// BuildDatabase extracts the current databases that we'll use for
 	// normal operation in the daemon. A function closure that closes all
@@ -110,7 +110,7 @@ type ChainControlBuilder interface {
 }
 
 // ImplementationCfg is a struct that holds all configuration items for
-// components that can be implemented outside lnd itself.
+// components that can be implemented outside broln itself.
 type ImplementationCfg struct {
 	// GrpcRegistrar is a type that can register additional gRPC subservers
 	// before the main gRPC server is started.
@@ -124,7 +124,7 @@ type ImplementationCfg struct {
 	// validation.
 	ExternalValidator
 
-	// DatabaseBuilder is a type that can provide lnd's main database
+	// DatabaseBuilder is a type that can provide broln's main database
 	// backend instances.
 	DatabaseBuilder
 
@@ -162,7 +162,7 @@ func NewDefaultWalletImpl(cfg *Config, logger btclog.Logger,
 	}
 }
 
-// RegisterRestSubserver is called after lnd creates the main proxy.ServeMux
+// RegisterRestSubserver is called after broln creates the main proxy.ServeMux
 // instance. External subservers implementing this method can then register
 // their own REST proxy stubs to the main server instance.
 //
@@ -176,7 +176,7 @@ func (d *DefaultWalletImpl) RegisterRestSubserver(ctx context.Context,
 	)
 }
 
-// RegisterGrpcSubserver is called for each net.Listener on which lnd creates a
+// RegisterGrpcSubserver is called for each net.Listener on which broln creates a
 // grpc.Server instance. External subservers implementing this method can then
 // register their own gRPC server structs to the main server instance.
 //
@@ -250,7 +250,7 @@ func (d *DefaultWalletImpl) BuildWalletConfig(ctx context.Context,
 	// Before starting the wallet, we'll create and start our Neutrino
 	// light client instance, if enabled, in order to allow it to sync
 	// while the rest of the daemon continues startup.
-	mainChain := d.cfg.Bitcoin
+	mainChain := d.cfg.Brocoin
 	if d.cfg.registeredChains.PrimaryChain() == chainreg.LitecoinChain {
 		mainChain = d.cfg.Litecoin
 	}
@@ -329,7 +329,7 @@ func (d *DefaultWalletImpl) BuildWalletConfig(ctx context.Context,
 				d.cfg.WalletUnlockPasswordFile, err)
 		}
 
-		// Remove any newlines at the end of the file. The lndinit tool
+		// Remove any newlines at the end of the file. The brolninit tool
 		// won't ever write a newline but maybe the file was provisioned
 		// by another process or user.
 		pwBytes = bytes.TrimRight(pwBytes, "\r\n")
@@ -396,7 +396,7 @@ func (d *DefaultWalletImpl) BuildWalletConfig(ctx context.Context,
 	if !d.cfg.NoMacaroons {
 		// Create the macaroon authentication/authorization service.
 		macaroonService, err = macaroons.NewService(
-			dbs.MacaroonDB, "lnd", walletInitParams.StatelessInit,
+			dbs.MacaroonDB, "broln", walletInitParams.StatelessInit,
 			macaroons.IPLockChecker,
 			macaroons.CustomChecker(interceptorChain),
 		)
@@ -507,7 +507,7 @@ func (d *DefaultWalletImpl) BuildWalletConfig(ctx context.Context,
 	// --no-macaroons is used.
 	close(walletInitParams.MacResponseChan)
 
-	// We'll also close all the macaroon channels since lnd is done sending
+	// We'll also close all the macaroon channels since broln is done sending
 	// macaroon data over it.
 	for _, lis := range grpcListeners {
 		if lis.MacChan != nil {
@@ -523,14 +523,14 @@ func (d *DefaultWalletImpl) BuildWalletConfig(ctx context.Context,
 	// hints and also the wallet itself, for these two we want them to be
 	// replicated, so we'll pass in the remote channel DB instance.
 	chainControlCfg := &chainreg.Config{
-		Bitcoin:                     d.cfg.Bitcoin,
+		Brocoin:                     d.cfg.Brocoin,
 		Litecoin:                    d.cfg.Litecoin,
 		PrimaryChain:                d.cfg.registeredChains.PrimaryChain,
 		HeightHintCacheQueryDisable: d.cfg.HeightHintCacheQueryDisable,
 		NeutrinoMode:                d.cfg.NeutrinoMode,
-		BitcoindMode:                d.cfg.BitcoindMode,
+		BrocoindMode:                d.cfg.BrocoindMode,
 		LitecoindMode:               d.cfg.LitecoindMode,
-		BtcdMode:                    d.cfg.BtcdMode,
+		BrondMode:                    d.cfg.BrondMode,
 		LtcdMode:                    d.cfg.LtcdMode,
 		HeightHintDB:                dbs.HeightHintDB,
 		ChanStateDB:                 dbs.ChanStateDB.ChannelStateDB(),
@@ -729,7 +729,7 @@ func (d *RPCSignerWalletImpl) BuildChainControl(
 }
 
 // DatabaseInstances is a struct that holds all instances to the actual
-// databases that are used in lnd.
+// databases that are used in broln.
 type DatabaseInstances struct {
 	// GraphDB is the database that stores the channel graph used for path
 	// finding.
@@ -771,7 +771,7 @@ type DatabaseInstances struct {
 }
 
 // DefaultDatabaseBuilder is a type that builds the default database backends
-// for lnd, using the given configuration to decide what actual implementation
+// for broln, using the given configuration to decide what actual implementation
 // to use.
 type DefaultDatabaseBuilder struct {
 	cfg    *Config
@@ -1075,7 +1075,7 @@ func waitForWalletPassword(cfg *Config,
 			ltndLog.Warnf("Dropped all transaction history from " +
 				"on-chain wallet. Remember to disable " +
 				"reset-wallet-transactions flag for next " +
-				"start of lnd")
+				"start of broln")
 		}
 
 		return &walletunlocker.WalletUnlockParams{
@@ -1217,7 +1217,7 @@ func initNeutrinoBackend(cfg *Config, chainDir string,
 		},
 		NameResolver: func(host string) ([]net.IP, error) {
 			if tor.IsOnionHost(host) {
-				// Neutrino internally uses btcd's address
+				// Neutrino internally uses brond's address
 				// manager which only operates on an IP level
 				// and does not understand onion hosts. We need
 				// to turn an onion host into a fake

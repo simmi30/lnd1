@@ -26,7 +26,7 @@ go:
 env:
   global:
     - GOCACHE=$HOME/.go-build
-    - BITCOIN_VERSION="22.0"
+    - BROCOIN_VERSION="22.0"
 
 sudo: required
 
@@ -47,10 +47,10 @@ jobs:
         - GOGC=30 make lint
 
     - stage: Integration Test
-      name: Bitcoind Integration ARM
+      name: Brocoind Integration ARM
       script:
-        - bash ./scripts/install_bitcoind.sh
-        - GOARM=7 GOARCH=arm GOOS=linux make itest-parallel backend=bitcoind tranches=3 parallel=3
+        - bash ./scripts/install_brocoind.sh
+        - GOARM=7 GOARCH=arm GOOS=linux make itest-parallel backend=brocoind tranches=3 parallel=3
       arch: arm64
       services:
         - docker

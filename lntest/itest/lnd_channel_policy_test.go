@@ -37,7 +37,7 @@ func testUpdateChannelPolicy(net *lntest.NetworkHarness, t *harnessTest) {
 	const (
 		defaultFeeBase       = 1000
 		defaultFeeRate       = 1
-		defaultTimeLockDelta = chainreg.DefaultBitcoinTimeLockDelta
+		defaultTimeLockDelta = chainreg.DefaultBrocoinTimeLockDelta
 		defaultMinHtlc       = 1000
 	)
 	defaultMaxHtlc := calculateMaxHtlc(funding.MaxBtcFundingAmount)
@@ -110,7 +110,7 @@ func testUpdateChannelPolicy(net *lntest.NetworkHarness, t *harnessTest) {
 	nodes = append(nodes, carol)
 
 	// Send some coins to Carol that can be used for channel funding.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	net.ConnectNodes(t.t, carol, net.Bob)
 
@@ -546,7 +546,7 @@ func testSendUpdateDisableChannel(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, eve)
 
 	// Give Eve some coins.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, eve)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, eve)
 
 	// Connect Eve to Carol and Bob, and open a channel to carol.
 	net.ConnectNodes(t.t, eve, carol)
@@ -570,9 +570,9 @@ func testSendUpdateDisableChannel(net *lntest.NetworkHarness, t *harnessTest) {
 	// We should expect to see a channel update with the default routing
 	// policy, except that it should indicate the channel is disabled.
 	expectedPolicy := &lnrpc.RoutingPolicy{
-		FeeBaseMsat:      int64(chainreg.DefaultBitcoinBaseFeeMSat),
-		FeeRateMilliMsat: int64(chainreg.DefaultBitcoinFeeRate),
-		TimeLockDelta:    chainreg.DefaultBitcoinTimeLockDelta,
+		FeeBaseMsat:      int64(chainreg.DefaultBrocoinBaseFeeMSat),
+		FeeRateMilliMsat: int64(chainreg.DefaultBrocoinFeeRate),
+		TimeLockDelta:    chainreg.DefaultBrocoinTimeLockDelta,
 		MinHtlc:          1000, // default value
 		MaxHtlcMsat:      calculateMaxHtlc(chanAmt),
 		Disabled:         true,
@@ -760,7 +760,7 @@ func testUpdateChannelPolicyForPrivateChannel(net *lntest.NetworkHarness,
 	const (
 		baseFeeMSat = 33000
 	)
-	timeLockDelta := uint32(chainreg.DefaultBitcoinTimeLockDelta)
+	timeLockDelta := uint32(chainreg.DefaultBrocoinTimeLockDelta)
 	updateFeeReq := &lnrpc.PolicyUpdateRequest{
 		BaseFeeMsat:   baseFeeMSat,
 		TimeLockDelta: timeLockDelta,
@@ -849,7 +849,7 @@ func testUpdateChannelPolicyFeeRateAccuracy(net *lntest.NetworkHarness,
 	maxHtlc := uint64(500000)
 	defaultMinHtlc := int64(1000)
 
-	// Originally LND did not properly round up fee rates which caused
+	// Originally broln did not properly round up fee rates which caused
 	// inaccuracy where fee rates were simply rounded down due to the
 	// integer conversion.
 	//

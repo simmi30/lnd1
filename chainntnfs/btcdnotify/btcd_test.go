@@ -1,7 +1,7 @@
 //go:build dev
 // +build dev
 
-package btcdnotify
+package brondnotify
 
 import (
 	"bytes"
@@ -51,9 +51,9 @@ func initHintCache(t *testing.T) *chainntnfs.HeightHintCache {
 	return hintCache
 }
 
-// setUpNotifier is a helper function to start a new notifier backed by a btcd
+// setUpNotifier is a helper function to start a new notifier backed by a brond
 // driver.
-func setUpNotifier(t *testing.T, h *rpctest.Harness) *BtcdNotifier {
+func setUpNotifier(t *testing.T, h *rpctest.Harness) *BrondNotifier {
 	hintCache := initHintCache(t)
 	blockCache := blockcache.NewBlockCache(10000)
 

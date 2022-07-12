@@ -40,7 +40,7 @@ represent real money and introducing bugs and security vulnerabilities can have
 far more dire consequences than in typical projects where having a small bug is
 minimal by comparison.  In the world of cryptocurrencies, even the smallest bug
 in the wrong area can cost people a significant amount of money.  For this
-reason, the Lightning Network Daemon (`lnd`) has a formalized and rigorous
+reason, the Lightning Network Daemon (`broln`) has a formalized and rigorous
 development process (heavily inspired by
 [btcsuite](https://github.com/brsuite)) which is outlined on this page.
 
@@ -58,7 +58,7 @@ contribute to the core layers of Lightning. However, there are still a number
 of low hanging fruit which can be tackled without having full competency in the
 areas mentioned below. 
 
-- A reasonable understanding of bitcoin at a high level (see the
+- A reasonable understanding of brocoin at a high level (see the
   [Required Reading](#required-reading) section for the original white paper)
 - A reasonable understanding of the Lightning Network at a high level
 - Experience in some type of C-like language
@@ -76,15 +76,15 @@ security and performance implications.
 
 # Required Reading
 
-- [Effective Go](http://golang.org/doc/effective_go.html) - The entire `lnd` 
+- [Effective Go](http://golang.org/doc/effective_go.html) - The entire `broln` 
   project follows the guidelines in this document.  For your code to be accepted,
   it must follow the guidelines therein.
-- [Original Satoshi Whitepaper](https://bitcoin.org/bitcoin.pdf) - This is the white paper that started it all.  Having a solid
+- [Original Satoshi Whitepaper](https://brocoin.org/brocoin.pdf) - This is the white paper that started it all.  Having a solid
   foundation to build on will make the code much more comprehensible.
-- [Lightning Network Whitepaper](https://lightning.network/lightning-network-paper.pdf) - This is the white paper that kicked off the Layer 2 revolution. Having a good grasp of the concepts of Lightning will make the core logic within the daemon much more comprehensible: Bitcoin Script, off-chain blockchain protocols, payment channels, bi-directional payment channels, relative and absolute time-locks, commitment state revocations, and Segregated Witness. 
-    - The original LN was written for a rather narrow audience, the paper may be a bit unapproachable to many. Thanks to the Bitcoin community, there exist many easily accessible supplemental resources which can help one see how all the pieces fit together from double-spend protection all the way up to commitment state transitions and Hash Time Locked Contracts (HTLCs): 
+- [Lightning Network Whitepaper](https://lightning.network/lightning-network-paper.pdf) - This is the white paper that kicked off the Layer 2 revolution. Having a good grasp of the concepts of Lightning will make the core logic within the daemon much more comprehensible: Brocoin Script, off-chain blockchain protocols, payment channels, bi-directional payment channels, relative and absolute time-locks, commitment state revocations, and Segregated Witness. 
+    - The original LN was written for a rather narrow audience, the paper may be a bit unapproachable to many. Thanks to the Brocoin community, there exist many easily accessible supplemental resources which can help one see how all the pieces fit together from double-spend protection all the way up to commitment state transitions and Hash Time Locked Contracts (HTLCs): 
          - [Lightning Network Summary](https://lightning.network/lightning-network-summary.pdf)
-        - [Understanding the Lightning Network 3-Part series](https://bitcoinmagazine.com/articles/understanding-the-lightning-network-part-building-a-bidirectional-payment-channel-1464710791) 
+        - [Understanding the Lightning Network 3-Part series](https://brocoinmagazine.com/articles/understanding-the-lightning-network-part-building-a-bidirectional-payment-channel-1464710791) 
         - [Deployable Lightning](https://github.com/ElementsProject/lightning/blob/master/doc/deployable-lightning.pdf) 
 
 
@@ -124,7 +124,7 @@ This approach has several benefits:
 
 ## Testing
 
-One of the major design goals of all of `lnd`'s packages and the daemon itself is
+One of the major design goals of all of `broln`'s packages and the daemon itself is
 to aim for a high degree of test coverage.  This is financial software so bugs
 and regressions in the core logic can cost people real money.  For this reason
 every effort must be taken to ensure the code is as accurate and bug-free as
@@ -153,12 +153,12 @@ A quick summary of test practices follows:
 - Changes to behavior within the daemon's interaction with the P2P protocol,
   or RPC's will need to be accompanied by integration tests which use the
   [`networkHarness`framework](https://github.com/brolightningnetwork/broln/blob/master/lntest/harness.go)
-  contained within `lnd`. For example integration tests, see
-  [`lnd_test.go`](https://github.com/brolightningnetwork/broln/blob/master/lnd_test.go#L181). 
+  contained within `broln`. For example integration tests, see
+  [`broln_test.go`](https://github.com/brolightningnetwork/broln/blob/master/broln_test.go#L181). 
 - The itest log files are automatically scanned for `[ERR]` lines. There
   shouldn't be any of those in the logs, see [Use of Log Levels](#use-of-log-levels).
 
-Throughout the process of contributing to `lnd`, you'll likely also be
+Throughout the process of contributing to `broln`, you'll likely also be
 extensively using the commands within our `Makefile`. As a result, we recommend
 [perusing the make file documentation](https://github.com/brolightningnetwork/broln/blob/master/docs/MAKEFILE.md).
 
@@ -322,7 +322,7 @@ Examples of common patterns w.r.t commit structures within the project:
 
 ## Code Spacing 
 
-Blocks of code within `lnd` should be segmented into logical stanzas of
+Blocks of code within `broln` should be segmented into logical stanzas of
 operation. Such spacing makes the code easier to follow at a skim, and reduces
 unnecessary line noise. Coupled with the commenting scheme specified above,
 proper spacing allows readers to quickly scan code, extracting semantics quickly.
@@ -429,14 +429,14 @@ the comment body.
 
 ## Protobuf Compilation
 
-The `lnd` project uses `protobuf`, and its extension [`gRPC`](www.grpc.io) in
+The `broln` project uses `protobuf`, and its extension [`gRPC`](www.grpc.io) in
 several areas and as the primary RPC interface. In order to ensure uniformity
 of all protos checked, in we require that all contributors pin against the
-_exact same_ version of `protoc`. As of the writing of this article, the `lnd`
+_exact same_ version of `protoc`. As of the writing of this article, the `broln`
 project uses [v3.4.0](https://github.com/google/protobuf/releases/tag/v3.4.0)
 of `protoc`.
 
-For detailed instructions on how to compile modifications to `lnd`'s `protobuf`
+For detailed instructions on how to compile modifications to `broln`'s `protobuf`
 definitions, check out the [lnrpc README](https://github.com/brolightningnetwork/broln/blob/master/lnrpc/README.md).
 
 ## Additional Style Constraints On Top of `gofmt`
@@ -472,16 +472,16 @@ lines utilized, while still adhering to the 80-character column limit.
 ## Pointing to Remote Dependant Branches in Go Modules
 
 It's common that a developer may need to make a change in a dependent project
-of `lnd` such as `btcd`, `neutrino`, `btcwallet`, etc. In order to test changes
-without testing infrastructure, or simply make a PR into `lnd` that will build
+of `broln` such as `brond`, `neutrino`, `btcwallet`, etc. In order to test changes
+without testing infrastructure, or simply make a PR into `broln` that will build
 without any further work, the `go.mod` and `go.sum` files will need to be
 updated. Luckily, the `go mod` command has a handy tool to do this
 automatically so developers don't need to manually edit the `go.mod` file:
 ```shell
-⛰  go mod edit -replace=IMPORT-PATH-IN-LND@LND-VERSION=DEV-FORK-IMPORT-PATH@DEV-FORK-VERSION
+⛰  go mod edit -replace=IMPORT-PATH-IN-broln@broln-VERSION=DEV-FORK-IMPORT-PATH@DEV-FORK-VERSION
 ```
 
-Here's an example replacing the `lightning-onion` version checked into `lnd` with a version in roasbeef's fork:
+Here's an example replacing the `lightning-onion` version checked into `broln` with a version in roasbeef's fork:
 ```shell
 ⛰  go mod edit -replace=github.com/brolightningnetwork/lightning-onion@v0.0.0-20180605012408-ac4d9da8f1d6=github.com/roasbeef/lightning-onion@2e5ae87696046298365ab43bcd1cf3a7a1d69695
 ```
@@ -497,7 +497,7 @@ etc) should lead to an `error` log.
 # Code Approval Process
 
 This section describes the code approval process that is used for code
-contributions.  This is how to get your changes into `lnd`.
+contributions.  This is how to get your changes into `broln`.
 
 ## Code Review
 
@@ -602,10 +602,10 @@ Rejoice as you will now be listed as a [contributor](https://github.com/brolight
 ****
 All contributions must be licensed with the
 [MIT license](https://github.com/brolightningnetwork/broln/blob/master/LICENSE).  This is
-the same license as all of the code found within lnd.
+the same license as all of the code found within broln.
 
 
 # Acknowledgements
 This document was heavily inspired by a [similar document outlining the code
 contribution](https://github.com/brsuite/brond/blob/master/docs/code_contribution_guidelines.md)
-guidelines for btcd. 
+guidelines for brond. 

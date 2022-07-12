@@ -77,13 +77,13 @@ type WalletKitClient interface {
 	//externally, witness pubkeys internally).
 	//
 	//NOTE: Events (deposits/spends) for keys derived from an account will only be
-	//detected by lnd if they happen after the import. Rescans to detect past
+	//detected by broln if they happen after the import. Rescans to detect past
 	//events will be supported later on.
 	ImportAccount(ctx context.Context, in *ImportAccountRequest, opts ...grpc.CallOption) (*ImportAccountResponse, error)
 	//
 	//ImportPublicKey imports a public key as watch-only into the wallet.
 	//
-	//NOTE: Events (deposits/spends) for a key will only be detected by lnd if
+	//NOTE: Events (deposits/spends) for a key will only be detected by broln if
 	//they happen after the import. Rescans to detect past events will be
 	//supported later on.
 	ImportPublicKey(ctx context.Context, in *ImportPublicKeyRequest, opts ...grpc.CallOption) (*ImportPublicKeyResponse, error)
@@ -94,7 +94,7 @@ type WalletKitClient interface {
 	//chain.
 	PublishTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*PublishResponse, error)
 	//
-	//SendOutputs is similar to the existing sendmany call in Bitcoind, and
+	//SendOutputs is similar to the existing sendmany call in Brocoind, and
 	//allows the caller to create a transaction that sends to several outputs at
 	//once. This is ideal when wanting to batch create a set of transactions.
 	SendOutputs(ctx context.Context, in *SendOutputsRequest, opts ...grpc.CallOption) (*SendOutputsResponse, error)
@@ -104,7 +104,7 @@ type WalletKitClient interface {
 	//achieve the confirmation target.
 	EstimateFee(ctx context.Context, in *EstimateFeeRequest, opts ...grpc.CallOption) (*EstimateFeeResponse, error)
 	//
-	//PendingSweeps returns lists of on-chain outputs that lnd is currently
+	//PendingSweeps returns lists of on-chain outputs that broln is currently
 	//attempting to sweep within its central batching engine. Outputs with similar
 	//fee rates are batched together in order to sweep them within a single
 	//transaction.
@@ -115,15 +115,15 @@ type WalletKitClient interface {
 	PendingSweeps(ctx context.Context, in *PendingSweepsRequest, opts ...grpc.CallOption) (*PendingSweepsResponse, error)
 	//
 	//BumpFee bumps the fee of an arbitrary input within a transaction. This RPC
-	//takes a different approach than bitcoind's bumpfee command. lnd has a
+	//takes a different approach than brocoind's bumpfee command. broln has a
 	//central batching engine in which inputs with similar fee rates are batched
 	//together to save on transaction fees. Due to this, we cannot rely on
 	//bumping the fee on a specific transaction, since transactions can change at
 	//any point with the addition of new inputs. The list of inputs that
-	//currently exist within lnd's central batching engine can be retrieved
+	//currently exist within broln's central batching engine can be retrieved
 	//through the PendingSweeps RPC.
 	//
-	//When bumping the fee of an input that currently exists within lnd's central
+	//When bumping the fee of an input that currently exists within broln's central
 	//batching engine, a higher fee transaction will be created that replaces the
 	//lower fee transaction through the Replace-By-Fee (RBF) policy. If it
 	//
@@ -177,7 +177,7 @@ type WalletKitClient interface {
 	//(UTXO information, BIP32 derivation information, witness or sig scripts)
 	//set.
 	//If no error is returned, the PSBT is ready to be given to the next signer or
-	//to be finalized if lnd was the last signer.
+	//to be finalized if broln was the last signer.
 	//
 	//NOTE: This RPC only signs inputs (and only those it can sign), it does not
 	//perform any other tasks (such as coin selection, UTXO locking or
@@ -186,10 +186,10 @@ type WalletKitClient interface {
 	SignPsbt(ctx context.Context, in *SignPsbtRequest, opts ...grpc.CallOption) (*SignPsbtResponse, error)
 	//
 	//FinalizePsbt expects a partial transaction with all inputs and outputs fully
-	//declared and tries to sign all inputs that belong to the wallet. Lnd must be
+	//declared and tries to sign all inputs that belong to the wallet. broln must be
 	//the last signer of the transaction. That means, if there are any unsigned
 	//non-witness inputs or inputs without UTXO information attached or inputs
-	//without witness data that do not belong to lnd's wallet, this method will
+	//without witness data that do not belong to broln's wallet, this method will
 	//fail. If no error is returned, the PSBT is ready to be extracted and the
 	//final TX within to be broadcast.
 	//
@@ -449,13 +449,13 @@ type WalletKitServer interface {
 	//externally, witness pubkeys internally).
 	//
 	//NOTE: Events (deposits/spends) for keys derived from an account will only be
-	//detected by lnd if they happen after the import. Rescans to detect past
+	//detected by broln if they happen after the import. Rescans to detect past
 	//events will be supported later on.
 	ImportAccount(context.Context, *ImportAccountRequest) (*ImportAccountResponse, error)
 	//
 	//ImportPublicKey imports a public key as watch-only into the wallet.
 	//
-	//NOTE: Events (deposits/spends) for a key will only be detected by lnd if
+	//NOTE: Events (deposits/spends) for a key will only be detected by broln if
 	//they happen after the import. Rescans to detect past events will be
 	//supported later on.
 	ImportPublicKey(context.Context, *ImportPublicKeyRequest) (*ImportPublicKeyResponse, error)
@@ -466,7 +466,7 @@ type WalletKitServer interface {
 	//chain.
 	PublishTransaction(context.Context, *Transaction) (*PublishResponse, error)
 	//
-	//SendOutputs is similar to the existing sendmany call in Bitcoind, and
+	//SendOutputs is similar to the existing sendmany call in Brocoind, and
 	//allows the caller to create a transaction that sends to several outputs at
 	//once. This is ideal when wanting to batch create a set of transactions.
 	SendOutputs(context.Context, *SendOutputsRequest) (*SendOutputsResponse, error)
@@ -476,7 +476,7 @@ type WalletKitServer interface {
 	//achieve the confirmation target.
 	EstimateFee(context.Context, *EstimateFeeRequest) (*EstimateFeeResponse, error)
 	//
-	//PendingSweeps returns lists of on-chain outputs that lnd is currently
+	//PendingSweeps returns lists of on-chain outputs that broln is currently
 	//attempting to sweep within its central batching engine. Outputs with similar
 	//fee rates are batched together in order to sweep them within a single
 	//transaction.
@@ -487,15 +487,15 @@ type WalletKitServer interface {
 	PendingSweeps(context.Context, *PendingSweepsRequest) (*PendingSweepsResponse, error)
 	//
 	//BumpFee bumps the fee of an arbitrary input within a transaction. This RPC
-	//takes a different approach than bitcoind's bumpfee command. lnd has a
+	//takes a different approach than brocoind's bumpfee command. broln has a
 	//central batching engine in which inputs with similar fee rates are batched
 	//together to save on transaction fees. Due to this, we cannot rely on
 	//bumping the fee on a specific transaction, since transactions can change at
 	//any point with the addition of new inputs. The list of inputs that
-	//currently exist within lnd's central batching engine can be retrieved
+	//currently exist within broln's central batching engine can be retrieved
 	//through the PendingSweeps RPC.
 	//
-	//When bumping the fee of an input that currently exists within lnd's central
+	//When bumping the fee of an input that currently exists within broln's central
 	//batching engine, a higher fee transaction will be created that replaces the
 	//lower fee transaction through the Replace-By-Fee (RBF) policy. If it
 	//
@@ -549,7 +549,7 @@ type WalletKitServer interface {
 	//(UTXO information, BIP32 derivation information, witness or sig scripts)
 	//set.
 	//If no error is returned, the PSBT is ready to be given to the next signer or
-	//to be finalized if lnd was the last signer.
+	//to be finalized if broln was the last signer.
 	//
 	//NOTE: This RPC only signs inputs (and only those it can sign), it does not
 	//perform any other tasks (such as coin selection, UTXO locking or
@@ -558,10 +558,10 @@ type WalletKitServer interface {
 	SignPsbt(context.Context, *SignPsbtRequest) (*SignPsbtResponse, error)
 	//
 	//FinalizePsbt expects a partial transaction with all inputs and outputs fully
-	//declared and tries to sign all inputs that belong to the wallet. Lnd must be
+	//declared and tries to sign all inputs that belong to the wallet. broln must be
 	//the last signer of the transaction. That means, if there are any unsigned
 	//non-witness inputs or inputs without UTXO information attached or inputs
-	//without witness data that do not belong to lnd's wallet, this method will
+	//without witness data that do not belong to broln's wallet, this method will
 	//fail. If no error is returned, the PSBT is ready to be extracted and the
 	//final TX within to be broadcast.
 	//

@@ -1,7 +1,7 @@
 package lncfg
 
 // DefaultHoldInvoiceExpiryDelta defines the number of blocks before the expiry
-// height of a hold invoice's htlc that lnd will automatically cancel the
+// height of a hold invoice's htlc that broln will automatically cancel the
 // invoice to prevent the channel from force closing. This value *must* be
 // greater than DefaultIncomingBroadcastDelta to prevent force closes.
 const DefaultHoldInvoiceExpiryDelta = DefaultIncomingBroadcastDelta + 2

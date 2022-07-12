@@ -944,7 +944,7 @@ func HtlcSecondLevelSpend(signer Signer, signDesc *SignDescriptor,
 
 // LockTimeToSequence converts the passed relative locktime to a sequence
 // number in accordance to BIP-68.
-// See: https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki
+// See: https://github.com/brocoin/bips/blob/master/bip-0068.mediawiki
 //  * (Compatibility)
 func LockTimeToSequence(isSeconds bool, locktime uint32) uint32 {
 	if !isSeconds {

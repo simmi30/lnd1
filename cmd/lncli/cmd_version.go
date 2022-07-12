@@ -11,10 +11,10 @@ import (
 
 var versionCommand = cli.Command{
 	Name:  "version",
-	Usage: "Display lncli and lnd version info.",
+	Usage: "Display lncli and broln version info.",
 	Description: `
-	Returns version information about both lncli and lnd. If lncli is unable
-	to connect to lnd, the command fails but still prints the lncli version.
+	Returns version information about both lncli and broln. If lncli is unable
+	to connect to broln, the command fails but still prints the lncli version.
 	`,
 	Action: actionDecorator(version),
 }
@@ -40,12 +40,12 @@ func version(ctx *cli.Context) error {
 
 	client := verrpc.NewVersionerClient(conn)
 
-	lndVersion, err := client.GetVersion(ctxc, &verrpc.VersionRequest{})
+	brolnVersion, err := client.GetVersion(ctxc, &verrpc.VersionRequest{})
 	if err != nil {
 		printRespJSON(versions)
-		return fmt.Errorf("unable fetch version from lnd: %v", err)
+		return fmt.Errorf("unable fetch version from broln: %v", err)
 	}
-	versions.Lnd = lndVersion
+	versions.broln = brolnVersion
 
 	printRespJSON(versions)
 

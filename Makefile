@@ -1,8 +1,8 @@
 PKG := github.com/brolightningnetwork/broln
-ESCPKG := github.com\/lightningnetwork\/lnd
+ESCPKG := github.com\/lightningnetwork\/broln
 MOBILE_PKG := $(PKG)/mobile
 
-BTCD_PKG := github.com/brsuite/brond
+brond_PKG := github.com/brsuite/brond
 LINT_PKG := github.com/golangci/golangci-lint/cmd/golangci-lint
 GOACC_PKG := github.com/ory/go-acc
 GOIMPORTS_PKG := golang.org/x/tools/cmd/goimports
@@ -11,7 +11,7 @@ GOFUZZ_PKG := github.com/dvyukov/go-fuzz/go-fuzz
 GOFUZZ_DEP_PKG := github.com/dvyukov/go-fuzz/go-fuzz-dep
 
 GO_BIN := ${GOPATH}/bin
-BTCD_BIN := $(GO_BIN)/btcd
+brond_BIN := $(GO_BIN)/brond
 GOMOBILE_BIN := GO111MODULE=off $(GO_BIN)/gomobile
 LINT_BIN := $(GO_BIN)/golangci-lint
 GOACC_BIN := $(GO_BIN)/go-acc
@@ -20,9 +20,9 @@ GOFUZZ_BIN := $(GO_BIN)/go-fuzz
 
 MOBILE_BUILD_DIR :=${GOPATH}/src/$(MOBILE_PKG)/build
 IOS_BUILD_DIR := $(MOBILE_BUILD_DIR)/ios
-IOS_BUILD := $(IOS_BUILD_DIR)/Lndmobile.xcframework
+IOS_BUILD := $(IOS_BUILD_DIR)/brolnmobile.xcframework
 ANDROID_BUILD_DIR := $(MOBILE_BUILD_DIR)/android
-ANDROID_BUILD := $(ANDROID_BUILD_DIR)/Lndmobile.aar
+ANDROID_BUILD := $(ANDROID_BUILD_DIR)/brolnmobile.aar
 
 COMMIT := $(shell git describe --tags --dirty)
 COMMIT_HASH := $(shell git rev-parse HEAD)
@@ -90,9 +90,9 @@ $(GOACC_BIN):
 	@$(call print, "Installing go-acc.")
 	go install $(GOACC_PKG)
 
-btcd:
-	@$(call print, "Installing btcd.")
-	go install $(BTCD_PKG)
+brond:
+	@$(call print, "Installing brond.")
+	go install $(brond_PKG)
 
 goimports:
 	@$(call print, "Installing goimports.")
@@ -115,40 +115,40 @@ $(GOFUZZ_DEP_BIN):
 # ============
 
 build:
-	@$(call print, "Building debug lnd and lncli.")
-	$(GOBUILD) -tags="$(DEV_TAGS)" -o lnd-debug $(DEV_LDFLAGS) $(PKG)/cmd/lnd
-	$(GOBUILD) -tags="$(DEV_TAGS)" -o lncli-debug $(DEV_LDFLAGS) $(PKG)/cmd/lncli
+	@$(call print, "Building debug broln and brolncli.")
+	$(GOBUILD) -tags="$(DEV_TAGS)" -o broln-debug $(DEV_LDFLAGS) $(PKG)/cmd/broln
+	$(GOBUILD) -tags="$(DEV_TAGS)" -o brolncli-debug $(DEV_LDFLAGS) $(PKG)/cmd/brolncli
 
 build-itest:
-	@$(call print, "Building itest btcd and lnd.")
-	CGO_ENABLED=0 $(GOBUILD) -tags="rpctest" -o lntest/itest/btcd-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(BTCD_PKG)
-	CGO_ENABLED=0 $(GOBUILD) -tags="$(ITEST_TAGS)" -o lntest/itest/lnd-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(PKG)/cmd/lnd
+	@$(call print, "Building itest brond and broln.")
+	CGO_ENABLED=0 $(GOBUILD) -tags="rpctest" -o lntest/itest/brond-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(brond_PKG)
+	CGO_ENABLED=0 $(GOBUILD) -tags="$(ITEST_TAGS)" -o lntest/itest/broln-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(PKG)/cmd/broln
 
 	@$(call print, "Building itest binary for ${backend} backend.")
 	CGO_ENABLED=0 $(GOTEST) -v ./lntest/itest -tags="$(DEV_TAGS) $(RPC_TAGS) rpctest $(backend)" -c -o lntest/itest/itest.test$(EXEC_SUFFIX)
 
 build-itest-race:
-	@$(call print, "Building itest btcd and lnd with race detector.")
-	CGO_ENABLED=0 $(GOBUILD) -tags="rpctest" -o lntest/itest/btcd-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(BTCD_PKG)
-	CGO_ENABLED=1 $(GOBUILD) -race -tags="$(ITEST_TAGS)" -o lntest/itest/lnd-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(PKG)/cmd/lnd
+	@$(call print, "Building itest brond and broln with race detector.")
+	CGO_ENABLED=0 $(GOBUILD) -tags="rpctest" -o lntest/itest/brond-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(brond_PKG)
+	CGO_ENABLED=1 $(GOBUILD) -race -tags="$(ITEST_TAGS)" -o lntest/itest/broln-itest$(EXEC_SUFFIX) $(ITEST_LDFLAGS) $(PKG)/cmd/broln
 
 	@$(call print, "Building itest binary for ${backend} backend.")
 	CGO_ENABLED=0 $(GOTEST) -v ./lntest/itest -tags="$(DEV_TAGS) $(RPC_TAGS) rpctest $(backend)" -c -o lntest/itest/itest.test$(EXEC_SUFFIX)
 
 install:
-	@$(call print, "Installing lnd and lncli.")
-	$(GOINSTALL) -tags="${tags}" $(LDFLAGS) $(PKG)/cmd/lnd
-	$(GOINSTALL) -tags="${tags}" $(LDFLAGS) $(PKG)/cmd/lncli
+	@$(call print, "Installing broln and brolncli.")
+	$(GOINSTALL) -tags="${tags}" $(LDFLAGS) $(PKG)/cmd/broln
+	$(GOINSTALL) -tags="${tags}" $(LDFLAGS) $(PKG)/cmd/brolncli
 
 release-install:
-	@$(call print, "Installing release lnd and lncli.")
-	env CGO_ENABLED=0 $(GOINSTALL) -v -trimpath -ldflags="$(RELEASE_LDFLAGS)" -tags="$(RELEASE_TAGS)" $(PKG)/cmd/lnd
-	env CGO_ENABLED=0 $(GOINSTALL) -v -trimpath -ldflags="$(RELEASE_LDFLAGS)" -tags="$(RELEASE_TAGS)" $(PKG)/cmd/lncli
+	@$(call print, "Installing release broln and brolncli.")
+	env CGO_ENABLED=0 $(GOINSTALL) -v -trimpath -ldflags="$(RELEASE_LDFLAGS)" -tags="$(RELEASE_TAGS)" $(PKG)/cmd/broln
+	env CGO_ENABLED=0 $(GOINSTALL) -v -trimpath -ldflags="$(RELEASE_LDFLAGS)" -tags="$(RELEASE_TAGS)" $(PKG)/cmd/brolncli
 
 # Make sure the generated mobile RPC stubs don't influence our vendor package
 # by removing them first in the clean-mobile target.
 release: clean-mobile
-	@$(call print, "Releasing lnd and lncli binaries.")
+	@$(call print, "Releasing broln and brolncli binaries.")
 	$(VERSION_CHECK)
 	./scripts/release.sh build-release "$(VERSION_TAG)" "$(BUILD_SYSTEM)" "$(RELEASE_TAGS)" "$(RELEASE_LDFLAGS)"
 
@@ -156,7 +156,7 @@ docker-release:
 	@$(call print, "Building release helper docker image.")
 	if [ "$(tag)" = "" ]; then echo "Must specify tag=<commit_or_tag>!"; exit 1; fi
 
-	docker build -t lnd-release-helper -f make/builder.Dockerfile make/
+	docker build -t broln-release-helper -f make/builder.Dockerfile make/
 
 	# Run the actual compilation inside the docker image. We pass in all flags
 	# that we might want to overwrite in manual tests.
@@ -174,13 +174,13 @@ check: unit itest
 db-instance:
 ifeq ($(dbbackend),postgres)
 	# Remove a previous postgres instance if it exists.
-	docker rm lnd-postgres --force || echo "Starting new postgres container"
+	docker rm broln-postgres --force || echo "Starting new postgres container"
 
 	# Start a fresh postgres instance. Allow a maximum of 500 connections so
-	# that multiple lnd instances with a maximum number of connections of 50
+	# that multiple broln instances with a maximum number of connections of 50
 	# each can run concurrently.
-	docker run --name lnd-postgres -e POSTGRES_PASSWORD=postgres -p 6432:5432 -d postgres:13-alpine -N 500
-	docker logs -f lnd-postgres &
+	docker run --name broln-postgres -e POSTGRES_PASSWORD=postgres -p 6432:5432 -d postgres:13-alpine -N 500
+	docker logs -f broln-postgres &
 
 	# Wait for the instance to be started.
 	sleep $(POSTGRES_START_DELAY)
@@ -202,13 +202,13 @@ itest-parallel: build-itest db-instance
 
 itest-clean:
 	@$(call print, "Cleaning old itest processes")
-	killall lnd-itest || echo "no running lnd-itest process found";
+	killall broln-itest || echo "no running broln-itest process found";
 
-unit: btcd
+unit: brond
 	@$(call print, "Running unit tests.")
 	$(UNIT)
 
-unit-debug: btcd
+unit-debug: brond
 	@$(call print, "Running debug unit tests.")
 	$(UNIT_DEBUG)
 
@@ -286,8 +286,8 @@ rpc-js-compile:
 	GOOS=js GOARCH=wasm $(GOBUILD) -tags="$(WASM_RELEASE_TAGS)" $(PKG)/lnrpc/...
 
 sample-conf-check:
-	@$(call print, "Making sure every flag has an example in the sample-lnd.conf file")
-	for flag in $$(GO_FLAGS_COMPLETION=1 go run -tags="$(RELEASE_TAGS)" $(PKG)/cmd/lnd -- | grep -v help | cut -c3-); do if ! grep -q $$flag sample-lnd.conf; then echo "Command line flag --$$flag not added to sample-lnd.conf"; exit 1; fi; done
+	@$(call print, "Making sure every flag has an example in the sample-broln.conf file")
+	for flag in $$(GO_FLAGS_COMPLETION=1 go run -tags="$(RELEASE_TAGS)" $(PKG)/cmd/broln -- | grep -v help | cut -c3-); do if ! grep -q $$flag sample-broln.conf; then echo "Command line flag --$$flag not added to sample-broln.conf"; exit 1; fi; done
 
 mobile-rpc:
 	@$(call print, "Creating mobile RPC from protos (prefix=$(prefix)).")
@@ -311,8 +311,8 @@ mobile: ios android
 
 clean:
 	@$(call print, "Cleaning source.$(NC)")
-	$(RM) ./lnd-debug ./lncli-debug
-	$(RM) ./lnd-itest ./lncli-itest
+	$(RM) ./broln-debug ./brolncli-debug
+	$(RM) ./broln-itest ./brolncli-itest
 	$(RM) -r ./vendor .vendor-new
 
 clean-mobile:
@@ -321,7 +321,7 @@ clean-mobile:
 	$(RM) mobile/*_generated.go
 
 .PHONY: all \
-	btcd \
+	brond \
 	default \
 	build \
 	install \

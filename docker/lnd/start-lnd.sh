@@ -43,8 +43,8 @@ RPCUSER=$(set_default "$RPCUSER" "devuser")
 RPCPASS=$(set_default "$RPCPASS" "devpass")
 DEBUG=$(set_default "$DEBUG" "debug")
 NETWORK=$(set_default "$NETWORK" "simnet")
-CHAIN=$(set_default "$CHAIN" "bitcoin")
-BACKEND="btcd"
+CHAIN=$(set_default "$CHAIN" "brocoin")
+BACKEND="brond"
 HOSTNAME=$(hostname)
 if [[ "$CHAIN" == "litecoin" ]]; then
     BACKEND="ltcd"
@@ -55,7 +55,7 @@ fi
 # address that is reachable on the internal network. If you do this outside of
 # docker, this might be a security concern!
 
-exec lnd \
+exec broln \
     --noseedbackup \
     "--$CHAIN.active" \
     "--$CHAIN.$NETWORK" \

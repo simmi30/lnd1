@@ -17,7 +17,7 @@ import (
 )
 
 // CfFilteredChainView is an implementation of the FilteredChainView interface
-// which is supported by an underlying Bitcoin light client which supports
+// which is supported by an underlying Brocoin light client which supports
 // client side filtering of Golomb Coded Sets. Rather than fetching all the
 // blocks, the light client is able to query filters locally, to test if an
 // item in a block modifies any of our watched set of UTXOs.
@@ -25,7 +25,7 @@ type CfFilteredChainView struct {
 	started int32 // To be used atomically.
 	stopped int32 // To be used atomically.
 
-	// p2pNode is a pointer to the running GCS-filter supported Bitcoin
+	// p2pNode is a pointer to the running GCS-filter supported Brocoin
 	// light clientl
 	p2pNode *neutrino.ChainService
 
@@ -373,7 +373,7 @@ func (c *CfFilteredChainView) DisconnectedBlocks() <-chan *FilteredBlock {
 }
 
 // GetBlock is used to retrieve the block with the given hash. Since the block
-// cache used by neutrino will be the same as that used by LND (since it is
+// cache used by neutrino will be the same as that used by broln (since it is
 // passed to neutrino on initialisation), the neutrino GetBlock method can be
 // called directly since it already uses the block cache. However, neutrino
 // does not lock the block cache mutex for the given block hash and so that is

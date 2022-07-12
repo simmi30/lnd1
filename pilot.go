@@ -72,14 +72,14 @@ func validateAtplCfg(cfg *lncfg.AutoPilot) ([]*autopilot.WeightedHeuristic,
 }
 
 // chanController is an implementation of the autopilot.ChannelController
-// interface that's backed by a running lnd instance.
+// interface that's backed by a running broln instance.
 type chanController struct {
 	server        *server
 	private       bool
 	minConfs      int32
 	confTarget    uint32
 	chanMinHtlcIn lnwire.MilliSatoshi
-	netParams     chainreg.BitcoinNetParams
+	netParams     chainreg.BrocoinNetParams
 }
 
 // OpenChannel opens a channel to a target peer, with a capacity of the
@@ -137,7 +137,7 @@ var _ autopilot.ChannelController = (*chanController)(nil)
 // interfaces needed to drive it won't be launched before the Manager's
 // StartAgent method is called.
 func initAutoPilot(svr *server, cfg *lncfg.AutoPilot,
-	minHTLCIn lnwire.MilliSatoshi, netParams chainreg.BitcoinNetParams) (
+	minHTLCIn lnwire.MilliSatoshi, netParams chainreg.BrocoinNetParams) (
 	*autopilot.ManagerCfg, error) {
 
 	atplLog.Infof("Instantiating autopilot with active=%v, "+

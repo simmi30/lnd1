@@ -123,11 +123,11 @@ func TestKeyRingDerivation(t *testing.T) {
 	keyRingImplementations := []keyRingConstructor{
 		func() (string, func(), KeyRing, error) {
 			cleanUp, wallet, err := createTestBtcWallet(
-				CoinTypeBitcoin,
+				CoinTypeBrocoin,
 			)
 			require.NoError(t, err)
 
-			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBitcoin)
+			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBrocoin)
 
 			return "btcwallet", cleanUp, keyRing, nil
 		},
@@ -258,11 +258,11 @@ func TestSecretKeyRingDerivation(t *testing.T) {
 	secretKeyRingImplementations := []secretKeyRingConstructor{
 		func() (string, func(), SecretKeyRing, error) {
 			cleanUp, wallet, err := createTestBtcWallet(
-				CoinTypeBitcoin,
+				CoinTypeBrocoin,
 			)
 			require.NoError(t, err)
 
-			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBitcoin)
+			keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBrocoin)
 
 			return "btcwallet", cleanUp, keyRing, nil
 		},

@@ -219,7 +219,7 @@ func testSendPaymentAMPInvoiceRepeat(net *lntest.NetworkHarness,
 	defer shutdownAndAssert(net, t, carol)
 
 	// Send Carol enough coins to be able to open a channel to Dave.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	dave := net.NewNode(t.t, "Dave", nil)
 	defer shutdownAndAssert(net, t, dave)
@@ -445,7 +445,7 @@ func testSendPaymentAMP(net *lntest.NetworkHarness, t *harnessTest) {
 		t, ctx.alice, &routerrpc.SendPaymentRequest{
 			Dest:           ctx.bob.PubKey[:],
 			Amt:            int64(paymentAmt),
-			FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+			FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 			TimeoutSeconds: 60,
 			FeeLimitMsat:   noFeeLimitMsat,
 			Amp:            true,

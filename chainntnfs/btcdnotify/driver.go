@@ -1,4 +1,4 @@
-package btcdnotify
+package brondnotify
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 )
 
 // createNewNotifier creates a new instance of the ChainNotifier interface
-// implemented by BtcdNotifier.
+// implemented by BrondNotifier.
 func createNewNotifier(args ...interface{}) (chainntnfs.ChainNotifier, error) {
 	if len(args) != 5 {
 		return nil, fmt.Errorf("incorrect number of arguments to "+
@@ -20,31 +20,31 @@ func createNewNotifier(args ...interface{}) (chainntnfs.ChainNotifier, error) {
 
 	config, ok := args[0].(*rpcclient.ConnConfig)
 	if !ok {
-		return nil, errors.New("first argument to btcdnotify.New " +
+		return nil, errors.New("first argument to brondnotify.New " +
 			"is incorrect, expected a *rpcclient.ConnConfig")
 	}
 
 	chainParams, ok := args[1].(*chaincfg.Params)
 	if !ok {
-		return nil, errors.New("second argument to btcdnotify.New " +
+		return nil, errors.New("second argument to brondnotify.New " +
 			"is incorrect, expected a *chaincfg.Params")
 	}
 
 	spendHintCache, ok := args[2].(chainntnfs.SpendHintCache)
 	if !ok {
-		return nil, errors.New("third argument to btcdnotify.New " +
+		return nil, errors.New("third argument to brondnotify.New " +
 			"is incorrect, expected a chainntnfs.SpendHintCache")
 	}
 
 	confirmHintCache, ok := args[3].(chainntnfs.ConfirmHintCache)
 	if !ok {
-		return nil, errors.New("fourth argument to btcdnotify.New " +
+		return nil, errors.New("fourth argument to brondnotify.New " +
 			"is incorrect, expected a chainntnfs.ConfirmHintCache")
 	}
 
 	blockCache, ok := args[4].(*blockcache.BlockCache)
 	if !ok {
-		return nil, errors.New("fifth argument to btcdnotify.New " +
+		return nil, errors.New("fifth argument to brondnotify.New " +
 			"is incorrect, expected a *blockcache.BlockCache")
 	}
 
@@ -53,7 +53,7 @@ func createNewNotifier(args ...interface{}) (chainntnfs.ChainNotifier, error) {
 	)
 }
 
-// init registers a driver for the BtcdNotifier concrete implementation of the
+// init registers a driver for the BrondNotifier concrete implementation of the
 // chainntnfs.ChainNotifier interface.
 func init() {
 	// Register the driver.

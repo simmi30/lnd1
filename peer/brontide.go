@@ -308,7 +308,7 @@ type Config struct {
 	// closure initiated by the remote peer.
 	CoopCloseTargetConfs uint32
 
-	// ServerPubKey is the serialized, compressed public key of our lnd node.
+	// ServerPubKey is the serialized, compressed public key of our broln node.
 	// It is used to determine which policy (channel edge) to pass to the
 	// ChannelLink.
 	ServerPubKey [33]byte

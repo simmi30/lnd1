@@ -71,7 +71,7 @@ func testSingleHopSendToRoute(net *lntest.NetworkHarness, t *harnessTest) {
 		test := test
 
 		t.t.Run(test.name, func(t1 *testing.T) {
-			ht := newHarnessTest(t1, t.lndHarness)
+			ht := newHarnessTest(t1, t.brolnHarness)
 			ht.RunTestCase(&testCase{
 				name: test.name,
 				test: func(_ *lntest.NetworkHarness, tt *harnessTest) {
@@ -104,7 +104,7 @@ func testSingleHopSendToRouteCase(net *lntest.NetworkHarness, t *harnessTest,
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// Open a channel with 100k satoshis between Carol and Dave with Carol
 	// being the sole funder of the channel.
@@ -433,12 +433,12 @@ func testSingleHopSendToRouteCase(net *lntest.NetworkHarness, t *harnessTest,
 // send payments through the routes.
 func testMultiHopSendToRoute(net *lntest.NetworkHarness, t *harnessTest) {
 	t.t.Run("with cache", func(tt *testing.T) {
-		ht := newHarnessTest(tt, t.lndHarness)
+		ht := newHarnessTest(tt, t.brolnHarness)
 		runMultiHopSendToRoute(net, ht, true)
 	})
 	if *dbBackendFlag == "bbolt" {
 		t.t.Run("without cache", func(tt *testing.T) {
-			ht := newHarnessTest(tt, t.lndHarness)
+			ht := newHarnessTest(tt, t.brolnHarness)
 			runMultiHopSendToRoute(net, ht, false)
 		})
 	}
@@ -463,7 +463,7 @@ func runMultiHopSendToRoute(net *lntest.NetworkHarness, t *harnessTest,
 	defer shutdownAndAssert(net, t, alice)
 
 	net.ConnectNodes(t.t, alice, net.Bob)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	const chanAmt = btcutil.Amount(100000)
 	var networkChans []*lnrpc.ChannelPoint
@@ -494,7 +494,7 @@ func runMultiHopSendToRoute(net *lntest.NetworkHarness, t *harnessTest,
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, net.Bob)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, net.Bob)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, net.Bob)
 
 	chanPointBob := openChannelAndAssert(
 		t, net, net.Bob, carol,
@@ -555,7 +555,7 @@ func runMultiHopSendToRoute(net *lntest.NetworkHarness, t *harnessTest,
 	routesReq := &lnrpc.QueryRoutesRequest{
 		PubKey:         carol.PubKeyStr,
 		Amt:            paymentAmt,
-		FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+		FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 	}
 	ctxt, _ := context.WithTimeout(ctxb, defaultTimeout)
 	routes, err := alice.QueryRoutes(ctxt, routesReq)
@@ -659,12 +659,12 @@ func testSendToRouteErrorPropagation(net *lntest.NetworkHarness, t *harnessTest)
 	carol := net.NewNode(t.t, "Carol", nil)
 	defer shutdownAndAssert(net, t, carol)
 
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	charlie := net.NewNode(t.t, "Charlie", nil)
 	defer shutdownAndAssert(net, t, charlie)
 
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, charlie)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, charlie)
 
 	net.ConnectNodes(t.t, carol, charlie)
 
@@ -779,7 +779,7 @@ func testPrivateChannels(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -803,7 +803,7 @@ func testPrivateChannels(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -1322,7 +1322,7 @@ func testMultiHopOverPrivateChannels(net *lntest.NetworkHarness, t *harnessTest)
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -1452,7 +1452,7 @@ func testQueryRoutes(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, net.Bob)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, net.Bob)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, net.Bob)
 
 	chanPointBob := openChannelAndAssert(
 		t, net, net.Bob, carol,
@@ -1467,7 +1467,7 @@ func testQueryRoutes(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, carol)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -1736,7 +1736,7 @@ func testRouteFeeCutoff(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointAliceCarol := openChannelAndAssert(
 		t, net, net.Alice, carol,
@@ -1802,7 +1802,7 @@ func testRouteFeeCutoff(net *lntest.NetworkHarness, t *harnessTest) {
 	//	Alice -> Carol -> Dave
 	baseFee := int64(10000)
 	feeRate := int64(5)
-	timeLockDelta := uint32(chainreg.DefaultBitcoinTimeLockDelta)
+	timeLockDelta := uint32(chainreg.DefaultBrocoinTimeLockDelta)
 	maxHtlc := calculateMaxHtlc(chanAmt)
 
 	expectedPolicy := &lnrpc.RoutingPolicy{

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/brsuite/brond/btcec"
-	bitcoinCfg "github.com/brsuite/brond/chaincfg"
+	brocoinCfg "github.com/brsuite/brond/chaincfg"
 	"github.com/brolightningnetwork/broln/kvdb"
 	"github.com/brolightningnetwork/broln/zpay32"
 	litecoinCfg "github.com/ltcsuite/ltcd/chaincfg"
@@ -65,12 +65,12 @@ func beforeMigrationFuncV11(t *testing.T, d *DB, invoices []Invoice) {
 func TestMigrateInvoices(t *testing.T) {
 	t.Parallel()
 
-	payReqBtc, err := getPayReq(&bitcoinCfg.MainNetParams)
+	payReqBtc, err := getPayReq(&brocoinCfg.MainNetParams)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var ltcNetParams bitcoinCfg.Params
+	var ltcNetParams brocoinCfg.Params
 	ltcNetParams.Bech32HRPSegwit = litecoinCfg.MainNetParams.Bech32HRPSegwit
 	payReqLtc, err := getPayReq(&ltcNetParams)
 	if err != nil {
@@ -123,7 +123,7 @@ func TestMigrateInvoices(t *testing.T) {
 func TestMigrateInvoicesHodl(t *testing.T) {
 	t.Parallel()
 
-	payReqBtc, err := getPayReq(&bitcoinCfg.MainNetParams)
+	payReqBtc, err := getPayReq(&brocoinCfg.MainNetParams)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -164,7 +164,7 @@ func signDigestCompact(hash []byte) ([]byte, error) {
 }
 
 // getPayReq creates a payment request for the given net.
-func getPayReq(net *bitcoinCfg.Params) (string, error) {
+func getPayReq(net *brocoinCfg.Params) (string, error) {
 	options := []func(*zpay32.Invoice){
 		zpay32.CLTVExpiry(uint64(testCltvDelta)),
 		zpay32.Description("test"),

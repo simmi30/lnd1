@@ -19,11 +19,11 @@ type NeutrinoBackendConfig struct {
 // BackendConfig interface.
 var _ BackendConfig = (*NeutrinoBackendConfig)(nil)
 
-// GenArgs returns the arguments needed to be passed to LND at startup for
+// GenArgs returns the arguments needed to be passed to broln at startup for
 // using this node as a chain backend.
 func (b NeutrinoBackendConfig) GenArgs() []string {
 	var args []string
-	args = append(args, "--bitcoin.node=neutrino")
+	args = append(args, "--brocoin.node=neutrino")
 	args = append(args, "--neutrino.connect="+b.minerAddr)
 	// We enable validating channels so that we can obtain the outpoint for
 	// channels within the graph and make certain assertions based on them.

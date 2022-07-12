@@ -12,7 +12,7 @@
 * [A bug has been fixed in channeldb that uses the return value without checking
   the returned error first](https://github.com/brolightningnetwork/broln/pull/6012).
 
-* [Fixes a bug that would cause lnd to be unable to start if anchors was
+* [Fixes a bug that would cause broln to be unable to start if anchors was
   disabled](https://github.com/brolightningnetwork/broln/pull/6007).
 
 * [Fixed a bug that would cause nodes with older channels to be unable to start

@@ -130,7 +130,7 @@ type ChainArbitratorConfig struct {
 	// certain on-chain events.
 	Notifier chainntnfs.ChainNotifier
 
-	// Signer is a signer backed by the active lnd node. This should be
+	// Signer is a signer backed by the active broln node. This should be
 	// capable of producing a signature as specified by a valid
 	// SignDescriptor.
 	Signer input.Signer

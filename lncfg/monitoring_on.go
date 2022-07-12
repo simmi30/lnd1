@@ -10,9 +10,9 @@ type Prometheus struct {
 	// Prometheus server to scrape our metrics.
 	Listen string `long:"listen" description:"the interface we should listen on for Prometheus"`
 
-	// Enable indicates whether to export lnd gRPC performance metrics to
+	// Enable indicates whether to export broln gRPC performance metrics to
 	// Prometheus. Default is false.
-	Enable bool `long:"enable" description:"enable Prometheus exporting of lnd gRPC performance metrics."`
+	Enable bool `long:"enable" description:"enable Prometheus exporting of broln gRPC performance metrics."`
 }
 
 // DefaultPrometheus is the default configuration for the Prometheus metrics

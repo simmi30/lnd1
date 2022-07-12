@@ -1,10 +1,10 @@
 # PSBT
 
 This document describes various use cases around the topic of Partially Signed
-Bitcoin Transactions (PSBTs). `lnd`'s wallet now features a full set of PSBT
+Brocoin Transactions (PSBTs). `broln`'s wallet now features a full set of PSBT
 functionality, including creating, signing and funding channels with PSBTs.
 
-See [BIP174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki) for
+See [BIP174](https://github.com/brocoin/bips/blob/master/bip-0174.mediawiki) for
 a full description of the PSBT format and the different _roles_ that a
 participant in a PSBT can have.
 
@@ -18,11 +18,11 @@ The first step for every transaction that is constructed using a PSBT flow is to
 select inputs (UTXOs) to fund the desired output and to add a change output that
 sends the remaining funds back to the own wallet.
 
-This `wallet psbt fund` command is very similar to `bitcoind`'s
+This `wallet psbt fund` command is very similar to `brocoind`'s
 `walletcreatefundedpsbt` command. One main difference is that you can specify a
 template PSBT in the `lncli` variant that contains the output(s) and optional
 inputs. Another difference is that for the `--outputs` flag, `lncli` expects the
-amounts to be in satoshis instead of fractions of a bitcoin.
+amounts to be in satoshis instead of fractions of a brocoin.
 
 ### Simple example: fund PSBT that sends to address
 
@@ -55,7 +55,7 @@ selected, the UTXO information was attached and a change output (at index 0) was
 created as well:
 
 ```shell
-⛰  bitcoin-cli decodepsbt cHNidP8BAHECAAAAAeJQY2VLRtutKgQYFUajEKpjFfl0Uyrm6x23OumDpe/4AQAAAAD/////AkxREgEAAAAAFgAUv6pTgbKHN60CZ+RQn5yOuH6c2WiA8PoCAAAAABYAFJDbOFU0E6zFF/M+g/AKDyqI2iUaAAAAAAABAOsCAAAAAAEBbxqXgEf9DlzcqqNM610s5pL1X258ra6+KJ22etb7HAcBAAAAAAAAAAACACT0AAAAAAAiACC7U1W0iJGhQ6o7CexDh5k36V6v3256xpA9/xmB2BybTFZdDQQAAAAAFgAUKp2ThzhswyM2QHlyvmMB6tQB7V0CSDBFAiEA4Md8RIZYqFdUPsgDyomlzMJL9bJ6Ho23JGTihXtEelgCIAeNXRLyt88SOuuWFVn3IodCE4U5D6DojIHesRmikF28ASEDHYFzMEAxfmfq98eSSnZtUwb1w7mAtHG65y8qiRFNnIkAAAAAAQEfVl0NBAAAAAAWABQqnZOHOGzDIzZAeXK+YwHq1AHtXQEDBAEAAAAAAAA=
+⛰  brocoin-cli decodepsbt cHNidP8BAHECAAAAAeJQY2VLRtutKgQYFUajEKpjFfl0Uyrm6x23OumDpe/4AQAAAAD/////AkxREgEAAAAAFgAUv6pTgbKHN60CZ+RQn5yOuH6c2WiA8PoCAAAAABYAFJDbOFU0E6zFF/M+g/AKDyqI2iUaAAAAAAABAOsCAAAAAAEBbxqXgEf9DlzcqqNM610s5pL1X258ra6+KJ22etb7HAcBAAAAAAAAAAACACT0AAAAAAAiACC7U1W0iJGhQ6o7CexDh5k36V6v3256xpA9/xmB2BybTFZdDQQAAAAAFgAUKp2ThzhswyM2QHlyvmMB6tQB7V0CSDBFAiEA4Md8RIZYqFdUPsgDyomlzMJL9bJ6Ho23JGTihXtEelgCIAeNXRLyt88SOuuWFVn3IodCE4U5D6DojIHesRmikF28ASEDHYFzMEAxfmfq98eSSnZtUwb1w7mAtHG65y8qiRFNnIkAAAAAAQEfVl0NBAAAAAAWABQqnZOHOGzDIzZAeXK+YwHq1AHtXQEDBAEAAAAAAAA=
 {
   "tx": {
     "txid": "33a316d62ddf74656967754d26ea83a3cb89e03ae44578d965156d4b71b1fce7",
@@ -187,7 +187,7 @@ Inspecting this PSBT, we notice that the two inputs were chosen and a large
 change change output was added at index 1:
 
 ```shell
-⛰  bitcoin-cli  decodepsbt cHNidP8BAJoCAAAAAkiMdlxF3M20VpdnCMK0NOkEoETG6Aa4HpC8Vv9RtJc1AQAAAAAAAAAA4lBjZUtG260qBBgVRqMQqmMV+XRTKubrHbc66YOl7/gBAAAAAAAAAAACgPD6AgAAAAAWABSQ2zhVNBOsxRfzPoPwCg8qiNolGtIkCAcAAAAAFgAUuvRP5r7qAvj0egDxyX9/FH+vukgAAAAAAAEA3gIAAAAAAQEr9IZcho/gV/6fH8C8P+yhNRZP+l3YuxsyatdYcS0S6AEAAAAA/v///wLI/8+yAAAAABYAFDXoRFwgXNO5VVtVq2WpaENh6blAAOH1BQAAAAAWABTcAR0NeNdDHb96kMnH5EVUcr1YwwJHMEQCIDqugtYLp4ebJAZvOdieshLi1lLuPl2tHQG4jM4ybwEGAiBeMpCkbHBmzYvljxb1JBQyVAMuoco0xIfi+5OQdHuXaAEhAnH96NhTW09X0npE983YBsHUoMPI4U4xBtHenpZVTEqpVwAAAAEBHwDh9QUAAAAAFgAU3AEdDXjXQx2/epDJx+RFVHK9WMMBAwQBAAAAAAEA6wIAAAAAAQFvGpeAR/0OXNyqo0zrXSzmkvVfbnytrr4onbZ61vscBwEAAAAAAAAAAAIAJPQAAAAAACIAILtTVbSIkaFDqjsJ7EOHmTfpXq/fbnrGkD3/GYHYHJtMVl0NBAAAAAAWABQqnZOHOGzDIzZAeXK+YwHq1AHtXQJIMEUCIQDgx3xEhlioV1Q+yAPKiaXMwkv1snoejbckZOKFe0R6WAIgB41dEvK3zxI665YVWfcih0IThTkPoOiMgd6xGaKQXbwBIQMdgXMwQDF+Z+r3x5JKdm1TBvXDuYC0cbrnLyqJEU2ciQAAAAABAR9WXQ0EAAAAABYAFCqdk4c4bMMjNkB5cr5jAerUAe1dAQMEAQAAAAAAAA==
+⛰  brocoin-cli  decodepsbt cHNidP8BAJoCAAAAAkiMdlxF3M20VpdnCMK0NOkEoETG6Aa4HpC8Vv9RtJc1AQAAAAAAAAAA4lBjZUtG260qBBgVRqMQqmMV+XRTKubrHbc66YOl7/gBAAAAAAAAAAACgPD6AgAAAAAWABSQ2zhVNBOsxRfzPoPwCg8qiNolGtIkCAcAAAAAFgAUuvRP5r7qAvj0egDxyX9/FH+vukgAAAAAAAEA3gIAAAAAAQEr9IZcho/gV/6fH8C8P+yhNRZP+l3YuxsyatdYcS0S6AEAAAAA/v///wLI/8+yAAAAABYAFDXoRFwgXNO5VVtVq2WpaENh6blAAOH1BQAAAAAWABTcAR0NeNdDHb96kMnH5EVUcr1YwwJHMEQCIDqugtYLp4ebJAZvOdieshLi1lLuPl2tHQG4jM4ybwEGAiBeMpCkbHBmzYvljxb1JBQyVAMuoco0xIfi+5OQdHuXaAEhAnH96NhTW09X0npE983YBsHUoMPI4U4xBtHenpZVTEqpVwAAAAEBHwDh9QUAAAAAFgAU3AEdDXjXQx2/epDJx+RFVHK9WMMBAwQBAAAAAAEA6wIAAAAAAQFvGpeAR/0OXNyqo0zrXSzmkvVfbnytrr4onbZ61vscBwEAAAAAAAAAAAIAJPQAAAAAACIAILtTVbSIkaFDqjsJ7EOHmTfpXq/fbnrGkD3/GYHYHJtMVl0NBAAAAAAWABQqnZOHOGzDIzZAeXK+YwHq1AHtXQJIMEUCIQDgx3xEhlioV1Q+yAPKiaXMwkv1snoejbckZOKFe0R6WAIgB41dEvK3zxI665YVWfcih0IThTkPoOiMgd6xGaKQXbwBIQMdgXMwQDF+Z+r3x5JKdm1TBvXDuYC0cbrnLyqJEU2ciQAAAAABAR9WXQ0EAAAAABYAFCqdk4c4bMMjNkB5cr5jAerUAe1dAQMEAQAAAAAAAA==
 {
 "tx": {
   "txid": "e62356b99c3097eaa1241ff8e39b996917e66b13e4c0ccba3698982d746c3b76",
@@ -278,17 +278,17 @@ outputs are used to fund a channel. See
 
 ## Opening a channel by using a PSBT
 
-This is a step-by-step guide on how to open a channel with `lnd` by using a PSBT
+This is a step-by-step guide on how to open a channel with `broln` by using a PSBT
 as the funding transaction.  
-We will use `bitcoind` to create and sign the transaction just to keep the
+We will use `brocoind` to create and sign the transaction just to keep the
 example simple. Of course any other PSBT compatible wallet could be used and the
 process would likely be spread out over multiple signing steps. The goal of this
 example is not to cover each and every possible edge case but to help users of
-`lnd` understand what inputs the `lncli` utility expects.
+`broln` understand what inputs the `lncli` utility expects.
 
 The goal is to open a channel of 1'234'567 satoshis to the node
 `03db1e56e5f76bc4018cf6f03d1bb98a7ae96e3f18535e929034f85e7f1ca2b8ac` by using
-a PSBT. That means, `lnd` can have a wallet balance of `0` and is still able to
+a PSBT. That means, `broln` can have a wallet balance of `0` and is still able to
 open a channel. We'll jump into an example right away.
 
 The new funding flow has a small caveat: _Time matters_.
@@ -298,14 +298,14 @@ with the remote peer immediately so we can obtain their multisig key they are
 going to use for the channel. Then we pause the whole process until we get a
 fully signed transaction back from the user. Unfortunately there is no reliable
 way to know after how much time the remote node starts to clean up and "forgets"
-about the pending channel. If the remote node is an `lnd` node, we know it's
+about the pending channel. If the remote node is an `broln` node, we know it's
 after 10 minutes. **So as long as the whole process takes less than 10 minutes,
 everything should work fine.**
 
 ### Safety warning
 
 **DO NOT PUBLISH** the finished transaction by yourself or with another tool.
-lnd MUST publish it in the proper funding flow order **OR THE FUNDS CAN BE
+broln MUST publish it in the proper funding flow order **OR THE FUNDS CAN BE
 LOST**!
 
 This is very important to remember when using wallets like `Wasabi` for
@@ -323,11 +323,11 @@ Starting PSBT funding flow with pending channel ID fc7853889a04d33b8115bd79ebc99
 PSBT funding initiated with peer 03db1e56e5f76bc4018cf6f03d1bb98a7ae96e3f18535e929034f85e7f1ca2b8ac.
 Please create a PSBT that sends 0.01234567 BTC (1234567 satoshi) to the funding address bcrt1qh33ghvgjj3ef625nl9jxz6nnrz2z9e65vsdey7w5msrklgr6rc0sv0s08q.
 
-Example with bitcoind:
-        bitcoin-cli walletcreatefundedpsbt [] '[{"bcrt1qh33ghvgjj3ef625nl9jxz6nnrz2z9e65vsdey7w5msrklgr6rc0sv0s08q":0.01234567}]'
+Example with brocoind:
+        brocoin-cli walletcreatefundedpsbt [] '[{"bcrt1qh33ghvgjj3ef625nl9jxz6nnrz2z9e65vsdey7w5msrklgr6rc0sv0s08q":0.01234567}]'
 
 Or if you are using a wallet that can fund a PSBT directly (currently not
-possible with bitcoind), you can use this PSBT that contains the same address
+possible with brocoind), you can use this PSBT that contains the same address
 and amount: cHNidP8BADUCAAAAAAGH1hIAAAAAACIAILxii7ESlHKdKpP5ZGFqcxiUIudUZBuSedTcB2+geh4fAAAAAAAA
 
 Paste the funded PSBT here to continue the funding flow.
@@ -338,15 +338,15 @@ The command line now waits until a PSBT is entered. We'll create one in the next
 step. Make sure to use a new shell window/tab for the next commands and leave
 the prompt from the `openchannel` running as is.
 
-### 2a. Use `bitcoind` to create a funding transaction
+### 2a. Use `brocoind` to create a funding transaction
 
 The output of the last command already gave us an example command to use with
-`bitcoind`. We'll go ahead and execute it now. The meaning of this command is
-something like "bitcoind, give me a PSBT that sends the given amount to the
+`brocoind`. We'll go ahead and execute it now. The meaning of this command is
+something like "brocoind, give me a PSBT that sends the given amount to the
 given address, choose any input you see fit":
 
 ```shell
-⛰  bitcoin-cli walletcreatefundedpsbt [] '[{"bcrt1qh33ghvgjj3ef625nl9jxz6nnrz2z9e65vsdey7w5msrklgr6rc0sv0s08q":0.01234567}]'
+⛰  brocoin-cli walletcreatefundedpsbt [] '[{"bcrt1qh33ghvgjj3ef625nl9jxz6nnrz2z9e65vsdey7w5msrklgr6rc0sv0s08q":0.01234567}]'
 {
   "psbt": "cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA",
   "fee": 0.00003060,
@@ -354,16 +354,16 @@ given address, choose any input you see fit":
 }
 ```
 
-We see that `bitcoind` has given us a transaction that would pay `3060` satoshi
+We see that `brocoind` has given us a transaction that would pay `3060` satoshi
 in fees. Fee estimation/calculation can be changed with parameters of the 
 `walletcreatefundedpsbt` command. To see all options, use
-`bitcoin-cli help walletcreatefundedpsbt`.
+`brocoin-cli help walletcreatefundedpsbt`.
 
 If we want to know what exactly is in this PSBT, we can look at it with the
 `decodepsbt` command:
 
 ```shell
-⛰  bitcoin-cli decodepsbt cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA
+⛰  brocoin-cli decodepsbt cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA
 {
   "tx": {
     "txid": "374504e4246a93a45b4a2c2bc31d8adc8525aa101c7b9065db6dc01c4bdfce0a",
@@ -442,11 +442,11 @@ This tells us that we got a PSBT with a big input, the channel output and a
 change output for the rest. Everything is there but the signatures/witness data,
 which is exactly what we need.
 
-### 2b. Use `lnd` to create a funding transaction
+### 2b. Use `broln` to create a funding transaction
 
-Starting with version `v0.12.0`, `lnd` can also create PSBTs. This assumes a
-scenario where one instance of `lnd` only has public keys (watch only mode) and
-a secondary, hardened and firewalled `lnd` instance has the corresponding
+Starting with version `v0.12.0`, `broln` can also create PSBTs. This assumes a
+scenario where one instance of `broln` only has public keys (watch only mode) and
+a secondary, hardened and firewalled `broln` instance has the corresponding
 private keys. On the watching only mode, the following command can be used to
 create the funding PSBT:
 
@@ -475,29 +475,29 @@ still waiting for our input.
 ...
 Base64 encoded PSBT: cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA
 
-PSBT verified by lnd, please continue the funding flow by signing the PSBT by
+PSBT verified by broln, please continue the funding flow by signing the PSBT by
 all required parties/devices. Once the transaction is fully signed, paste it
 again here.
 
 Base64 encoded PSBT:
 ```
 
-We can now go ahead and sign the transaction. We are going to use `bitcoind` for
+We can now go ahead and sign the transaction. We are going to use `brocoind` for
 this again, but in practice this would now happen on a hardware wallet and
-perhaps `bitcoind` would only know the public keys and couldn't sign for the
+perhaps `brocoind` would only know the public keys and couldn't sign for the
 transaction itself. Again, this is only an example and can't reflect all
 real-world use cases.
 
 ```shell
-⛰  bitcoin-cli walletprocesspsbt cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA
+⛰  brocoin-cli walletprocesspsbt cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAAAA
 {
 "psbt": "cHNidP8BAH0CAAAAAbxLLf9+AYfqfF69QAQuETnL6cas7GDiWBZF+3xxc/Y/AAAAAAD+////AofWEgAAAAAAIgAgvGKLsRKUcp0qk/lkYWpzGJQi51RkG5J51NwHb6B6Hh+1If0jAQAAABYAFL+6THEGhybJnOkFGSRFbtCcPOG8AAAAAAABAR8wBBAkAQAAABYAFHemJ11XF7CU7WXBIJLD/qZF+6jrAQhrAkcwRAIgHKQbenZYvgADRd9TKGVO36NnaIgW3S12OUg8XGtSrE8CICmeaYoJ/U7Ecm+/GneY8i2hu2QCaQnuomJgzn+JAnrDASEDUBmCLcsybA5qXSRBBdZ0Uk/FQiay9NgOpv4D26yeJpAAAAA=",
 "complete": true
 }
 ```
 
-If you are using the two `lnd` node model as described in
-[2b](#2b-use-lnd-to-create-a-funding-transaction), you can achieve the same
+If you are using the two `broln` node model as described in
+[2b](#2b-use-broln-to-create-a-funding-transaction), you can achieve the same
 result with the following command:
 
 ```shell
@@ -514,7 +514,7 @@ inside the PSBT.
 **!!! WARNING !!!**
 
 **DO NOT PUBLISH** the finished transaction by yourself or with another tool.
-lnd MUST publish it in the proper funding flow order **OR THE FUNDS CAN BE
+broln MUST publish it in the proper funding flow order **OR THE FUNDS CAN BE
 LOST**!
 
 Let's give it to `lncli` to continue:
@@ -536,25 +536,25 @@ using the freshly created channel.
 The PSBT channel funding flow makes it possible to open multiple channels in one
 transaction. This can be achieved by taking the initial PSBT returned by the
 `openchannel` and feed it into the `--base_psbt` parameter of the next
-`openchannel` command. This won't work with `bitcoind` though, as it cannot take
+`openchannel` command. This won't work with `brocoind` though, as it cannot take
 a PSBT as partial input for the `walletcreatefundedpsbt` command.
 
-However, the `bitcoin-cli` examples from the command line can be combined into
+However, the `brocoin-cli` examples from the command line can be combined into
 a single command. For example:
 
 Channel 1:
 ```shell
-⛰  bitcoin-cli walletcreatefundedpsbt [] '[{"tb1qywvazres587w9wyy8uw03q8j9ek6gc9crwx4jvhqcmew4xzsvqcq3jjdja":0.01000000}]'
+⛰  brocoin-cli walletcreatefundedpsbt [] '[{"tb1qywvazres587w9wyy8uw03q8j9ek6gc9crwx4jvhqcmew4xzsvqcq3jjdja":0.01000000}]'
 ```
 
 Channel 2:
 ```shell
-⛰  bitcoin-cli walletcreatefundedpsbt [] '[{"tb1q53626fcwwtcdc942zaf4laqnr3vg5gv4g0hakd2h7fw2pmz6428sk3ezcx":0.01000000}]'
+⛰  brocoin-cli walletcreatefundedpsbt [] '[{"tb1q53626fcwwtcdc942zaf4laqnr3vg5gv4g0hakd2h7fw2pmz6428sk3ezcx":0.01000000}]'
 ```
 
 Combined command to get batch PSBT:
 ```shell
-⛰  bitcoin-cli walletcreatefundedpsbt [] '[{"tb1q53626fcwwtcdc942zaf4laqnr3vg5gv4g0hakd2h7fw2pmz6428sk3ezcx":0.01000000},{"tb1qywvazres587w9wyy8uw03q8j9ek6gc9crwx4jvhqcmew4xzsvqcq3jjdja":0.01000000}]'
+⛰  brocoin-cli walletcreatefundedpsbt [] '[{"tb1q53626fcwwtcdc942zaf4laqnr3vg5gv4g0hakd2h7fw2pmz6428sk3ezcx":0.01000000},{"tb1qywvazres587w9wyy8uw03q8j9ek6gc9crwx4jvhqcmew4xzsvqcq3jjdja":0.01000000}]'
 ```
 
 ### Safety warning about batch transactions
@@ -571,8 +571,8 @@ multiple channel funding outputs **too early could lead to loss of funds**!
 
 For example, let's say we want to open two channels. We call `openchannel --psbt`
 two times, combine the funding addresses as shown above, verify the PSBT, sign
-it and finally paste it into the terminal of the first command. `lnd` then goes
-ahead and finishes the negotiations with peer 1. If successful, `lnd` publishes
+it and finally paste it into the terminal of the first command. `broln` then goes
+ahead and finishes the negotiations with peer 1. If successful, `broln` publishes
 the transaction. In the meantime we paste the same PSBT into the second terminal
 window. But by now, the peer 2 for channel 2 has timed out our funding flow and
 aborts the negotiation. Normally this would be fine, we would just not publish
@@ -608,7 +608,7 @@ fully completed its funding negotiation.
 
 ### Use the BatchOpenChannel RPC for safe batch channel funding
 
-If `lnd`'s internal wallet should fund the batch channel open transaction then
+If `broln`'s internal wallet should fund the batch channel open transaction then
 the safest option is the `BatchOpenChannel` RPC (and its
 `lncli batchopenchannel` counterpart).
 The `BatchOpenChannel` RPC accepts a list of node pubkeys and amounts and will
@@ -657,10 +657,10 @@ const Buffer = require('safe-buffer').Buffer;
 const randomBytes = require('random-bytes').sync;
 const prompt = require('prompt');
 
-const LND_DIR = '/home/myuser/.lnd';
-const LND_HOST = 'localhost:10019';
+const broln_DIR = '/home/myuser/.broln';
+const broln_HOST = 'localhost:10019';
 const NETWORK = 'regtest';
-const LNRPC_PROTO_DIR = '/home/myuser/projects/go/lnd/lnrpc';
+const LNRPC_PROTO_DIR = '/home/myuser/projects/go/broln/lnrpc';
 
 const grpcOptions = {
     keepCase: true,
@@ -676,18 +676,18 @@ const lnrpc = grpc.loadPackageDefinition(packageDefinition).lnrpc;
 
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
 
-const adminMac = fs.readFileSync(`${LND_DIR}/data/chain/bitcoin/${NETWORK}/admin.macaroon`);
+const adminMac = fs.readFileSync(`${broln_DIR}/data/chain/brocoin/${NETWORK}/admin.macaroon`);
 const metadata = new grpc.Metadata();
 metadata.add('macaroon', adminMac.toString('hex'));
 const macaroonCreds = grpc.credentials.createFromMetadataGenerator((_args, callback) => {
     callback(null, metadata);
 });
 
-const lndCert = fs.readFileSync(`${LND_DIR}/tls.cert`);
-const sslCreds = grpc.credentials.createSsl(lndCert);
+const brolnCert = fs.readFileSync(`${broln_DIR}/tls.cert`);
+const sslCreds = grpc.credentials.createSsl(brolnCert);
 const credentials = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
 
-const client = new lnrpc.Lightning(LND_HOST, credentials);
+const client = new lnrpc.Lightning(broln_HOST, credentials);
 
 const params = process.argv.slice(2);
 
@@ -771,7 +771,7 @@ function tryCleanup() {
             });
         } else {
             // The channel is pending but since we aborted will never make it
-            // to be confirmed. We need to tell lnd to abandon this channel
+            // to be confirmed. We need to tell broln to abandon this channel
             // otherwise it will show in the pending channels for forever.
             console.log("Cleaning up channel, abandon channel")
             client.AbandonChannel({
@@ -791,8 +791,8 @@ function tryCleanup() {
 }
 
 function maybeFundPSBT() {
-    const outputsBitcoind = [];
-    const outputsLnd = {};
+    const outputsBrocoind = [];
+    const outputsbroln = {};
     for (let i = 0; i < channels.length; i++) {
         const c = channels[i];
         if (c.outputAddr === '') {
@@ -800,10 +800,10 @@ function maybeFundPSBT() {
             return;
         }
 
-        outputsBitcoind.push({
+        outputsBrocoind.push({
             [c.outputAddr]: c.amount / 100000000,
         });
-        outputsLnd[c.outputAddr] = c.amount;
+        outputsbroln[c.outputAddr] = c.amount;
     }
 
     console.log(`
@@ -811,11 +811,11 @@ Channels ready for funding transaction.
 Please create a funded PSBT now.
 Examples:
 
-bitcoind:
-    bitcoin-cli walletcreatefundedpsbt '[]' '${JSON.stringify(outputsBitcoind)}' 0 '{"fee_rate": 15}'
+brocoind:
+    brocoin-cli walletcreatefundedpsbt '[]' '${JSON.stringify(outputsBrocoind)}' 0 '{"fee_rate": 15}'
 
-lnd:
-    lncli wallet psbt fund --outputs='${JSON.stringify(outputsLnd)}' --sat_per_vbyte=15
+broln:
+    lncli wallet psbt fund --outputs='${JSON.stringify(outputsbroln)}' --sat_per_vbyte=15
 `);
 
     prompt.get([{name: 'funded_psbt'}], (err, result) => {

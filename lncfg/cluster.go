@@ -14,7 +14,7 @@ const (
 	DefaultEtcdElectionPrefix = "/leader/"
 )
 
-// Cluster holds configuration for clustered LND.
+// Cluster holds configuration for clustered broln.
 type Cluster struct {
 	EnableLeaderElection bool `long:"enable-leader-election" description:"Enables leader election if set."`
 

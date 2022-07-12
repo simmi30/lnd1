@@ -173,7 +173,7 @@ func IsPrivate(addr net.Addr) bool {
 }
 
 // ParseAddressString converts an address in string format to a net.Addr that is
-// compatible with lnd. UDP is not supported because lnd needs reliable
+// compatible with broln. UDP is not supported because broln needs reliable
 // connections. We accept a custom function to resolve any TCP addresses so
 // that caller is able control exactly how resolution is performed.
 func ParseAddressString(strAddress string, defaultPort string,
@@ -194,7 +194,7 @@ func ParseAddressString(strAddress string, defaultPort string,
 	}
 
 	// Only TCP and Unix socket addresses are valid. We can't use IP or
-	// UDP only connections for anything we do in lnd.
+	// UDP only connections for anything we do in broln.
 	switch parsedNetwork {
 	case "unix", "unixpacket":
 		return net.ResolveUnixAddr(parsedNetwork, parsedAddr)

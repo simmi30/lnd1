@@ -100,7 +100,7 @@
         "WAITING_TO_START"
       ],
       "default": "NON_EXISTING",
-      "description": " - SERVER_ACTIVE: SERVER_ACTIVE means that the lnd server is ready to accept calls."
+      "description": " - SERVER_ACTIVE: SERVER_ACTIVE means that the broln server is ready to accept calls."
     },
     "protobufAny": {
       "type": "object",

@@ -9,7 +9,7 @@ import (
 )
 
 // NodeSigner is an implementation of the MessageSigner interface backed by the
-// identity private key of running lnd node.
+// identity private key of running broln node.
 type NodeSigner struct {
 	keySigner keychain.SingleKeyMessageSigner
 }

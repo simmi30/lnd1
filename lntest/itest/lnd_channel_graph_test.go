@@ -45,7 +45,7 @@ func testUpdateChanStatus(net *lntest.NetworkHarness, t *harnessTest) {
 	net.ConnectNodes(t.t, alice, bob)
 
 	// Give Alice some coins so she can fund a channel.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	// Open a channel with 100k satoshis between Alice and Bob with Alice
 	// being the sole funder of the channel.
@@ -155,9 +155,9 @@ func testUpdateChanStatus(net *lntest.NetworkHarness, t *harnessTest) {
 	// policy. The value of "Disabled" will depend on the specific
 	// scenario being tested.
 	expectedPolicy := &lnrpc.RoutingPolicy{
-		FeeBaseMsat:      int64(chainreg.DefaultBitcoinBaseFeeMSat),
-		FeeRateMilliMsat: int64(chainreg.DefaultBitcoinFeeRate),
-		TimeLockDelta:    chainreg.DefaultBitcoinTimeLockDelta,
+		FeeBaseMsat:      int64(chainreg.DefaultBrocoinBaseFeeMSat),
+		FeeRateMilliMsat: int64(chainreg.DefaultBrocoinFeeRate),
+		TimeLockDelta:    chainreg.DefaultBrocoinTimeLockDelta,
 		MinHtlc:          1000, // default value
 		MaxHtlcMsat:      calculateMaxHtlc(chanAmt),
 	}
@@ -388,10 +388,10 @@ func testGraphTopologyNtfns(net *lntest.NetworkHarness, t *harnessTest, pinned b
 	net.EnsureConnected(t.t, alice, bob)
 
 	// Alice stimmy.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	// Bob stimmy.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, bob)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, bob)
 
 	// Assert that Bob has the correct sync type before proceeeding.
 	if pinned {
@@ -624,12 +624,12 @@ func testNodeAnnouncement(net *lntest.NetworkHarness, t *harnessTest) {
 		"fomvuglh6h6vcag73xo5t5gv56ombih3zr2xvplkpbfd7wrog4swjwid.onion:1234",
 	}
 
-	var lndArgs []string
+	var brolnArgs []string
 	for _, addr := range advertisedAddrs {
-		lndArgs = append(lndArgs, "--externalip="+addr)
+		brolnArgs = append(brolnArgs, "--externalip="+addr)
 	}
 
-	dave := net.NewNode(t.t, "Dave", lndArgs)
+	dave := net.NewNode(t.t, "Dave", brolnArgs)
 	defer shutdownAndAssert(net, t, dave)
 
 	// We must let Dave have an open channel before he can send a node

@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	// paymentTimeout is the default timeout for the payment loop in lnd.
+	// paymentTimeout is the default timeout for the payment loop in broln.
 	// No new attempts will be started after the timeout.
 	paymentTimeout = time.Second * 60
 )
@@ -197,7 +197,7 @@ var sendPaymentCommand = cli.Command{
 }
 
 // retrieveFeeLimit retrieves the fee limit based on the different fee limit
-// flags passed. It always returns a value and doesn't rely on lnd applying a
+// flags passed. It always returns a value and doesn't rely on broln applying a
 // default.
 func retrieveFeeLimit(ctx *cli.Context, amt int64) (int64, error) {
 	switch {
@@ -669,7 +669,7 @@ func newAliasCache(client lnrpc.LightningClient) *aliasCache {
 	}
 }
 
-// get returns a node alias either from cache or freshly requested from lnd.
+// get returns a node alias either from cache or freshly requested from broln.
 func (a *aliasCache) get(ctxc context.Context, pubkey string) string {
 	alias, ok := a.cache[pubkey]
 	if ok {
@@ -1321,7 +1321,7 @@ var buildRouteCommand = cli.Command{
 			Name: "final_cltv_delta",
 			Usage: "number of blocks the last hop has to reveal " +
 				"the preimage",
-			Value: chainreg.DefaultBitcoinTimeLockDelta,
+			Value: chainreg.DefaultBrocoinTimeLockDelta,
 		},
 		cli.StringFlag{
 			Name:  "hops",
@@ -1410,7 +1410,7 @@ var deletePaymentsCommand = cli.Command{
 	the internal bbolt database. But that disk space is only reclaimed after
 	compacting the database. Users might want to turn on auto compaction
 	(db.bolt.auto-compact=true in the config file or --db.bolt.auto-compact
-	as a command line flag) and restart lnd after deleting a large number of
+	as a command line flag) and restart broln after deleting a large number of
 	payments to see a reduction in the file size of the channel.db file.
 	`,
 	Action: actionDecorator(deletePayments),

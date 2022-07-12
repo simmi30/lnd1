@@ -1,13 +1,13 @@
-# Increasing LND reliablity by clustering
+# Increasing broln reliablity by clustering
 
-Normally LND nodes use the embedded bbolt database to store all important states.
+Normally broln nodes use the embedded bbolt database to store all important states.
 This method of running has been proven to work well in a variety of environments,
 from mobile clients to large nodes serving hundreds of channels. With scale however
-it is desirable to be able to replicate LND's state to quickly and reliably move nodes,
+it is desirable to be able to replicate broln's state to quickly and reliably move nodes,
 do updates and be more resilient to datacenter failures.
 
 It is now possible to store all essential state in a replicated etcd DB and to
-run multiple LND nodes on different machines where only one of them (the leader) 
+run multiple broln nodes on different machines where only one of them (the leader) 
 is able to read and mutate the database. In such setup if the leader node fails
 or decomissioned, a follower node will be elected as the new leader and will
 quickly come online to minimize downtime.
@@ -15,9 +15,9 @@ quickly come online to minimize downtime.
 The leader election feature currently relies on etcd to work both for the election
 itself and for the replicated data store.
 
-## Building LND with leader election support
+## Building broln with leader election support
 
-To create a dev build of LND with leader election support use the following command:
+To create a dev build of broln with leader election support use the following command:
 
 ```shell
 ⛰  make tags="kvdb_etcd"
@@ -39,15 +39,15 @@ To start your local etcd instance for testing run:
 The large `max-txn-ops` and `max-request-bytes` values are currently recommended
 but may not be required in the future.
 
-## Configuring LND to run on etcd and participate in leader election
+## Configuring broln to run on etcd and participate in leader election
 
-To run LND with etcd, additional configuration is needed, specified either
-through command line flags or in `lnd.conf`.
+To run broln with etcd, additional configuration is needed, specified either
+through command line flags or in `broln.conf`.
 
 Sample command line:
 
 ```shell
-⛰  ./lnd-debug \
+⛰  ./broln-debug \
     --db.backend=etcd \
     --db.etcd.host=127.0.0.1:2379 \
     --db.etcd.certfile=/home/user/etcd/bin/default.etcd/fixtures/client/cert.pem \
@@ -56,7 +56,7 @@ Sample command line:
     --cluster.enable-leader-election \
     --cluster.leader-elector=etcd \
     --cluster.etcd-election-prefix=cluster-leader \
-    --cluster.id=lnd-1
+    --cluster.id=broln-1
 ```
 The `cluster.etcd-election-prefix` option sets the election's etcd key prefix. 
 The `cluster.id` is used to identify the individual nodes in the cluster
@@ -79,7 +79,7 @@ network traffic to the right instance. For example in Kubernetes, the load balan
 will route traffic to all "ready" nodes. This readiness may be monitored by a
 readiness probe.
 
-For readiness probing we can simply use LND's state RPC service where a special state
+For readiness probing we can simply use broln's state RPC service where a special state
 `WAITING_TO_START` indicates that the node is waiting to become the leader and is
 not started yet. To test this we can simply curl the REST endpoint of the state RPC:
 
@@ -96,16 +96,16 @@ readinessProbe:
 
 ## What data is written to the replicated remote database? 
 
-Beginning with LND 0.14.0 when using a remote database (etcd or PostgreSQL) all
-LND data will be written to the replicated database, including the wallet data
+Beginning with broln 0.14.0 when using a remote database (etcd or PostgreSQL) all
+broln data will be written to the replicated database, including the wallet data
 which contains the key material and node identity, the graph, the channel state,
 the macaroon and the watchtower client databases. This means that when using
-leader election there's no need to copy anything between instances of the LND
+leader election there's no need to copy anything between instances of the broln
 cluster.
 
 ## Is leader election supported for Postgres?
 
 No, leader election is not supported by Postgres itself since it doesn't have a
 mechanism to reliably **determine a leading node**. It is, however, possible to
-use Postgres **as the LND database backend** while using an etcd cluster purely
+use Postgres **as the broln database backend** while using an etcd cluster purely
 for the leader election functionality. 

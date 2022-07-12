@@ -33,15 +33,15 @@ var (
 var createCommand = cli.Command{
 	Name:     "create",
 	Category: "Startup",
-	Usage:    "Initialize a wallet when starting lnd for the first time.",
+	Usage:    "Initialize a wallet when starting broln for the first time.",
 	Description: `
-	The create command is used to initialize an lnd wallet from scratch for
+	The create command is used to initialize an broln wallet from scratch for
 	the very first time. This is interactive command with one required
 	argument (the password), and one optional argument (the mnemonic
 	passphrase).
 
 	The first argument (the password) is required and MUST be greater than
-	8 characters. This will be used to encrypt the wallet within lnd. This
+	8 characters. This will be used to encrypt the wallet within broln. This
 	MUST be remembered as it will be required to fully start up the daemon.
 
 	The second argument is an optional 24-word mnemonic derived from BIP
@@ -387,7 +387,7 @@ mnemonicCheck:
 		return err
 	}
 
-	fmt.Println("\nlnd successfully initialized!")
+	fmt.Println("\nbroln successfully initialized!")
 
 	if statelessInit {
 		return storeOrPrintAdminMac(ctx, response.AdminMacaroon)
@@ -443,8 +443,8 @@ var unlockCommand = cli.Command{
 	Category: "Startup",
 	Usage:    "Unlock an encrypted wallet at startup.",
 	Description: `
-	The unlock command is used to decrypt lnd's wallet state in order to
-	start up. This command MUST be run after booting up lnd before it's
+	The unlock command is used to decrypt broln's wallet state in order to
+	start up. This command MUST be run after booting up broln before it's
 	able to carry out its duties. An exception is if a user is running with
 	--noseedbackup, then a default passphrase will be used.
 
@@ -536,7 +536,7 @@ func unlock(ctx *cli.Context) error {
 		return err
 	}
 
-	fmt.Println("\nlnd successfully unlocked!")
+	fmt.Println("\nbroln successfully unlocked!")
 
 	// TODO(roasbeef): add ability to accept hex single and multi backups
 
@@ -548,11 +548,11 @@ var changePasswordCommand = cli.Command{
 	Category: "Startup",
 	Usage:    "Change an encrypted wallet's password at startup.",
 	Description: `
-	The changepassword command is used to Change lnd's encrypted wallet's
+	The changepassword command is used to Change broln's encrypted wallet's
 	password. It will automatically unlock the daemon if the password change
 	is successful.
 
-	If one did not specify a password for their wallet (running lnd with
+	If one did not specify a password for their wallet (running broln with
 	--noseedbackup), one must restart their daemon without
 	--noseedbackup and use this command. The "current password" field
 	should be left empty.
@@ -644,13 +644,13 @@ var createWatchOnlyCommand = cli.Command{
 	Name:      "createwatchonly",
 	Category:  "Startup",
 	ArgsUsage: "accounts-json-file",
-	Usage: "Initialize a watch-only wallet after starting lnd for the " +
+	Usage: "Initialize a watch-only wallet after starting broln for the " +
 		"first time.",
 	Description: `
-	The create command is used to initialize an lnd wallet from scratch for
+	The create command is used to initialize an broln wallet from scratch for
 	the very first time, in watch-only mode. Watch-only means, there will be
-	no private keys in lnd's wallet. This is only useful in combination with
-	a remote signer or when lnd should be used as an on-chain wallet with
+	no private keys in broln's wallet. This is only useful in combination with
+	a remote signer or when broln should be used as an on-chain wallet with
 	PSBT interaction only.
 
 	This is an interactive command that takes a JSON file as its first and
@@ -682,7 +682,7 @@ var createWatchOnlyCommand = cli.Command{
 	   ]
 	}
 
-	There must be an account for each of the existing key families that lnd
+	There must be an account for each of the existing key families that broln
 	uses internally (currently 0-9, see keychain/derivation.go).
 
 	Read the documentation under docs/remote-signing.md for more information
@@ -853,7 +853,7 @@ func printCipherSeedWords(mnemonicWords []string) {
 		"RESTORE THE WALLET!!!")
 	fmt.Println()
 
-	fmt.Println("---------------BEGIN LND CIPHER SEED---------------")
+	fmt.Println("---------------BEGIN broln CIPHER SEED---------------")
 
 	numCols := 4
 	colWords := monowidthColumns(mnemonicWords, numCols)
@@ -863,7 +863,7 @@ func printCipherSeedWords(mnemonicWords []string) {
 			colWords[i+2], i+4, colWords[i+3])
 	}
 
-	fmt.Println("---------------END LND CIPHER SEED-----------------")
+	fmt.Println("---------------END broln CIPHER SEED-----------------")
 
 	fmt.Println("\n!!!YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO " +
 		"RESTORE THE WALLET!!!")

@@ -2,19 +2,19 @@
 
 [![Build Status](https://img.shields.io/travis/lightningnetwork/broln.svg)](https://travis-ci.org/lightningnetwork/broln)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/brolightningnetwork/broln/blob/master/LICENSE)
-[![Irc](https://img.shields.io/badge/chat-on%20libera-brightgreen.svg)](https://web.libera.chat/#lnd)
+[![Irc](https://img.shields.io/badge/chat-on%20libera-brightgreen.svg)](https://web.libera.chat/#broln)
 [![Godoc](https://godoc.org/github.com/brolightningnetwork/broln?status.svg)](https://godoc.org/github.com/brolightningnetwork/broln)
 
 <img src="logo.png">
 
-The Lightning Network Daemon (`lnd`) - is a complete implementation of a
-[Lightning Network](https://lightning.network) node.  `lnd` has several pluggable back-end
-chain services including [`btcd`](https://github.com/brsuite/brond) (a
-full-node), [`bitcoind`](https://github.com/bitcoin/bitcoin), and
+The Lightning Network Daemon (`broln`) - is a complete implementation of a
+[Lightning Network](https://lightning.network) node.  `broln` has several pluggable back-end
+chain services including [`brond`](https://github.com/brsuite/brond) (a
+full-node), [`brocoind`](https://github.com/brocoin/brocoin), and
 [`neutrino`](https://github.com/lightninglabs/neutrino) (a new experimental light client). The project's codebase uses the
-[btcsuite](https://github.com/brsuite/) set of Bitcoin libraries, and also
+[btcsuite](https://github.com/brsuite/) set of Brocoin libraries, and also
 exports a large set of isolated re-usable Lightning Network related libraries
-within it.  In the current state `lnd` is capable of:
+within it.  In the current state `broln` is capable of:
 * Creating channels.
 * Closing channels.
 * Completely managing all channel states (including the exceptional ones!).
@@ -26,17 +26,17 @@ through the network.
 * Automatic channel management ([`autopilot`](https://github.com/brolightningnetwork/broln/tree/master/autopilot)).
 
 ## Lightning Network Specification Compliance
-`lnd` _fully_ conforms to the [Lightning Network specification
+`broln` _fully_ conforms to the [Lightning Network specification
 (BOLTs)](https://github.com/brolightningnetwork/lightning-rfc). BOLT stands for:
 Basis of Lightning Technology. The specifications are currently being drafted
 by several groups of implementers based around the world including the
-developers of `lnd`. The set of specification documents as well as our
+developers of `broln`. The set of specification documents as well as our
 implementation of the specification are still a work-in-progress. With that
-said, the current status of `lnd`'s BOLT compliance is:
+said, the current status of `broln`'s BOLT compliance is:
 
   - [X] BOLT 1: Base Protocol
   - [X] BOLT 2: Peer Protocol for Channel Management
-  - [X] BOLT 3: Bitcoin Transaction and Script Formats
+  - [X] BOLT 3: Brocoin Transaction and Script Formats
   - [X] BOLT 4: Onion Routing Protocol
   - [X] BOLT 5: Recommendations for On-chain Transaction Handling
   - [X] BOLT 7: P2P Node and Channel Discovery
@@ -48,7 +48,7 @@ said, the current status of `lnd`'s BOLT compliance is:
 ## Developer Resources
 
 The daemon has been designed to be as developer friendly as possible in order
-to facilitate application development on top of `lnd`. Two primary RPC
+to facilitate application development on top of `broln`. Two primary RPC
 interfaces are exported: an HTTP REST API, and a [gRPC](https://grpc.io/)
 service. The exported API's are not yet stable, so be warned: they may change
 drastically in the near future.
@@ -60,31 +60,31 @@ resources including guides, articles, example applications and community resourc
 
 Finally, we also have an active
 [Slack](https://lightning.engineering/slack.html) where protocol developers, application developers, testers and users gather to
-discuss various aspects of `lnd` and also Lightning in general.
+discuss various aspects of `broln` and also Lightning in general.
 
 ## Installation
   In order to build from source, please see [the installation
   instructions](docs/INSTALL.md).
 
 ## Docker
-  To run lnd from Docker, please see the main [Docker instructions](docs/DOCKER.md)
+  To run broln from Docker, please see the main [Docker instructions](docs/DOCKER.md)
 
 ## IRC
   * irc.libera.chat
-  * channel #lnd
-  * [webchat](https://web.libera.chat/#lnd)
+  * channel #broln
+  * [webchat](https://web.libera.chat/#broln)
 
 ## Safety
 
-When operating a mainnet `lnd` node, please refer to our [operational safety
-guidelines](docs/safety.md). It is important to note that `lnd` is still
+When operating a mainnet `broln` node, please refer to our [operational safety
+guidelines](docs/safety.md). It is important to note that `broln` is still
 **beta** software and that ignoring these operational guidelines can lead to
 loss of funds.
 
 ## Security
 
-The developers of `lnd` take security _very_ seriously. The disclosure of
-security vulnerabilities helps us secure the health of `lnd`, privacy of our
+The developers of `broln` take security _very_ seriously. The disclosure of
+security vulnerabilities helps us secure the health of `broln`, privacy of our
 users, and also the health of the Lightning Network as a whole.  If you find
 any issues regarding security or privacy, please disclose the information
 responsibly by sending an email to security at lightning dot engineering,
@@ -95,5 +95,5 @@ preferably encrypted using our designated PGP key
 ## Further reading
 * [Step-by-step send payment guide with docker](https://github.com/brolightningnetwork/broln/tree/master/docker)
 * [Contribution guide](https://github.com/brolightningnetwork/broln/blob/master/docs/code_contribution_guidelines.md)
-# lnd
-# lnd1
+# broln
+# broln1

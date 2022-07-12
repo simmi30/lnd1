@@ -117,7 +117,7 @@ type Controller struct {
 	version string
 
 	// targetIPAddress is the IP address which we tell the Tor server to use
-	// to connect to the LND node.  This is required when the Tor server
+	// to connect to the broln node.  This is required when the Tor server
 	// runs on another host, otherwise the service will not be reachable.
 	targetIPAddress string
 

@@ -19,7 +19,7 @@ import (
 const (
 	// maxBlockTarget is the highest number of blocks confirmations that
 	// a WebAPIEstimator will cache fees for. This number is chosen
-	// because it's the highest number of confs bitcoind will return a fee
+	// because it's the highest number of confs brocoind will return a fee
 	// estimate for.
 	maxBlockTarget uint32 = 1008
 
@@ -127,10 +127,10 @@ func (e StaticEstimator) Stop() error {
 // Estimator interface.
 var _ Estimator = (*StaticEstimator)(nil)
 
-// BtcdEstimator is an implementation of the Estimator interface backed
-// by the RPC interface of an active btcd node. This implementation will proxy
-// any fee estimation requests to btcd's RPC interface.
-type BtcdEstimator struct {
+// BrondEstimator is an implementation of the Estimator interface backed
+// by the RPC interface of an active brond node. This implementation will proxy
+// any fee estimation requests to brond's RPC interface.
+type BrondEstimator struct {
 	// fallbackFeePerKW is the fall back fee rate in sat/kw that is returned
 	// if the fee estimator does not yet have enough data to actually
 	// produce fee estimates.
@@ -142,16 +142,16 @@ type BtcdEstimator struct {
 	// transaction to propagate through the network.
 	minFeeManager *minFeeManager
 
-	btcdConn *rpcclient.Client
+	brondConn *rpcclient.Client
 }
 
-// NewBtcdEstimator creates a new BtcdEstimator given a fully populated
+// NewBrondEstimator creates a new BrondEstimator given a fully populated
 // rpc config that is able to successfully connect and authenticate with the
-// btcd node, and also a fall back fee rate. The fallback fee rate is used in
+// brond node, and also a fall back fee rate. The fallback fee rate is used in
 // the occasion that the estimator has insufficient data, or returns zero for a
 // fee estimate.
-func NewBtcdEstimator(rpcConfig rpcclient.ConnConfig,
-	fallBackFeeRate SatPerKWeight) (*BtcdEstimator, error) {
+func NewBrondEstimator(rpcConfig rpcclient.ConnConfig,
+	fallBackFeeRate SatPerKWeight) (*BrondEstimator, error) {
 
 	rpcConfig.DisableConnectOnNew = true
 	rpcConfig.DisableAutoReconnect = false
@@ -160,9 +160,9 @@ func NewBtcdEstimator(rpcConfig rpcclient.ConnConfig,
 		return nil, err
 	}
 
-	return &BtcdEstimator{
+	return &BrondEstimator{
 		fallbackFeePerKW: fallBackFeeRate,
-		btcdConn:         chainConn,
+		brondConn:         chainConn,
 	}, nil
 }
 
@@ -170,8 +170,8 @@ func NewBtcdEstimator(rpcConfig rpcclient.ConnConfig,
 // it needs to perform its duty.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BtcdEstimator) Start() error {
-	if err := b.btcdConn.Connect(20); err != nil {
+func (b *BrondEstimator) Start() error {
+	if err := b.brondConn.Connect(20); err != nil {
 		return err
 	}
 
@@ -190,9 +190,9 @@ func (b *BtcdEstimator) Start() error {
 }
 
 // fetchMinRelayFee fetches and returns the minimum relay fee in sat/kb from
-// the btcd backend.
-func (b *BtcdEstimator) fetchMinRelayFee() (SatPerKWeight, error) {
-	info, err := b.btcdConn.GetInfo()
+// the brond backend.
+func (b *BrondEstimator) fetchMinRelayFee() (SatPerKWeight, error) {
+	info, err := b.brondConn.GetInfo()
 	if err != nil {
 		return 0, err
 	}
@@ -211,8 +211,8 @@ func (b *BtcdEstimator) fetchMinRelayFee() (SatPerKWeight, error) {
 // by the fee estimator.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BtcdEstimator) Stop() error {
-	b.btcdConn.Shutdown()
+func (b *BrondEstimator) Stop() error {
+	b.brondConn.Shutdown()
 
 	return nil
 }
@@ -221,7 +221,7 @@ func (b *BtcdEstimator) Stop() error {
 // confirmation and returns the estimated fee expressed in sat/kw.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BtcdEstimator) EstimateFeePerKW(numBlocks uint32) (SatPerKWeight, error) {
+func (b *BrondEstimator) EstimateFeePerKW(numBlocks uint32) (SatPerKWeight, error) {
 	feeEstimate, err := b.fetchEstimate(numBlocks)
 	switch {
 	// If the estimator doesn't have enough data, or returns an error, then
@@ -242,15 +242,15 @@ func (b *BtcdEstimator) EstimateFeePerKW(numBlocks uint32) (SatPerKWeight, error
 // relayed.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BtcdEstimator) RelayFeePerKW() SatPerKWeight {
+func (b *BrondEstimator) RelayFeePerKW() SatPerKWeight {
 	return b.minFeeManager.fetchMinFee()
 }
 
 // fetchEstimate returns a fee estimate for a transaction to be confirmed in
 // confTarget blocks. The estimate is returned in sat/kw.
-func (b *BtcdEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, error) {
+func (b *BrondEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, error) {
 	// First, we'll fetch the estimate for our confirmation target.
-	btcPerKB, err := b.btcdConn.EstimateFee(int64(confTarget))
+	btcPerKB, err := b.brondConn.EstimateFee(int64(confTarget))
 	if err != nil {
 		return 0, err
 	}
@@ -280,14 +280,14 @@ func (b *BtcdEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, error) 
 	return satPerKw, nil
 }
 
-// A compile-time assertion to ensure that BtcdEstimator implements the
+// A compile-time assertion to ensure that BrondEstimator implements the
 // Estimator interface.
-var _ Estimator = (*BtcdEstimator)(nil)
+var _ Estimator = (*BrondEstimator)(nil)
 
-// BitcoindEstimator is an implementation of the Estimator interface backed by
-// the RPC interface of an active bitcoind node. This implementation will proxy
-// any fee estimation requests to bitcoind's RPC interface.
-type BitcoindEstimator struct {
+// BrocoindEstimator is an implementation of the Estimator interface backed by
+// the RPC interface of an active brocoind node. This implementation will proxy
+// any fee estimation requests to brocoind's RPC interface.
+type BrocoindEstimator struct {
 	// fallbackFeePerKW is the fallback fee rate in sat/kw that is returned
 	// if the fee estimator does not yet have enough data to actually
 	// produce fee estimates.
@@ -304,16 +304,16 @@ type BitcoindEstimator struct {
 	// to "CONSERVATIVE".
 	feeMode string
 
-	bitcoindConn *rpcclient.Client
+	brocoindConn *rpcclient.Client
 }
 
-// NewBitcoindEstimator creates a new BitcoindEstimator given a fully populated
+// NewBrocoindEstimator creates a new BrocoindEstimator given a fully populated
 // rpc config that is able to successfully connect and authenticate with the
-// bitcoind node, and also a fall back fee rate. The fallback fee rate is used
+// brocoind node, and also a fall back fee rate. The fallback fee rate is used
 // in the occasion that the estimator has insufficient data, or returns zero
 // for a fee estimate.
-func NewBitcoindEstimator(rpcConfig rpcclient.ConnConfig, feeMode string,
-	fallBackFeeRate SatPerKWeight) (*BitcoindEstimator, error) {
+func NewBrocoindEstimator(rpcConfig rpcclient.ConnConfig, feeMode string,
+	fallBackFeeRate SatPerKWeight) (*BrocoindEstimator, error) {
 
 	rpcConfig.DisableConnectOnNew = true
 	rpcConfig.DisableAutoReconnect = false
@@ -324,9 +324,9 @@ func NewBitcoindEstimator(rpcConfig rpcclient.ConnConfig, feeMode string,
 		return nil, err
 	}
 
-	return &BitcoindEstimator{
+	return &BrocoindEstimator{
 		fallbackFeePerKW: fallBackFeeRate,
-		bitcoindConn:     chainConn,
+		brocoindConn:     chainConn,
 		feeMode:          feeMode,
 	}, nil
 }
@@ -335,7 +335,7 @@ func NewBitcoindEstimator(rpcConfig rpcclient.ConnConfig, feeMode string,
 // it needs to perform its duty.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BitcoindEstimator) Start() error {
+func (b *BrocoindEstimator) Start() error {
 	// Once the connection to the backend node has been established, we'll
 	// initialise the minimum relay fee manager which will query
 	// the backend node for its minimum mempool fee.
@@ -354,8 +354,8 @@ func (b *BitcoindEstimator) Start() error {
 // fetchMinMempoolFee is used to fetch the minimum fee that the backend node
 // requires for a tx to enter its mempool. The returned fee will be the
 // maximum of the minimum relay fee and the minimum mempool fee.
-func (b *BitcoindEstimator) fetchMinMempoolFee() (SatPerKWeight, error) {
-	resp, err := b.bitcoindConn.RawRequest("getmempoolinfo", nil)
+func (b *BrocoindEstimator) fetchMinMempoolFee() (SatPerKWeight, error) {
+	resp, err := b.brocoindConn.RawRequest("getmempoolinfo", nil)
 	if err != nil {
 		return 0, err
 	}
@@ -384,7 +384,7 @@ func (b *BitcoindEstimator) fetchMinMempoolFee() (SatPerKWeight, error) {
 // by the fee estimator.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BitcoindEstimator) Stop() error {
+func (b *BrocoindEstimator) Stop() error {
 	return nil
 }
 
@@ -392,7 +392,7 @@ func (b *BitcoindEstimator) Stop() error {
 // confirmation and returns the estimated fee expressed in sat/kw.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BitcoindEstimator) EstimateFeePerKW(
+func (b *BrocoindEstimator) EstimateFeePerKW(
 	numBlocks uint32) (SatPerKWeight, error) {
 
 	if numBlocks > maxBlockTarget {
@@ -422,15 +422,15 @@ func (b *BitcoindEstimator) EstimateFeePerKW(
 // relayed.
 //
 // NOTE: This method is part of the Estimator interface.
-func (b *BitcoindEstimator) RelayFeePerKW() SatPerKWeight {
+func (b *BrocoindEstimator) RelayFeePerKW() SatPerKWeight {
 	return b.minFeeManager.fetchMinFee()
 }
 
 // fetchEstimate returns a fee estimate for a transaction to be confirmed in
 // confTarget blocks. The estimate is returned in sat/kw.
-func (b *BitcoindEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, error) {
+func (b *BrocoindEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, error) {
 	// First, we'll send an "estimatesmartfee" command as a raw request,
-	// since it isn't supported by btcd but is available in bitcoind.
+	// since it isn't supported by brond but is available in brocoind.
 	target, err := json.Marshal(uint64(confTarget))
 	if err != nil {
 		return 0, err
@@ -442,7 +442,7 @@ func (b *BitcoindEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, err
 		return 0, err
 	}
 
-	resp, err := b.bitcoindConn.RawRequest(
+	resp, err := b.brocoindConn.RawRequest(
 		"estimatesmartfee", []json.RawMessage{target, mode},
 	)
 	if err != nil {
@@ -485,9 +485,9 @@ func (b *BitcoindEstimator) fetchEstimate(confTarget uint32) (SatPerKWeight, err
 	return satPerKw, nil
 }
 
-// A compile-time assertion to ensure that BitcoindEstimator implements the
+// A compile-time assertion to ensure that BrocoindEstimator implements the
 // Estimator interface.
-var _ Estimator = (*BitcoindEstimator)(nil)
+var _ Estimator = (*BrocoindEstimator)(nil)
 
 // WebAPIFeeSource is an interface allows the WebAPIEstimator to query an
 // arbitrary HTTP-based fee estimator. Each new set/network will gain an
@@ -506,7 +506,7 @@ type WebAPIFeeSource interface {
 }
 
 // SparseConfFeeSource is an implementation of the WebAPIFeeSource that utilizes
-// a user-specified fee estimation API for Bitcoin. It expects the response
+// a user-specified fee estimation API for Brocoin. It expects the response
 // to be in the JSON format: `fee_by_block_target: { ... }` where the value maps
 // block targets to fee estimates (in sat per kilovbyte).
 type SparseConfFeeSource struct {

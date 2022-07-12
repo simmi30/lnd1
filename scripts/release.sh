@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simple bash script to build basic lnd tools for all the platforms
+# Simple bash script to build basic broln tools for all the platforms
 # we support with the golang cross-compiler.
 #
 # Copyright (c) 2016 Company 0, LLC.
@@ -9,9 +9,9 @@
 
 set -e
 
-LND_VERSION_REGEX="lnd version (.+) commit"
-PKG="github.com/brolightningnetwork/lnd"
-PACKAGE=lnd
+broln_VERSION_REGEX="broln version (.+) commit"
+PKG="github.com/brolightningnetwork/broln"
+PACKAGE=broln
 
 # Needed for setting file timestamps to get reproducible archives.
 BUILD_DATE="2020-01-01 00:00:00"
@@ -97,32 +97,32 @@ function check_tag_correct() {
     exit 1
   fi
 
-  # Build lnd to extract version.
-  go build ${PKG}/cmd/lnd
+  # Build broln to extract version.
+  go build ${PKG}/cmd/broln
 
   # Extract version command output.
-  lnd_version_output=$(./lnd --version)
+  broln_version_output=$(./broln --version)
 
   # Use a regex to isolate the version string.
-  if [[ $lnd_version_output =~ $LND_VERSION_REGEX ]]; then
+  if [[ $broln_version_output =~ $broln_VERSION_REGEX ]]; then
     # Prepend 'v' to match git tag naming scheme.
-    lnd_version="v${BASH_REMATCH[1]}"
-    green "version: $lnd_version"
+    broln_version="v${BASH_REMATCH[1]}"
+    green "version: $broln_version"
 
     # If tag contains a release candidate suffix, append this suffix to the
-    # lnd reported version before we compare.
+    # broln reported version before we compare.
     RC_REGEX="-rc[0-9]+$"
     if [[ $tag =~ $RC_REGEX ]]; then
-      lnd_version+=${BASH_REMATCH[0]}
+      broln_version+=${BASH_REMATCH[0]}
     fi
 
-    # Match git tag with lnd version.
-    if [[ $tag != "${lnd_version}" ]]; then
-      red "lnd version $lnd_version does not match tag $tag"
+    # Match git tag with broln version.
+    if [[ $tag != "${broln_version}" ]]; then
+      red "broln version $broln_version does not match tag $tag"
       exit 1
     fi
   else
-    red "malformed lnd version output"
+    red "malformed broln version output"
     exit 1
   fi
 }
@@ -177,7 +177,7 @@ function build_release() {
     pushd "${dir}"
 
     green " - Building: ${os} ${arch} ${arm} with build tags '${buildtags}'"
-    env CGO_ENABLED=0 GOOS=$os GOARCH=$arch GOARM=$arm go build -v -trimpath -ldflags="${ldflags}" -tags="${buildtags}" ${PKG}/cmd/lnd
+    env CGO_ENABLED=0 GOOS=$os GOARCH=$arch GOARM=$arm go build -v -trimpath -ldflags="${ldflags}" -tags="${buildtags}" ${PKG}/cmd/broln
     env CGO_ENABLED=0 GOOS=$os GOARCH=$arch GOARM=$arm go build -v -trimpath -ldflags="${ldflags}" -tags="${buildtags}" ${PKG}/cmd/lncli
     popd
 
@@ -193,7 +193,7 @@ function build_release() {
   done
 
   # Add the hash of the packages too, then sort by the second column (name).
-  shasum -a 256 lnd-* vendor* >> "manifest-$tag.txt"
+  shasum -a 256 broln-* vendor* >> "manifest-$tag.txt"
   LC_ALL=C sort -k2 -o "manifest-$tag.txt" "manifest-$tag.txt"
   cat "manifest-$tag.txt"
 }

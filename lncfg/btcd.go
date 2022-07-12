@@ -1,7 +1,7 @@
 package lncfg
 
-// Btcd holds the configuration options for the daemon's connection to btcd.
-type Btcd struct {
+// Brond holds the configuration options for the daemon's connection to brond.
+type Brond struct {
 	Dir        string `long:"dir" description:"The base directory that contains the node's data, logs, configuration file, etc."`
 	RPCHost    string `long:"rpchost" description:"The daemon's rpc listening address. If a port is omitted, then the default port for the selected chain parameters will be used."`
 	RPCUser    string `long:"rpcuser" description:"Username for RPC connections"`

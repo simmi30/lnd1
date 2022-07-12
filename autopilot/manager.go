@@ -14,7 +14,7 @@ import (
 // ManagerCfg houses a set of values and methods that is passed to the Manager
 // for it to properly manage its autopilot agent.
 type ManagerCfg struct {
-	// Self is the public key of the lnd instance. It is used to making
+	// Self is the public key of the broln instance. It is used to making
 	// sure the autopilot is not opening channels to itself.
 	Self *btcec.PublicKey
 
@@ -187,7 +187,7 @@ func (m *Manager) StartAgent() error {
 
 				for _, edgeUpdate := range topChange.ChannelEdgeUpdates {
 					// If this isn't an advertisement by
-					// the backing lnd node, then we'll
+					// the backing broln node, then we'll
 					// continue as we only want to add
 					// channels that we've created
 					// ourselves.

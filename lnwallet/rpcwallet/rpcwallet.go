@@ -102,7 +102,7 @@ func (r *RPCKeyRing) NewAddress(addrType lnwallet.AddressType, change bool,
 	return r.WalletController.NewAddress(addrType, change, account)
 }
 
-// SendOutputs funds, signs, and broadcasts a Bitcoin transaction paying out to
+// SendOutputs funds, signs, and broadcasts a Brocoin transaction paying out to
 // the specified outputs. In the case the wallet has insufficient funds, or the
 // outputs are non-standard, a non-nil error will be returned.
 //
@@ -171,7 +171,7 @@ func (r *RPCKeyRing) SendOutputs(outputs []*wire.TxOut,
 // declared and tries to sign all unsigned inputs that have all required fields
 // (UTXO information, BIP32 derivation information, witness or sig scripts) set.
 // If no error is returned, the PSBT is ready to be given to the next signer or
-// to be finalized if lnd was the last signer.
+// to be finalized if broln was the last signer.
 //
 // NOTE: This RPC only signs inputs (and only those it can sign), it does not
 // perform any other tasks (such as coin selection, UTXO locking or
@@ -218,9 +218,9 @@ func (r *RPCKeyRing) SignPsbt(packet *psbt.Packet) error {
 
 // FinalizePsbt expects a partial transaction with all inputs and outputs fully
 // declared and tries to sign all inputs that belong to the specified account.
-// Lnd must be the last signer of the transaction. That means, if there are any
+// broln must be the last signer of the transaction. That means, if there are any
 // unsigned non-witness inputs or inputs without UTXO information attached or
-// inputs without witness data that do not belong to lnd's wallet, this method
+// inputs without witness data that do not belong to broln's wallet, this method
 // will fail. If no error is returned, the PSBT is ready to be extracted and the
 // final TX within to be broadcast.
 //
@@ -600,7 +600,7 @@ func (r *RPCKeyRing) remoteSign(tx *wire.MsgTx, signDesc *input.SignDescriptor,
 	// we haven't published yet (e.g. a channel funding TX). So we need to
 	// assemble everything from the sign descriptor. We won't be able to
 	// supply a non-witness UTXO (=full TX of the input being spent) in this
-	// case. That is no problem if the signing instance is another lnd
+	// case. That is no problem if the signing instance is another broln
 	// instance since we don't require it for pure witness inputs. But a
 	// hardware wallet might require it for security reasons.
 	case signDesc.KeyDesc.PubKey != nil && signDesc.Output != nil:

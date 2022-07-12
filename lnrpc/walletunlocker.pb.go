@@ -180,7 +180,7 @@ type InitWalletRequest struct {
 	//settled funds within a set of channels. This should be populated if the
 	//user was unable to close out all channels and sweep funds before partial or
 	//total data loss occurred. If specified, then after on-chain recovery of
-	//funds, lnd begin to carry out the data loss recovery protocol in order to
+	//funds, broln begin to carry out the data loss recovery protocol in order to
 	//recover the funds in each channel from a remote force closed transaction.
 	ChannelBackups *ChanBackupSnapshot `protobuf:"bytes,5,opt,name=channel_backups,json=channelBackups,proto3" json:"channel_backups,omitempty"`
 	//
@@ -194,7 +194,7 @@ type InitWalletRequest struct {
 	//aezeed_passphrase. Instead of deriving the master root key from the entropy
 	//of an aezeed cipher seed, the given extended master root key is used
 	//directly as the wallet's master key. This allows users to import/use a
-	//master key from another wallet. When doing so, lnd still uses its default
+	//master key from another wallet. When doing so, broln still uses its default
 	//SegWit only (BIP49/84) derivation paths and funds from custom/non-default
 	//derivation paths will not automatically appear in the on-chain wallet. Using
 	//an 'xprv' instead of an aezeed also has the disadvantage that the wallet's
@@ -206,10 +206,10 @@ type InitWalletRequest struct {
 	//
 	//extended_master_key_birthday_timestamp is the optional unix timestamp in
 	//seconds to use as the wallet's birthday when using an extended master key
-	//to restore the wallet. lnd will only start scanning for funds in blocks that
+	//to restore the wallet. broln will only start scanning for funds in blocks that
 	//are after the birthday which can speed up the process significantly. If the
 	//birthday is not known, this should be left at its default value of 0 in
-	//which case lnd will start scanning from the first SegWit block (481824 on
+	//which case broln will start scanning from the first SegWit block (481824 on
 	//mainnet).
 	ExtendedMasterKeyBirthdayTimestamp uint64 `protobuf:"varint,8,opt,name=extended_master_key_birthday_timestamp,json=extendedMasterKeyBirthdayTimestamp,proto3" json:"extended_master_key_birthday_timestamp,omitempty"`
 	//
@@ -375,10 +375,10 @@ type WatchOnly struct {
 	unknownFields protoimpl.UnknownFields
 
 	//
-	//The unix timestamp in seconds of when the master key was created. lnd will
+	//The unix timestamp in seconds of when the master key was created. broln will
 	//only start scanning for funds in blocks that are after the birthday which
 	//can speed up the process significantly. If the birthday is not known, this
-	//should be left at its default value of 0 in which case lnd will start
+	//should be left at its default value of 0 in which case broln will start
 	//scanning from the first SegWit block (481824 on mainnet).
 	MasterKeyBirthdayTimestamp uint64 `protobuf:"varint,1,opt,name=master_key_birthday_timestamp,json=masterKeyBirthdayTimestamp,proto3" json:"master_key_birthday_timestamp,omitempty"`
 	//
@@ -388,9 +388,9 @@ type WatchOnly struct {
 	//bytes must be in big-endian order.
 	MasterKeyFingerprint []byte `protobuf:"bytes,2,opt,name=master_key_fingerprint,json=masterKeyFingerprint,proto3" json:"master_key_fingerprint,omitempty"`
 	//
-	//The list of accounts to import. There _must_ be an account for all of lnd's
+	//The list of accounts to import. There _must_ be an account for all of broln's
 	//main key scopes: BIP49/BIP84 (m/49'/0'/0', m/84'/0'/0', note that the
-	//coin type is always 0, even for testnet/regtest) and lnd's internal key
+	//coin type is always 0, even for testnet/regtest) and broln's internal key
 	//scope (m/1017'/<coin_type>'/<account>'), where account is the key family as
 	//defined in `keychain/derivation.go` (currently indices 0 to 9).
 	Accounts []*WatchOnlyAccount `protobuf:"bytes,3,rep,name=accounts,proto3" json:"accounts,omitempty"`
@@ -557,7 +557,7 @@ type UnlockWalletRequest struct {
 	//settled funds within a set of channels. This should be populated if the
 	//user was unable to close out all channels and sweep funds before partial or
 	//total data loss occurred. If specified, then after on-chain recovery of
-	//funds, lnd begin to carry out the data loss recovery protocol in order to
+	//funds, broln begin to carry out the data loss recovery protocol in order to
 	//recover the funds in each channel from a remote force closed transaction.
 	ChannelBackups *ChanBackupSnapshot `protobuf:"bytes,3,opt,name=channel_backups,json=channelBackups,proto3" json:"channel_backups,omitempty"`
 	//

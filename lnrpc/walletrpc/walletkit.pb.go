@@ -1762,7 +1762,7 @@ type PendingSweepsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	//
-	//The set of outputs currently being swept by lnd's central batching engine.
+	//The set of outputs currently being swept by broln's central batching engine.
 	PendingSweeps []*PendingSweep `protobuf:"bytes,1,rep,name=pending_sweeps,json=pendingSweeps,proto3" json:"pending_sweeps,omitempty"`
 }
 
@@ -1944,7 +1944,7 @@ type ListSweepsRequest struct {
 
 	//
 	//Retrieve the full sweep transaction details. If false, only the sweep txids
-	//will be returned. Note that some sweeps that LND publishes will have been
+	//will be returned. Note that some sweeps that broln publishes will have been
 	//replaced-by-fee, so will not be included in this output.
 	Verbose bool `protobuf:"varint,1,opt,name=verbose,proto3" json:"verbose,omitempty"`
 }

@@ -22,7 +22,7 @@ const (
 // OpenChannel is the message Alice sends to Bob if we should like to create a
 // channel with Bob where she's the sole provider of funds to the channel.
 // Single funder channels simplify the initial funding workflow, are supported
-// by nodes backed by SPV Bitcoin clients, and have a simpler security models
+// by nodes backed by SPV Brocoin clients, and have a simpler security models
 // than dual funded channels.
 type OpenChannel struct {
 	// ChainHash is the target chain that the initiator wishes to open a

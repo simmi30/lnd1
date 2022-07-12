@@ -7,13 +7,13 @@ import (
 	"github.com/brolightningnetwork/broln/input"
 )
 
-// Sig is a fixed-sized ECDSA signature. Unlike Bitcoin, we use fixed sized
+// Sig is a fixed-sized ECDSA signature. Unlike Brocoin, we use fixed sized
 // signatures on the wire, instead of DER encoded signatures. This type
-// provides several methods to convert to/from a regular Bitcoin DER encoded
+// provides several methods to convert to/from a regular Brocoin DER encoded
 // signature (raw bytes and *btcec.Signature).
 type Sig [64]byte
 
-// NewSigFromRawSignature returns a Sig from a Bitcoin raw signature encoded in
+// NewSigFromRawSignature returns a Sig from a Brocoin raw signature encoded in
 // the canonical DER encoding.
 func NewSigFromRawSignature(sig []byte) (Sig, error) {
 	var b Sig

@@ -22,8 +22,8 @@ import (
 	"github.com/lightninglabs/neutrino"
 	"github.com/brolightningnetwork/broln/blockcache"
 	"github.com/brolightningnetwork/broln/chainntnfs"
-	"github.com/brolightningnetwork/broln/chainntnfs/bitcoindnotify"
-	"github.com/brolightningnetwork/broln/chainntnfs/btcdnotify"
+	"github.com/brolightningnetwork/broln/chainntnfs/brocoindnotify"
+	"github.com/brolightningnetwork/broln/chainntnfs/brondnotify"
 	"github.com/brolightningnetwork/broln/chainntnfs/neutrinonotify"
 	"github.com/brolightningnetwork/broln/channeldb"
 )
@@ -1915,7 +1915,7 @@ var blockCatchupTests = []blockCatchupTestCase{
 // the interface. Second, an additional case in the switch within the main loop
 // below needs to be added which properly initializes the interface.
 func TestInterfaces(t *testing.T, targetBackEnd string) {
-	// Initialize the harness around a btcd node which will serve as our
+	// Initialize the harness around a brond node which will serve as our
 	// dedicated miner to generate blocks, cause re-orgs, etc. We'll set up
 	// this node with a chain length of 125, so we have plenty of BTC to
 	// play around with.
@@ -1961,21 +1961,21 @@ func TestInterfaces(t *testing.T, targetBackEnd string) {
 		)
 
 		switch notifierType {
-		case "bitcoind":
-			var bitcoindConn *chain.BitcoindConn
-			bitcoindConn, cleanUp = chainntnfs.NewBitcoindBackend(
+		case "brocoind":
+			var brocoindConn *chain.BrocoindConn
+			brocoindConn, cleanUp = chainntnfs.NewBrocoindBackend(
 				t, p2pAddr, true,
 			)
 			newNotifier = func() (chainntnfs.TestChainNotifier, error) {
-				return bitcoindnotify.New(
-					bitcoindConn, chainntnfs.NetParams,
+				return brocoindnotify.New(
+					brocoindConn, chainntnfs.NetParams,
 					hintCache, hintCache, blockCache,
 				), nil
 			}
 
-		case "btcd":
+		case "brond":
 			newNotifier = func() (chainntnfs.TestChainNotifier, error) {
-				return btcdnotify.New(
+				return brondnotify.New(
 					&rpcConfig, chainntnfs.NetParams,
 					hintCache, hintCache, blockCache,
 				)

@@ -49,7 +49,7 @@ func (d *dbConnSet) Open(dsn string) (*sql.DB, error) {
 
 	// Limit maximum number of open connections. This is useful to prevent
 	// the server from running out of connections and returning an error.
-	// With this client-side limit in place, lnd will wait for a connection
+	// With this client-side limit in place, broln will wait for a connection
 	// to become available.
 	if d.maxConnections != 0 {
 		db.SetMaxOpenConns(d.maxConnections)

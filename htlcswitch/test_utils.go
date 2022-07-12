@@ -678,7 +678,7 @@ func generateHops(payAmt lnwire.MilliSatoshi, startingHeight uint32,
 		binary.BigEndian.PutUint64(nextHopBytes[:], nextHop.ToUint64())
 
 		hops[i] = hop.NewLegacyPayload(&sphinx.HopData{
-			Realm:         [1]byte{}, // hop.BitcoinNetwork
+			Realm:         [1]byte{}, // hop.BrocoinNetwork
 			NextAddress:   nextHopBytes,
 			ForwardAmount: uint64(amount),
 			OutgoingCltv:  timeLock,

@@ -1,4 +1,4 @@
-package btcdnotify
+package brondnotify
 
 import (
 	"errors"
@@ -22,7 +22,7 @@ import (
 const (
 	// notifierType uniquely identifies this concrete implementation of the
 	// ChainNotifier interface.
-	notifierType = "btcd"
+	notifierType = "brond"
 )
 
 // chainUpdate encapsulates an update to the current main chain. This struct is
@@ -37,7 +37,7 @@ type chainUpdate struct {
 	connect bool
 }
 
-// txUpdate encapsulates a transaction related notification sent from btcd to
+// txUpdate encapsulates a transaction related notification sent from brond to
 // the registered RPC client. This struct is used as an element within an
 // unbounded queue in order to avoid blocking the main rpc dispatch rule.
 type txUpdate struct {
@@ -48,10 +48,10 @@ type txUpdate struct {
 // TODO(roasbeef): generalize struct below:
 //  * move chans to config, allow outside callers to handle send conditions
 
-// BtcdNotifier implements the ChainNotifier interface using btcd's websockets
+// BrondNotifier implements the ChainNotifier interface using brond's websockets
 // notifications. Multiple concurrent clients are supported. All notifications
 // are achieved via non-blocking sends on client channels.
-type BtcdNotifier struct {
+type BrondNotifier struct {
 	epochClientCounter uint64 // To be used atomically.
 
 	start   sync.Once
@@ -90,18 +90,18 @@ type BtcdNotifier struct {
 	quit chan struct{}
 }
 
-// Ensure BtcdNotifier implements the ChainNotifier interface at compile time.
-var _ chainntnfs.ChainNotifier = (*BtcdNotifier)(nil)
+// Ensure BrondNotifier implements the ChainNotifier interface at compile time.
+var _ chainntnfs.ChainNotifier = (*BrondNotifier)(nil)
 
-// New returns a new BtcdNotifier instance. This function assumes the btcd node
+// New returns a new BrondNotifier instance. This function assumes the brond node
 // detailed in the passed configuration is already running, and willing to
 // accept new websockets clients.
 func New(config *rpcclient.ConnConfig, chainParams *chaincfg.Params,
 	spendHintCache chainntnfs.SpendHintCache,
 	confirmHintCache chainntnfs.ConfirmHintCache,
-	blockCache *blockcache.BlockCache) (*BtcdNotifier, error) {
+	blockCache *blockcache.BlockCache) (*BrondNotifier, error) {
 
-	notifier := &BtcdNotifier{
+	notifier := &BrondNotifier{
 		chainParams: chainParams,
 
 		notificationCancels:  make(chan interface{}),
@@ -126,7 +126,7 @@ func New(config *rpcclient.ConnConfig, chainParams *chaincfg.Params,
 		OnRedeemingTx:       notifier.onRedeemingTx,
 	}
 
-	// Disable connecting to btcd within the rpcclient.New method. We
+	// Disable connecting to brond within the rpcclient.New method. We
 	// defer establishing the connection to our .Start() method.
 	config.DisableConnectOnNew = true
 	config.DisableAutoReconnect = false
@@ -139,9 +139,9 @@ func New(config *rpcclient.ConnConfig, chainParams *chaincfg.Params,
 	return notifier, nil
 }
 
-// Start connects to the running btcd node over websockets, registers for block
+// Start connects to the running brond node over websockets, registers for block
 // notifications, and finally launches all related helper goroutines.
-func (b *BtcdNotifier) Start() error {
+func (b *BrondNotifier) Start() error {
 	var startErr error
 	b.start.Do(func() {
 		startErr = b.startNotifier()
@@ -150,20 +150,20 @@ func (b *BtcdNotifier) Start() error {
 }
 
 // Started returns true if this instance has been started, and false otherwise.
-func (b *BtcdNotifier) Started() bool {
+func (b *BrondNotifier) Started() bool {
 	return atomic.LoadInt32(&b.active) != 0
 }
 
-// Stop shutsdown the BtcdNotifier.
-func (b *BtcdNotifier) Stop() error {
+// Stop shutsdown the BrondNotifier.
+func (b *BrondNotifier) Stop() error {
 	// Already shutting down?
 	if atomic.AddInt32(&b.stopped, 1) != 1 {
 		return nil
 	}
 
-	chainntnfs.Log.Info("btcd notifier shutting down")
+	chainntnfs.Log.Info("brond notifier shutting down")
 
-	// Shutdown the rpc client, this gracefully disconnects from btcd, and
+	// Shutdown the rpc client, this gracefully disconnects from brond, and
 	// cleans up all related resources.
 	b.chainConn.Shutdown()
 
@@ -186,14 +186,14 @@ func (b *BtcdNotifier) Stop() error {
 	return nil
 }
 
-func (b *BtcdNotifier) startNotifier() error {
+func (b *BrondNotifier) startNotifier() error {
 	// Start our concurrent queues before starting the chain connection, to
 	// ensure onBlockConnected and onRedeemingTx callbacks won't be
 	// blocked.
 	b.chainUpdates.Start()
 	b.txUpdates.Start()
 
-	// Connect to btcd, and register for notifications on connected, and
+	// Connect to brond, and register for notifications on connected, and
 	// disconnected blocks.
 	if err := b.chainConn.Connect(20); err != nil {
 		b.txUpdates.Stop()
@@ -245,7 +245,7 @@ func (b *BtcdNotifier) startNotifier() error {
 // onBlockConnected implements on OnBlockConnected callback for rpcclient.
 // Ingesting a block updates the wallet's internal utxo state based on the
 // outputs created and destroyed within each block.
-func (b *BtcdNotifier) onBlockConnected(hash *chainhash.Hash, height int32, t time.Time) {
+func (b *BrondNotifier) onBlockConnected(hash *chainhash.Hash, height int32, t time.Time) {
 	// Append this new chain update to the end of the queue of new chain
 	// updates.
 	select {
@@ -277,7 +277,7 @@ type filteredBlock struct {
 }
 
 // onBlockDisconnected implements on OnBlockDisconnected callback for rpcclient.
-func (b *BtcdNotifier) onBlockDisconnected(hash *chainhash.Hash, height int32, t time.Time) {
+func (b *BrondNotifier) onBlockDisconnected(hash *chainhash.Hash, height int32, t time.Time) {
 	// Append this new chain update to the end of the queue of new chain
 	// updates.
 	select {
@@ -292,7 +292,7 @@ func (b *BtcdNotifier) onBlockDisconnected(hash *chainhash.Hash, height int32, t
 }
 
 // onRedeemingTx implements on OnRedeemingTx callback for rpcclient.
-func (b *BtcdNotifier) onRedeemingTx(tx *btcutil.Tx, details *btcjson.BlockDetails) {
+func (b *BrondNotifier) onRedeemingTx(tx *btcutil.Tx, details *btcjson.BlockDetails) {
 	// Append this new transaction update to the end of the queue of new
 	// chain updates.
 	select {
@@ -304,7 +304,7 @@ func (b *BtcdNotifier) onRedeemingTx(tx *btcutil.Tx, details *btcjson.BlockDetai
 
 // notificationDispatcher is the primary goroutine which handles client
 // notification registrations, as well as notification dispatches.
-func (b *BtcdNotifier) notificationDispatcher() {
+func (b *BrondNotifier) notificationDispatcher() {
 	defer b.wg.Done()
 
 out:
@@ -515,7 +515,7 @@ out:
 // historicalConfDetails looks up whether a confirmation request (txid/output
 // script) has already been included in a block in the active chain and, if so,
 // returns details about said block.
-func (b *BtcdNotifier) historicalConfDetails(confRequest chainntnfs.ConfRequest,
+func (b *BrondNotifier) historicalConfDetails(confRequest chainntnfs.ConfRequest,
 	startHeight, endHeight uint32) (*chainntnfs.TxConfirmation,
 	chainntnfs.TxConfStatus, error) {
 
@@ -575,7 +575,7 @@ func (b *BtcdNotifier) historicalConfDetails(confRequest chainntnfs.ConfRequest,
 // been included in a block in the active chain by scanning the chain's blocks
 // within the given range. If the transaction/output script is found, its
 // confirmation details are returned. Otherwise, nil is returned.
-func (b *BtcdNotifier) confDetailsManually(confRequest chainntnfs.ConfRequest,
+func (b *BrondNotifier) confDetailsManually(confRequest chainntnfs.ConfRequest,
 	startHeight, endHeight uint32) (*chainntnfs.TxConfirmation,
 	chainntnfs.TxConfStatus, error) {
 
@@ -633,7 +633,7 @@ func (b *BtcdNotifier) confDetailsManually(confRequest chainntnfs.ConfRequest,
 // now or after numConfirmations confs.
 // TODO(halseth): this is reusing the neutrino notifier implementation, unify
 // them.
-func (b *BtcdNotifier) handleBlockConnected(epoch chainntnfs.BlockEpoch) error {
+func (b *BrondNotifier) handleBlockConnected(epoch chainntnfs.BlockEpoch) error {
 	// First, we'll fetch the raw block as we'll need to gather all the
 	// transactions to determine whether any are relevant to our registered
 	// clients.
@@ -677,7 +677,7 @@ func (b *BtcdNotifier) handleBlockConnected(epoch chainntnfs.BlockEpoch) error {
 
 // notifyBlockEpochs notifies all registered block epoch clients of the newly
 // connected block to the main chain.
-func (b *BtcdNotifier) notifyBlockEpochs(newHeight int32,
+func (b *BrondNotifier) notifyBlockEpochs(newHeight int32,
 	newSha *chainhash.Hash, blockHeader *wire.BlockHeader) {
 
 	for _, client := range b.blockEpochClients {
@@ -689,7 +689,7 @@ func (b *BtcdNotifier) notifyBlockEpochs(newHeight int32,
 
 // notifyBlockEpochClient sends a registered block epoch client a notification
 // about a specific block.
-func (b *BtcdNotifier) notifyBlockEpochClient(epochClient *blockEpochRegistration,
+func (b *BrondNotifier) notifyBlockEpochClient(epochClient *blockEpochRegistration,
 	height int32, sha *chainhash.Hash, blockHeader *wire.BlockHeader) {
 
 	epoch := &chainntnfs.BlockEpoch{
@@ -713,7 +713,7 @@ func (b *BtcdNotifier) notifyBlockEpochClient(epochClient *blockEpochRegistratio
 //
 // Once a spend of has been detected, the details of the spending event will be
 // sent across the 'Spend' channel.
-func (b *BtcdNotifier) RegisterSpendNtfn(outpoint *wire.OutPoint,
+func (b *BrondNotifier) RegisterSpendNtfn(outpoint *wire.OutPoint,
 	pkScript []byte, heightHint uint32) (*chainntnfs.SpendEvent, error) {
 
 	// Register the conf notification with the TxNotifier. A non-nil value
@@ -902,7 +902,7 @@ func (b *BtcdNotifier) RegisterSpendNtfn(outpoint *wire.OutPoint,
 // Progress on the number of confirmations left can be read from the 'Updates'
 // channel. Once it has reached all of its confirmations, a notification will be
 // sent across the 'Confirmed' channel.
-func (b *BtcdNotifier) RegisterConfirmationsNtfn(txid *chainhash.Hash,
+func (b *BrondNotifier) RegisterConfirmationsNtfn(txid *chainhash.Hash,
 	pkScript []byte,
 	numConfs, heightHint uint32) (*chainntnfs.ConfirmationEvent, error) {
 
@@ -947,7 +947,7 @@ type blockEpochRegistration struct {
 	wg sync.WaitGroup
 }
 
-// epochCancel is a message sent to the BtcdNotifier when a client wishes to
+// epochCancel is a message sent to the BrondNotifier when a client wishes to
 // cancel an outstanding epoch notification that has yet to be dispatched.
 type epochCancel struct {
 	epochID uint64
@@ -959,7 +959,7 @@ type epochCancel struct {
 // the notifier uses to check if they are behind on blocks and catch them up. If
 // they do not provide one, then a notification will be dispatched immediately
 // for the current tip of the chain upon a successful registration.
-func (b *BtcdNotifier) RegisterBlockEpochNtfn(
+func (b *BrondNotifier) RegisterBlockEpochNtfn(
 	bestBlock *chainntnfs.BlockEpoch) (*chainntnfs.BlockEpochEvent, error) {
 
 	reg := &blockEpochRegistration{
@@ -1044,7 +1044,7 @@ func (b *BtcdNotifier) RegisterBlockEpochNtfn(
 
 // GetBlock is used to retrieve the block with the given hash. This function
 // wraps the blockCache's GetBlock function.
-func (b *BtcdNotifier) GetBlock(hash *chainhash.Hash) (*wire.MsgBlock,
+func (b *BrondNotifier) GetBlock(hash *chainhash.Hash) (*wire.MsgBlock,
 	error) {
 
 	return b.blockCache.GetBlock(hash, b.chainConn.GetBlock)

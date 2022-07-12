@@ -57,7 +57,7 @@ type Config struct {
 	// keys due to incoming client requests.
 	KeyRing keychain.KeyRing
 
-	// Sweeper is the central batching engine of lnd. It is responsible for
+	// Sweeper is the central batching engine of broln. It is responsible for
 	// sweeping inputs in batches back into the wallet.
 	Sweeper *sweep.UtxoSweeper
 

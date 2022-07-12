@@ -16,9 +16,9 @@ import (
 	"github.com/brolightningnetwork/broln/channeldb"
 )
 
-// BtcdFilteredChainView is an implementation of the FilteredChainView
-// interface which is backed by an active websockets connection to btcd.
-type BtcdFilteredChainView struct {
+// BrondFilteredChainView is an implementation of the FilteredChainView
+// interface which is backed by an active websockets connection to brond.
+type BrondFilteredChainView struct {
 	started int32 // To be used atomically.
 	stopped int32 // To be used atomically.
 
@@ -29,7 +29,7 @@ type BtcdFilteredChainView struct {
 	bestHeightMtx sync.Mutex
 	bestHeight    uint32
 
-	btcdConn *rpcclient.Client
+	brondConn *rpcclient.Client
 
 	// blockEventQueue is the ordered queue used to keep the order
 	// of connected and disconnected blocks sent to the reader of the
@@ -56,16 +56,16 @@ type BtcdFilteredChainView struct {
 	wg   sync.WaitGroup
 }
 
-// A compile time check to ensure BtcdFilteredChainView implements the
+// A compile time check to ensure BrondFilteredChainView implements the
 // chainview.FilteredChainView.
-var _ FilteredChainView = (*BtcdFilteredChainView)(nil)
+var _ FilteredChainView = (*BrondFilteredChainView)(nil)
 
-// NewBtcdFilteredChainView creates a new instance of a FilteredChainView from
-// RPC credentials for an active btcd instance.
-func NewBtcdFilteredChainView(config rpcclient.ConnConfig,
-	blockCache *blockcache.BlockCache) (*BtcdFilteredChainView, error) {
+// NewBrondFilteredChainView creates a new instance of a FilteredChainView from
+// RPC credentials for an active brond instance.
+func NewBrondFilteredChainView(config rpcclient.ConnConfig,
+	blockCache *blockcache.BlockCache) (*BrondFilteredChainView, error) {
 
-	chainView := &BtcdFilteredChainView{
+	chainView := &BrondFilteredChainView{
 		chainFilter:     make(map[wire.OutPoint]struct{}),
 		filterUpdates:   make(chan filterUpdate),
 		filterBlockReqs: make(chan *filterBlockReq),
@@ -78,7 +78,7 @@ func NewBtcdFilteredChainView(config rpcclient.ConnConfig,
 		OnFilteredBlockDisconnected: chainView.onFilteredBlockDisconnected,
 	}
 
-	// Disable connecting to btcd within the rpcclient.New method. We
+	// Disable connecting to brond within the rpcclient.New method. We
 	// defer establishing the connection to our .Start() method.
 	config.DisableConnectOnNew = true
 	config.DisableAutoReconnect = false
@@ -86,7 +86,7 @@ func NewBtcdFilteredChainView(config rpcclient.ConnConfig,
 	if err != nil {
 		return nil, err
 	}
-	chainView.btcdConn = chainConn
+	chainView.brondConn = chainConn
 
 	chainView.blockQueue = newBlockEventQueue()
 
@@ -96,7 +96,7 @@ func NewBtcdFilteredChainView(config rpcclient.ConnConfig,
 // Start starts all goroutines necessary for normal operation.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) Start() error {
+func (b *BrondFilteredChainView) Start() error {
 	// Already started?
 	if atomic.AddInt32(&b.started, 1) != 1 {
 		return nil
@@ -104,16 +104,16 @@ func (b *BtcdFilteredChainView) Start() error {
 
 	log.Infof("FilteredChainView starting")
 
-	// Connect to btcd, and register for notifications on connected, and
+	// Connect to brond, and register for notifications on connected, and
 	// disconnected blocks.
-	if err := b.btcdConn.Connect(20); err != nil {
+	if err := b.brondConn.Connect(20); err != nil {
 		return err
 	}
-	if err := b.btcdConn.NotifyBlocks(); err != nil {
+	if err := b.brondConn.NotifyBlocks(); err != nil {
 		return err
 	}
 
-	_, bestHeight, err := b.btcdConn.GetBestBlock()
+	_, bestHeight, err := b.brondConn.GetBestBlock()
 	if err != nil {
 		return err
 	}
@@ -134,15 +134,15 @@ func (b *BtcdFilteredChainView) Start() error {
 // method.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) Stop() error {
+func (b *BrondFilteredChainView) Stop() error {
 	// Already shutting down?
 	if atomic.AddInt32(&b.stopped, 1) != 1 {
 		return nil
 	}
 
-	// Shutdown the rpc client, this gracefully disconnects from btcd, and
+	// Shutdown the rpc client, this gracefully disconnects from brond, and
 	// cleans up all related resources.
-	b.btcdConn.Shutdown()
+	b.brondConn.Shutdown()
 
 	b.blockQueue.Stop()
 
@@ -157,7 +157,7 @@ func (b *BtcdFilteredChainView) Stop() error {
 // onFilteredBlockConnected is called for each block that's connected to the
 // end of the main chain. Based on our current chain filter, the block may or
 // may not include any relevant transactions.
-func (b *BtcdFilteredChainView) onFilteredBlockConnected(height int32,
+func (b *BrondFilteredChainView) onFilteredBlockConnected(height int32,
 	header *wire.BlockHeader, txns []*btcutil.Tx) {
 
 	mtxs := make([]*wire.MsgTx, len(txns))
@@ -201,7 +201,7 @@ func (b *BtcdFilteredChainView) onFilteredBlockConnected(height int32,
 
 // onFilteredBlockDisconnected is a callback which is executed once a block is
 // disconnected from the end of the main chain.
-func (b *BtcdFilteredChainView) onFilteredBlockDisconnected(height int32,
+func (b *BrondFilteredChainView) onFilteredBlockDisconnected(height int32,
 	header *wire.BlockHeader) {
 
 	log.Debugf("got disconnected block at height %d: %v", height,
@@ -232,7 +232,7 @@ type filterBlockReq struct {
 // selected lock, then the internal chainFilter will also be updated.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*FilteredBlock, error) {
+func (b *BrondFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*FilteredBlock, error) {
 	req := &filterBlockReq{
 		blockHash: blockHash,
 		resp:      make(chan *FilteredBlock, 1),
@@ -254,7 +254,7 @@ func (b *BtcdFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*Filtere
 // filtration.
 //
 // TODO(roasbeef): change to use loadfilter RPC's
-func (b *BtcdFilteredChainView) chainFilterer() {
+func (b *BrondFilteredChainView) chainFilterer() {
 	defer b.wg.Done()
 
 	// filterBlock is a helper function that scans the given block, and
@@ -338,10 +338,10 @@ func (b *BtcdFilteredChainView) chainFilterer() {
 			}
 			b.filterMtx.Unlock()
 
-			// Apply the new TX filter to btcd, which will cause
+			// Apply the new TX filter to brond, which will cause
 			// all following notifications from and calls to it
 			// return blocks filtered with the new filter.
-			b.btcdConn.LoadTxFilter(false, []btcutil.Address{},
+			b.brondConn.LoadTxFilter(false, []btcutil.Address{},
 				update.newUtxos)
 
 			// All blocks gotten after we loaded the filter will
@@ -362,10 +362,10 @@ func (b *BtcdFilteredChainView) chainFilterer() {
 			// caller doesn't miss any relevant notifications.
 			// Starting from the height _after_ the update height,
 			// we'll walk forwards, rescanning one block at a time
-			// with btcd applying the newly loaded filter to each
+			// with brond applying the newly loaded filter to each
 			// block.
 			for i := update.updateHeight + 1; i < bestHeight+1; i++ {
-				blockHash, err := b.btcdConn.GetBlockHash(int64(i))
+				blockHash, err := b.brondConn.GetBlockHash(int64(i))
 				if err != nil {
 					log.Warnf("Unable to get block hash "+
 						"for block at height %d: %v",
@@ -377,7 +377,7 @@ func (b *BtcdFilteredChainView) chainFilterer() {
 				// is happening while we rescan, we scan one
 				// block at a time, skipping blocks that might
 				// have gone missing.
-				rescanned, err := b.btcdConn.RescanBlocks(
+				rescanned, err := b.brondConn.RescanBlocks(
 					[]chainhash.Hash{*blockHash})
 				if err != nil {
 					log.Warnf("Unable to rescan block "+
@@ -417,7 +417,7 @@ func (b *BtcdFilteredChainView) chainFilterer() {
 				req.resp <- nil
 				continue
 			}
-			header, err := b.btcdConn.GetBlockHeaderVerbose(req.blockHash)
+			header, err := b.brondConn.GetBlockHeaderVerbose(req.blockHash)
 			if err != nil {
 				req.err <- err
 				req.resp <- nil
@@ -454,7 +454,7 @@ type filterUpdate struct {
 // rewound to ensure all relevant notifications are dispatched.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
+func (b *BrondFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
 	updateHeight uint32) error {
 
 	newUtxos := make([]wire.OutPoint, len(ops))
@@ -481,7 +481,7 @@ func (b *BtcdFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
 // set is to be returned.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
+func (b *BrondFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
 	return b.blockQueue.newBlocks
 }
 
@@ -490,14 +490,14 @@ func (b *BtcdFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
 // main chain in the case of a re-org.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BtcdFilteredChainView) DisconnectedBlocks() <-chan *FilteredBlock {
+func (b *BrondFilteredChainView) DisconnectedBlocks() <-chan *FilteredBlock {
 	return b.blockQueue.staleBlocks
 }
 
 // GetBlock is used to retrieve the block with the given hash. This function
 // wraps the blockCache's GetBlock function.
-func (b *BtcdFilteredChainView) GetBlock(hash *chainhash.Hash) (
+func (b *BrondFilteredChainView) GetBlock(hash *chainhash.Hash) (
 	*wire.MsgBlock, error) {
 
-	return b.blockCache.GetBlock(hash, b.btcdConn.GetBlock)
+	return b.blockCache.GetBlock(hash, b.brondConn.GetBlock)
 }

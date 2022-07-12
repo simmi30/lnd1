@@ -37,7 +37,7 @@ var (
 )
 
 // KeyFamily represents a "family" of keys that will be used within various
-// contracts created by lnd. These families are meant to be distinct branches
+// contracts created by broln. These families are meant to be distinct branches
 // within the HD key chain of the backing wallet. Usage of key families within
 // the interface below are strict in order to promote integrability and the
 // ability to restore all keys given a user master seed backup.

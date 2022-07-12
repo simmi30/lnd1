@@ -20,8 +20,8 @@ import (
 	"github.com/lightninglabs/neutrino"
 	"github.com/brolightningnetwork/broln/blockcache"
 	"github.com/brolightningnetwork/broln/chainntnfs"
-	"github.com/brolightningnetwork/broln/chainntnfs/bitcoindnotify"
-	"github.com/brolightningnetwork/broln/chainntnfs/btcdnotify"
+	"github.com/brolightningnetwork/broln/chainntnfs/brocoindnotify"
+	"github.com/brolightningnetwork/broln/chainntnfs/brondnotify"
 	"github.com/brolightningnetwork/broln/chainntnfs/neutrinonotify"
 	"github.com/brolightningnetwork/broln/channeldb"
 	"github.com/brolightningnetwork/broln/htlcswitch"
@@ -39,8 +39,8 @@ import (
 // Config houses necessary fields that a chainControl instance needs to
 // function.
 type Config struct {
-	// Bitcoin defines settings for the Bitcoin chain.
-	Bitcoin *lncfg.Chain
+	// Brocoin defines settings for the Brocoin chain.
+	Brocoin *lncfg.Chain
 
 	// Litecoin defines settings for the Litecoin chain.
 	Litecoin *lncfg.Chain
@@ -57,17 +57,17 @@ type Config struct {
 	// light-client.
 	NeutrinoMode *lncfg.Neutrino
 
-	// BitcoindMode defines settings for connecting to a bitcoind node.
-	BitcoindMode *lncfg.Bitcoind
+	// BrocoindMode defines settings for connecting to a brocoind node.
+	BrocoindMode *lncfg.Brocoind
 
 	// LitecoindMode defines settings for connecting to a litecoind node.
-	LitecoindMode *lncfg.Bitcoind
+	LitecoindMode *lncfg.Brocoind
 
-	// BtcdMode defines settings for connecting to a btcd node.
-	BtcdMode *lncfg.Btcd
+	// BrondMode defines settings for connecting to a brond node.
+	BrondMode *lncfg.Brond
 
 	// LtcdMode defines settings for connecting to an ltcd node.
-	LtcdMode *lncfg.Btcd
+	LtcdMode *lncfg.Brond
 
 	// HeightHintDB is a pointer to the database that stores the height
 	// hints.
@@ -89,20 +89,20 @@ type Config struct {
 	NeutrinoCS *neutrino.ChainService
 
 	// ActiveNetParams details the current chain we are on.
-	ActiveNetParams BitcoinNetParams
+	ActiveNetParams BrocoinNetParams
 
 	// FeeURL defines the URL for fee estimation we will use. This field is
 	// optional.
 	FeeURL string
 
 	// Dialer is a function closure that will be used to establish outbound
-	// TCP connections to Bitcoin peers in the event of a pruned block being
+	// TCP connections to Brocoin peers in the event of a pruned block being
 	// requested.
 	Dialer chain.Dialer
 }
 
 const (
-	// DefaultBitcoinMinHTLCInMSat is the default smallest value htlc this
+	// DefaultBrocoinMinHTLCInMSat is the default smallest value htlc this
 	// node will accept. This value is proposed in the channel open sequence
 	// and cannot be changed during the life of the channel. It is 1 msat by
 	// default to allow maximum flexibility in deciding what size payments
@@ -111,23 +111,23 @@ const (
 	// All forwarded payments are subjected to the min htlc constraint of
 	// the routing policy of the outgoing channel. This implicitly controls
 	// the minimum htlc value on the incoming channel too.
-	DefaultBitcoinMinHTLCInMSat = lnwire.MilliSatoshi(1)
+	DefaultBrocoinMinHTLCInMSat = lnwire.MilliSatoshi(1)
 
-	// DefaultBitcoinMinHTLCOutMSat is the default minimum htlc value that
+	// DefaultBrocoinMinHTLCOutMSat is the default minimum htlc value that
 	// we require for sending out htlcs. Our channel peer may have a lower
 	// min htlc channel parameter, but we - by default - don't forward
 	// anything under the value defined here.
-	DefaultBitcoinMinHTLCOutMSat = lnwire.MilliSatoshi(1000)
+	DefaultBrocoinMinHTLCOutMSat = lnwire.MilliSatoshi(1000)
 
-	// DefaultBitcoinBaseFeeMSat is the default forwarding base fee.
-	DefaultBitcoinBaseFeeMSat = lnwire.MilliSatoshi(1000)
+	// DefaultBrocoinBaseFeeMSat is the default forwarding base fee.
+	DefaultBrocoinBaseFeeMSat = lnwire.MilliSatoshi(1000)
 
-	// DefaultBitcoinFeeRate is the default forwarding fee rate.
-	DefaultBitcoinFeeRate = lnwire.MilliSatoshi(1)
+	// DefaultBrocoinFeeRate is the default forwarding fee rate.
+	DefaultBrocoinFeeRate = lnwire.MilliSatoshi(1)
 
-	// DefaultBitcoinTimeLockDelta is the default forwarding time lock
+	// DefaultBrocoinTimeLockDelta is the default forwarding time lock
 	// delta.
-	DefaultBitcoinTimeLockDelta = 40
+	DefaultBrocoinTimeLockDelta = 40
 
 	DefaultLitecoinMinHTLCInMSat  = lnwire.MilliSatoshi(1)
 	DefaultLitecoinMinHTLCOutMSat = lnwire.MilliSatoshi(1000)
@@ -136,13 +136,13 @@ const (
 	DefaultLitecoinTimeLockDelta  = 576
 	DefaultLitecoinDustLimit      = btcutil.Amount(54600)
 
-	// DefaultBitcoinStaticFeePerKW is the fee rate of 50 sat/vbyte
+	// DefaultBrocoinStaticFeePerKW is the fee rate of 50 sat/vbyte
 	// expressed in sat/kw.
-	DefaultBitcoinStaticFeePerKW = chainfee.SatPerKWeight(12500)
+	DefaultBrocoinStaticFeePerKW = chainfee.SatPerKWeight(12500)
 
-	// DefaultBitcoinStaticMinRelayFeeRate is the min relay fee used for
+	// DefaultBrocoinStaticMinRelayFeeRate is the min relay fee used for
 	// static estimators.
-	DefaultBitcoinStaticMinRelayFeeRate = chainfee.FeePerKwFloor
+	DefaultBrocoinStaticMinRelayFeeRate = chainfee.FeePerKwFloor
 
 	// DefaultLitecoinStaticFeePerKW is the fee rate of 200 sat/vbyte
 	// expressed in sat/kw.
@@ -200,9 +200,9 @@ type PartialChainControl struct {
 	ChannelConstraints channeldb.ChannelConstraints
 }
 
-// ChainControl couples the three primary interfaces lnd utilizes for a
+// ChainControl couples the three primary interfaces broln utilizes for a
 // particular chain together. A single ChainControl instance will exist for all
-// the chains lnd is currently active on.
+// the chains broln is currently active on.
 type ChainControl struct {
 	// PartialChainControl is the part of the chain control that was
 	// initialized purely from the configuration and doesn't contain any
@@ -233,7 +233,7 @@ type ChainControl struct {
 }
 
 // GenDefaultBtcConstraints generates the default set of channel constraints
-// that are to be used when funding a Bitcoin channel.
+// that are to be used when funding a Brocoin channel.
 func GenDefaultBtcConstraints() channeldb.ChannelConstraints {
 	// We use the dust limit for the maximally sized witness program with
 	// a 40-byte data push.
@@ -251,7 +251,7 @@ func GenDefaultBtcConstraints() channeldb.ChannelConstraints {
 func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 	// Set the RPC config from the "home" chain. Multi-chain isn't yet
 	// active, so we'll restrict usage to a particular chain for now.
-	homeChainConfig := cfg.Bitcoin
+	homeChainConfig := cfg.Brocoin
 	if cfg.PrimaryChain() == LitecoinChain {
 		homeChainConfig = cfg.Litecoin
 	}
@@ -262,17 +262,17 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 	}
 
 	switch cfg.PrimaryChain() {
-	case BitcoinChain:
+	case BrocoinChain:
 		cc.RoutingPolicy = htlcswitch.ForwardingPolicy{
-			MinHTLCOut:    cfg.Bitcoin.MinHTLCOut,
-			BaseFee:       cfg.Bitcoin.BaseFee,
-			FeeRate:       cfg.Bitcoin.FeeRate,
-			TimeLockDelta: cfg.Bitcoin.TimeLockDelta,
+			MinHTLCOut:    cfg.Brocoin.MinHTLCOut,
+			BaseFee:       cfg.Brocoin.BaseFee,
+			FeeRate:       cfg.Brocoin.FeeRate,
+			TimeLockDelta: cfg.Brocoin.TimeLockDelta,
 		}
-		cc.MinHtlcIn = cfg.Bitcoin.MinHTLCIn
+		cc.MinHtlcIn = cfg.Brocoin.MinHTLCIn
 		cc.FeeEstimator = chainfee.NewStaticEstimator(
-			DefaultBitcoinStaticFeePerKW,
-			DefaultBitcoinStaticMinRelayFeeRate,
+			DefaultBrocoinStaticFeePerKW,
+			DefaultBrocoinStaticMinRelayFeeRate,
 		)
 	case LitecoinChain:
 		cc.RoutingPolicy = htlcswitch.ForwardingPolicy{
@@ -347,50 +347,50 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 			return err
 		}
 
-	case "bitcoind", "litecoind":
-		var bitcoindMode *lncfg.Bitcoind
+	case "brocoind", "litecoind":
+		var brocoindMode *lncfg.Brocoind
 		switch {
-		case cfg.Bitcoin.Active:
-			bitcoindMode = cfg.BitcoindMode
+		case cfg.Brocoin.Active:
+			brocoindMode = cfg.BrocoindMode
 		case cfg.Litecoin.Active:
-			bitcoindMode = cfg.LitecoindMode
+			brocoindMode = cfg.LitecoindMode
 		}
 		// Otherwise, we'll be speaking directly via RPC and ZMQ to a
-		// bitcoind node. If the specified host for the btcd/ltcd RPC
+		// brocoind node. If the specified host for the brond/ltcd RPC
 		// server already has a port specified, then we use that
 		// directly. Otherwise, we assume the default port according to
 		// the selected chain parameters.
-		var bitcoindHost string
-		if strings.Contains(bitcoindMode.RPCHost, ":") {
-			bitcoindHost = bitcoindMode.RPCHost
+		var brocoindHost string
+		if strings.Contains(brocoindMode.RPCHost, ":") {
+			brocoindHost = brocoindMode.RPCHost
 		} else {
 			// The RPC ports specified in chainparams.go assume
-			// btcd, which picks a different port so that btcwallet
-			// can use the same RPC port as bitcoind. We convert
-			// this back to the btcwallet/bitcoind port.
+			// brond, which picks a different port so that btcwallet
+			// can use the same RPC port as brocoind. We convert
+			// this back to the btcwallet/brocoind port.
 			rpcPort, err := strconv.Atoi(cfg.ActiveNetParams.RPCPort)
 			if err != nil {
 				return nil, nil, err
 			}
 			rpcPort -= 2
-			bitcoindHost = fmt.Sprintf("%v:%d",
-				bitcoindMode.RPCHost, rpcPort)
-			if (cfg.Bitcoin.Active &&
-				(cfg.Bitcoin.RegTest || cfg.Bitcoin.SigNet)) ||
+			brocoindHost = fmt.Sprintf("%v:%d",
+				brocoindMode.RPCHost, rpcPort)
+			if (cfg.Brocoin.Active &&
+				(cfg.Brocoin.RegTest || cfg.Brocoin.SigNet)) ||
 				(cfg.Litecoin.Active && cfg.Litecoin.RegTest) {
 
-				conn, err := net.Dial("tcp", bitcoindHost)
+				conn, err := net.Dial("tcp", brocoindHost)
 				if err != nil || conn == nil {
 					switch {
-					case cfg.Bitcoin.Active && cfg.Bitcoin.RegTest:
+					case cfg.Brocoin.Active && cfg.Brocoin.RegTest:
 						rpcPort = 18871
 					case cfg.Litecoin.Active && cfg.Litecoin.RegTest:
 						rpcPort = 19443
-					case cfg.Bitcoin.Active && cfg.Bitcoin.SigNet:
+					case cfg.Brocoin.Active && cfg.Brocoin.SigNet:
 						rpcPort = 38332
 					}
-					bitcoindHost = fmt.Sprintf("%v:%d",
-						bitcoindMode.RPCHost,
+					brocoindHost = fmt.Sprintf("%v:%d",
+						brocoindMode.RPCHost,
 						rpcPort)
 				} else {
 					conn.Close()
@@ -398,59 +398,59 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 			}
 		}
 
-		// Establish the connection to bitcoind and create the clients
+		// Establish the connection to brocoind and create the clients
 		// required for our relevant subsystems.
-		bitcoindConn, err := chain.NewBitcoindConn(&chain.BitcoindConfig{
+		brocoindConn, err := chain.NewBrocoindConn(&chain.BrocoindConfig{
 			ChainParams:        cfg.ActiveNetParams.Params,
-			Host:               bitcoindHost,
-			User:               bitcoindMode.RPCUser,
-			Pass:               bitcoindMode.RPCPass,
-			ZMQBlockHost:       bitcoindMode.ZMQPubRawBlock,
-			ZMQTxHost:          bitcoindMode.ZMQPubRawTx,
+			Host:               brocoindHost,
+			User:               brocoindMode.RPCUser,
+			Pass:               brocoindMode.RPCPass,
+			ZMQBlockHost:       brocoindMode.ZMQPubRawBlock,
+			ZMQTxHost:          brocoindMode.ZMQPubRawTx,
 			ZMQReadDeadline:    5 * time.Second,
 			Dialer:             cfg.Dialer,
-			PrunedModeMaxPeers: bitcoindMode.PrunedNodeMaxPeers,
+			PrunedModeMaxPeers: brocoindMode.PrunedNodeMaxPeers,
 		})
 		if err != nil {
 			return nil, nil, err
 		}
 
-		if err := bitcoindConn.Start(); err != nil {
+		if err := brocoindConn.Start(); err != nil {
 			return nil, nil, fmt.Errorf("unable to connect to "+
-				"bitcoind: %v", err)
+				"brocoind: %v", err)
 		}
 
-		cc.ChainNotifier = bitcoindnotify.New(
-			bitcoindConn, cfg.ActiveNetParams.Params, hintCache,
+		cc.ChainNotifier = brocoindnotify.New(
+			brocoindConn, cfg.ActiveNetParams.Params, hintCache,
 			hintCache, cfg.BlockCache,
 		)
-		cc.ChainView = chainview.NewBitcoindFilteredChainView(
-			bitcoindConn, cfg.BlockCache,
+		cc.ChainView = chainview.NewBrocoindFilteredChainView(
+			brocoindConn, cfg.BlockCache,
 		)
-		cc.ChainSource = bitcoindConn.NewBitcoindClient()
+		cc.ChainSource = brocoindConn.NewBrocoindClient()
 
 		// If we're not in regtest mode, then we'll attempt to use a
 		// proper fee estimator for testnet.
 		rpcConfig := &rpcclient.ConnConfig{
-			Host:                 bitcoindHost,
-			User:                 bitcoindMode.RPCUser,
-			Pass:                 bitcoindMode.RPCPass,
+			Host:                 brocoindHost,
+			User:                 brocoindMode.RPCUser,
+			Pass:                 brocoindMode.RPCPass,
 			DisableConnectOnNew:  true,
 			DisableAutoReconnect: false,
 			DisableTLS:           true,
 			HTTPPostMode:         true,
 		}
-		if cfg.Bitcoin.Active && !cfg.Bitcoin.RegTest {
-			log.Infof("Initializing bitcoind backed fee estimator "+
-				"in %s mode", bitcoindMode.EstimateMode)
+		if cfg.Brocoin.Active && !cfg.Brocoin.RegTest {
+			log.Infof("Initializing brocoind backed fee estimator "+
+				"in %s mode", brocoindMode.EstimateMode)
 
 			// Finally, we'll re-initialize the fee estimator, as
-			// if we're using bitcoind as a backend, then we can
+			// if we're using brocoind as a backend, then we can
 			// use live fee estimates, rather than a statically
 			// coded value.
 			fallBackFeeRate := chainfee.SatPerKVByte(25 * 1000)
-			cc.FeeEstimator, err = chainfee.NewBitcoindEstimator(
-				*rpcConfig, bitcoindMode.EstimateMode,
+			cc.FeeEstimator, err = chainfee.NewBrocoindEstimator(
+				*rpcConfig, brocoindMode.EstimateMode,
 				fallBackFeeRate.FeePerKWeight(),
 			)
 			if err != nil {
@@ -459,15 +459,15 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 		} else if cfg.Litecoin.Active && !cfg.Litecoin.RegTest {
 			log.Infof("Initializing litecoind backed fee "+
 				"estimator in %s mode",
-				bitcoindMode.EstimateMode)
+				brocoindMode.EstimateMode)
 
 			// Finally, we'll re-initialize the fee estimator, as
 			// if we're using litecoind as a backend, then we can
 			// use live fee estimates, rather than a statically
 			// coded value.
 			fallBackFeeRate := chainfee.SatPerKVByte(25 * 1000)
-			cc.FeeEstimator, err = chainfee.NewBitcoindEstimator(
-				*rpcConfig, bitcoindMode.EstimateMode,
+			cc.FeeEstimator, err = chainfee.NewBrocoindEstimator(
+				*rpcConfig, brocoindMode.EstimateMode,
 				fallBackFeeRate.FeePerKWeight(),
 			)
 			if err != nil {
@@ -476,7 +476,7 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 		}
 
 		// We need to use some apis that are not exposed by btcwallet,
-		// for a health check function so we create an ad-hoc bitcoind
+		// for a health check function so we create an ad-hoc brocoind
 		// connection.
 		chainConn, err := rpcclient.New(rpcConfig, nil)
 		if err != nil {
@@ -484,8 +484,8 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 		}
 
 		// The api we will use for our health check depends on the
-		// bitcoind version.
-		cmd, err := getBitcoindHealthCheckCmd(chainConn)
+		// brocoind version.
+		cmd, err := getBrocoindHealthCheckCmd(chainConn)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -495,28 +495,28 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 			return err
 		}
 
-	case "btcd", "ltcd":
+	case "brond", "ltcd":
 		// Otherwise, we'll be speaking directly via RPC to a node.
 		//
-		// So first we'll load btcd/ltcd's TLS cert for the RPC
+		// So first we'll load brond/ltcd's TLS cert for the RPC
 		// connection. If a raw cert was specified in the config, then
 		// we'll set that directly. Otherwise, we attempt to read the
 		// cert from the path specified in the config.
-		var btcdMode *lncfg.Btcd
+		var brondMode *lncfg.Brond
 		switch {
-		case cfg.Bitcoin.Active:
-			btcdMode = cfg.BtcdMode
+		case cfg.Brocoin.Active:
+			brondMode = cfg.BrondMode
 		case cfg.Litecoin.Active:
-			btcdMode = cfg.LtcdMode
+			brondMode = cfg.LtcdMode
 		}
 		var rpcCert []byte
-		if btcdMode.RawRPCCert != "" {
-			rpcCert, err = hex.DecodeString(btcdMode.RawRPCCert)
+		if brondMode.RawRPCCert != "" {
+			rpcCert, err = hex.DecodeString(brondMode.RawRPCCert)
 			if err != nil {
 				return nil, nil, err
 			}
 		} else {
-			certFile, err := os.Open(btcdMode.RPCCert)
+			certFile, err := os.Open(brondMode.RPCCert)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -529,31 +529,31 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 			}
 		}
 
-		// If the specified host for the btcd/ltcd RPC server already
+		// If the specified host for the brond/ltcd RPC server already
 		// has a port specified, then we use that directly. Otherwise,
 		// we assume the default port according to the selected chain
 		// parameters.
-		var btcdHost string
-		if strings.Contains(btcdMode.RPCHost, ":") {
-			btcdHost = btcdMode.RPCHost
+		var brondHost string
+		if strings.Contains(brondMode.RPCHost, ":") {
+			brondHost = brondMode.RPCHost
 		} else {
-			btcdHost = fmt.Sprintf("%v:%v", btcdMode.RPCHost,
+			brondHost = fmt.Sprintf("%v:%v", brondMode.RPCHost,
 				cfg.ActiveNetParams.RPCPort)
 		}
 
-		btcdUser := btcdMode.RPCUser
-		btcdPass := btcdMode.RPCPass
+		brondUser := brondMode.RPCUser
+		brondPass := brondMode.RPCPass
 		rpcConfig := &rpcclient.ConnConfig{
-			Host:                 btcdHost,
+			Host:                 brondHost,
 			Endpoint:             "ws",
-			User:                 btcdUser,
-			Pass:                 btcdPass,
+			User:                 brondUser,
+			Pass:                 brondPass,
 			Certificates:         rpcCert,
 			DisableTLS:           false,
 			DisableConnectOnNew:  true,
 			DisableAutoReconnect: false,
 		}
-		cc.ChainNotifier, err = btcdnotify.New(
+		cc.ChainNotifier, err = brondnotify.New(
 			rpcConfig, cfg.ActiveNetParams.Params, hintCache,
 			hintCache, cfg.BlockCache,
 		)
@@ -563,7 +563,7 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 
 		// Finally, we'll create an instance of the default chain view
 		// to be used within the routing layer.
-		cc.ChainView, err = chainview.NewBtcdFilteredChainView(
+		cc.ChainView, err = chainview.NewBrondFilteredChainView(
 			*rpcConfig, cfg.BlockCache,
 		)
 		if err != nil {
@@ -571,11 +571,11 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 			return nil, nil, err
 		}
 
-		// Create a special websockets rpc client for btcd which will be
+		// Create a special websockets rpc client for brond which will be
 		// used by the wallet for notifications, calls, etc.
 		chainRPC, err := chain.NewRPCClient(
-			cfg.ActiveNetParams.Params, btcdHost, btcdUser,
-			btcdPass, rpcCert, false, 20,
+			cfg.ActiveNetParams.Params, brondHost, brondUser,
+			brondPass, rpcCert, false, 20,
 		)
 		if err != nil {
 			return nil, nil, err
@@ -591,17 +591,17 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 
 		// If we're not in simnet or regtest mode, then we'll attempt
 		// to use a proper fee estimator for testnet.
-		if !cfg.Bitcoin.SimNet && !cfg.Litecoin.SimNet &&
-			!cfg.Bitcoin.RegTest && !cfg.Litecoin.RegTest {
+		if !cfg.Brocoin.SimNet && !cfg.Litecoin.SimNet &&
+			!cfg.Brocoin.RegTest && !cfg.Litecoin.RegTest {
 
-			log.Info("Initializing btcd backed fee estimator")
+			log.Info("Initializing brond backed fee estimator")
 
 			// Finally, we'll re-initialize the fee estimator, as
-			// if we're using btcd as a backend, then we can use
+			// if we're using brond as a backend, then we can use
 			// live fee estimates, rather than a statically coded
 			// value.
 			fallBackFeeRate := chainfee.SatPerKVByte(25 * 1000)
-			cc.FeeEstimator, err = chainfee.NewBtcdEstimator(
+			cc.FeeEstimator, err = chainfee.NewBrondEstimator(
 				*rpcConfig, fallBackFeeRate.FeePerKWeight(),
 			)
 			if err != nil {
@@ -633,7 +633,7 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 	// If the fee URL isn't set, and the user is running mainnet, then
 	// we'll return an error to instruct them to set a proper fee
 	// estimator.
-	case cfg.FeeURL == "" && cfg.Bitcoin.MainNet &&
+	case cfg.FeeURL == "" && cfg.Brocoin.MainNet &&
 		homeChainConfig.Node == "neutrino":
 
 		return nil, nil, fmt.Errorf("--feeurl parameter required " +
@@ -643,7 +643,7 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 	case cfg.FeeURL != "":
 		// Do not cache fees on regtest to make it easier to execute
 		// manual or automated test cases.
-		cacheFees := !cfg.Bitcoin.RegTest
+		cacheFees := !cfg.Brocoin.RegTest
 
 		log.Infof("Using external fee estimator %v: cached=%v",
 			cfg.FeeURL, cacheFees)
@@ -681,8 +681,8 @@ func NewPartialChainControl(cfg *Config) (*PartialChainControl, func(), error) {
 
 // NewChainControl attempts to create a ChainControl instance according
 // to the parameters in the passed configuration. Currently three
-// branches of ChainControl instances exist: one backed by a running btcd
-// full-node, another backed by a running bitcoind full-node, and the other
+// branches of ChainControl instances exist: one backed by a running brond
+// full-node, another backed by a running brocoind full-node, and the other
 // backed by a running neutrino light client instance. When running with a
 // neutrino light client instance, `neutrinoCS` must be non-nil.
 func NewChainControl(walletConfig lnwallet.Config,
@@ -722,19 +722,19 @@ func NewChainControl(walletConfig lnwallet.Config,
 	return cc, ccCleanup, nil
 }
 
-// getBitcoindHealthCheckCmd queries bitcoind for its version to decide which
+// getBrocoindHealthCheckCmd queries brocoind for its version to decide which
 // api we should use for our health check. We prefer to use the uptime
 // command, because it has no locking and is an inexpensive call, which was
 // added in version 0.15. If we are on an earlier version, we fallback to using
 // getblockchaininfo.
-func getBitcoindHealthCheckCmd(client *rpcclient.Client) (string, error) {
-	// Query bitcoind to get our current version.
+func getBrocoindHealthCheckCmd(client *rpcclient.Client) (string, error) {
+	// Query brocoind to get our current version.
 	resp, err := client.RawRequest("getnetworkinfo", nil)
 	if err != nil {
 		return "", err
 	}
 
-	// Parse the response to retrieve bitcoind's version.
+	// Parse the response to retrieve brocoind's version.
 	info := struct {
 		Version int64 `json:"version"`
 	}{}
@@ -742,7 +742,7 @@ func getBitcoindHealthCheckCmd(client *rpcclient.Client) (string, error) {
 		return "", err
 	}
 
-	// Bitcoind returns a single value representing the semantic version:
+	// Brocoind returns a single value representing the semantic version:
 	// 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSION_MINOR
 	// + 100 * CLIENT_VERSION_REVISION + 1 * CLIENT_VERSION_BUILD
 	//
@@ -756,25 +756,25 @@ func getBitcoindHealthCheckCmd(client *rpcclient.Client) (string, error) {
 }
 
 var (
-	// BitcoinTestnetGenesis is the genesis hash of Bitcoin's testnet
+	// BrocoinTestnetGenesis is the genesis hash of Brocoin's testnet
 	// chain.
-	BitcoinTestnetGenesis = chainhash.Hash([chainhash.HashSize]byte{
+	BrocoinTestnetGenesis = chainhash.Hash([chainhash.HashSize]byte{
 		0xce, 0xeb, 0x1a, 0x38, 0x06, 0xf0, 0x71, 0x0c, 
 0xda, 0x62, 0xbd, 0x49, 0x32, 0x8d, 0x70, 0x62,
 0xb1, 0x0c, 0xca, 0x75, 0xd1, 0xd8, 0x16, 0x9f,
 0xa9, 0x9e, 0xed, 0x16, 0xfa, 0x0c, 0x00, 0x00, 
 	})
 
-	// BitcoinSignetGenesis is the genesis hash of Bitcoin's signet chain.
-	BitcoinSignetGenesis = chainhash.Hash([chainhash.HashSize]byte{
+	// BrocoinSignetGenesis is the genesis hash of Brocoin's signet chain.
+	BrocoinSignetGenesis = chainhash.Hash([chainhash.HashSize]byte{
 		0xf6, 0x1e, 0xee, 0x3b, 0x63, 0xa3, 0x80, 0xa4,
 		0x77, 0xa0, 0x63, 0xaf, 0x32, 0xb2, 0xbb, 0xc9,
 		0x7c, 0x9f, 0xf9, 0xf0, 0x1f, 0x2c, 0x42, 0x25,
 		0xe9, 0x73, 0x98, 0x81, 0x08, 0x00, 0x00, 0x00,
 	})
 
-	// BitcoinMainnetGenesis is the genesis hash of Bitcoin's main chain.
-	BitcoinMainnetGenesis = chainhash.Hash([chainhash.HashSize]byte{
+	// BrocoinMainnetGenesis is the genesis hash of Brocoin's main chain.
+	BrocoinMainnetGenesis = chainhash.Hash([chainhash.HashSize]byte{
 		0xd2, 0x28, 0x0d, 0x8c, 0xf4, 0x3a, 0x3e, 0xfd,
 0x9a, 0x51, 0x41, 0x4b, 0x15, 0xbf, 0x6a, 0xb0,
 0x2b, 0x1c, 0x12, 0xfb, 0x78, 0xd6, 0xb6, 0x9e,
@@ -801,10 +801,10 @@ var (
 	// chainMap is a simple index that maps a chain's genesis hash to the
 	// ChainCode enum for that chain.
 	chainMap = map[chainhash.Hash]ChainCode{
-		BitcoinTestnetGenesis:  BitcoinChain,
+		BrocoinTestnetGenesis:  BrocoinChain,
 		LitecoinTestnetGenesis: LitecoinChain,
 
-		BitcoinMainnetGenesis:  BitcoinChain,
+		BrocoinMainnetGenesis:  BrocoinChain,
 		LitecoinMainnetGenesis: LitecoinChain,
 	}
 
@@ -821,22 +821,22 @@ var (
 	// TODO(roasbeef): extend and collapse these and chainparams.go into
 	// struct like chaincfg.Params
 	ChainDNSSeeds = map[chainhash.Hash][][2]string{
-		BitcoinMainnetGenesis: {
+		BrocoinMainnetGenesis: {
 			{
 				"207.180.196.129",
 			},
 			{
-				//"lseed.bitcoinstats.com",
+				//"lseed.brocoinstats.com",
 			},
 		},
 
-		BitcoinTestnetGenesis: {
+		BrocoinTestnetGenesis: {
 			{
 				"207.180.196.129",
 			},
 		},
 
-		BitcoinSignetGenesis: {
+		BrocoinSignetGenesis: {
 			{
 				"ln.signet.secp.tech",
 			},
@@ -856,7 +856,7 @@ type ChainRegistry struct {
 	sync.RWMutex
 
 	activeChains map[ChainCode]*ChainControl
-	netParams    map[ChainCode]*BitcoinNetParams
+	netParams    map[ChainCode]*BrocoinNetParams
 
 	primaryChain ChainCode
 }
@@ -865,7 +865,7 @@ type ChainRegistry struct {
 func NewChainRegistry() *ChainRegistry {
 	return &ChainRegistry{
 		activeChains: make(map[ChainCode]*ChainControl),
-		netParams:    make(map[ChainCode]*BitcoinNetParams),
+		netParams:    make(map[ChainCode]*BrocoinNetParams),
 	}
 }
 
@@ -907,7 +907,7 @@ func (c *ChainRegistry) LookupChainByHash(
 	return cc, ok
 }
 
-// RegisterPrimaryChain sets a target chain as the "home chain" for lnd.
+// RegisterPrimaryChain sets a target chain as the "home chain" for broln.
 func (c *ChainRegistry) RegisterPrimaryChain(cc ChainCode) {
 	c.Lock()
 	defer c.Unlock()
@@ -915,7 +915,7 @@ func (c *ChainRegistry) RegisterPrimaryChain(cc ChainCode) {
 	c.primaryChain = cc
 }
 
-// PrimaryChain returns the primary chain for this running lnd instance. The
+// PrimaryChain returns the primary chain for this running broln instance. The
 // primary chain is considered the "home base" while the other registered
 // chains are treated as secondary chains.
 func (c *ChainRegistry) PrimaryChain() ChainCode {

@@ -428,7 +428,7 @@ type SendPaymentRequest struct {
 	LastHopPubkey []byte `protobuf:"bytes,14,opt,name=last_hop_pubkey,json=lastHopPubkey,proto3" json:"last_hop_pubkey,omitempty"`
 	//
 	//An optional maximum total time lock for the route. This should not exceed
-	//lnd's `--max-cltv-expiry` setting. If zero, then the value of
+	//broln's `--max-cltv-expiry` setting. If zero, then the value of
 	//`--max-cltv-expiry` is enforced.
 	CltvLimit int32 `protobuf:"varint,9,opt,name=cltv_limit,json=cltvLimit,proto3" json:"cltv_limit,omitempty"`
 	//
@@ -460,7 +460,7 @@ type SendPaymentRequest struct {
 	NoInflightUpdates bool `protobuf:"varint,18,opt,name=no_inflight_updates,json=noInflightUpdates,proto3" json:"no_inflight_updates,omitempty"`
 	//
 	//The largest payment split that should be attempted when making a payment if
-	//splitting is necessary. Setting this value will effectively cause lnd to
+	//splitting is necessary. Setting this value will effectively cause broln to
 	//split more aggressively, vs only when it thinks it needs to. Note that this
 	//value is in milli-satoshis.
 	MaxShardSizeMsat uint64 `protobuf:"varint,21,opt,name=max_shard_size_msat,json=maxShardSizeMsat,proto3" json:"max_shard_size_msat,omitempty"`

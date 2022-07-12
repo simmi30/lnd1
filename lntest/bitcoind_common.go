@@ -1,5 +1,5 @@
-//go:build bitcoind
-// +build bitcoind
+//go:build brocoind
+// +build brocoind
 
 package lntest
 
@@ -19,9 +19,9 @@ import (
 // logDirPattern is the pattern of the name of the temporary log directory.
 const logDirPattern = "%s/.backendlogs"
 
-// BitcoindBackendConfig is an implementation of the BackendConfig interface
-// backed by a Bitcoind node.
-type BitcoindBackendConfig struct {
+// BrocoindBackendConfig is an implementation of the BackendConfig interface
+// backed by a Brocoind node.
+type BrocoindBackendConfig struct {
 	rpcHost      string
 	rpcUser      string
 	rpcPass      string
@@ -34,45 +34,45 @@ type BitcoindBackendConfig struct {
 	minerAddr string
 }
 
-// A compile time assertion to ensure BitcoindBackendConfig meets the
+// A compile time assertion to ensure BrocoindBackendConfig meets the
 // BackendConfig interface.
-var _ BackendConfig = (*BitcoindBackendConfig)(nil)
+var _ BackendConfig = (*BrocoindBackendConfig)(nil)
 
-// GenArgs returns the arguments needed to be passed to LND at startup for
+// GenArgs returns the arguments needed to be passed to broln at startup for
 // using this node as a chain backend.
-func (b BitcoindBackendConfig) GenArgs() []string {
+func (b BrocoindBackendConfig) GenArgs() []string {
 	var args []string
-	args = append(args, "--bitcoin.node=bitcoind")
-	args = append(args, fmt.Sprintf("--bitcoind.rpchost=%v", b.rpcHost))
-	args = append(args, fmt.Sprintf("--bitcoind.rpcuser=%v", b.rpcUser))
-	args = append(args, fmt.Sprintf("--bitcoind.rpcpass=%v", b.rpcPass))
-	args = append(args, fmt.Sprintf("--bitcoind.zmqpubrawblock=%v",
+	args = append(args, "--brocoin.node=brocoind")
+	args = append(args, fmt.Sprintf("--brocoind.rpchost=%v", b.rpcHost))
+	args = append(args, fmt.Sprintf("--brocoind.rpcuser=%v", b.rpcUser))
+	args = append(args, fmt.Sprintf("--brocoind.rpcpass=%v", b.rpcPass))
+	args = append(args, fmt.Sprintf("--brocoind.zmqpubrawblock=%v",
 		b.zmqBlockPath))
-	args = append(args, fmt.Sprintf("--bitcoind.zmqpubrawtx=%v",
+	args = append(args, fmt.Sprintf("--brocoind.zmqpubrawtx=%v",
 		b.zmqTxPath))
 
 	return args
 }
 
 // ConnectMiner is called to establish a connection to the test miner.
-func (b BitcoindBackendConfig) ConnectMiner() error {
+func (b BrocoindBackendConfig) ConnectMiner() error {
 	return b.rpcClient.AddNode(b.minerAddr, rpcclient.ANAdd)
 }
 
 // DisconnectMiner is called to disconnect the miner.
-func (b BitcoindBackendConfig) DisconnectMiner() error {
+func (b BrocoindBackendConfig) DisconnectMiner() error {
 	return b.rpcClient.AddNode(b.minerAddr, rpcclient.ANRemove)
 }
 
 // Name returns the name of the backend type.
-func (b BitcoindBackendConfig) Name() string {
-	return "bitcoind"
+func (b BrocoindBackendConfig) Name() string {
+	return "brocoind"
 }
 
-// newBackend starts a bitcoind node with the given extra parameters and returns
-// a BitcoindBackendConfig for that node.
+// newBackend starts a brocoind node with the given extra parameters and returns
+// a BrocoindBackendConfig for that node.
 func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
-	*BitcoindBackendConfig, func() error, error) {
+	*BrocoindBackendConfig, func() error, error) {
 
 	baseLogDir := fmt.Sprintf(logDirPattern, GetLogDir())
 	if netParams != &chaincfg.RegressionNetParams {
@@ -83,12 +83,12 @@ func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
 		return nil, nil, err
 	}
 
-	logFile, err := filepath.Abs(baseLogDir + "/bitcoind.log")
+	logFile, err := filepath.Abs(baseLogDir + "/brocoind.log")
 	if err != nil {
 		return nil, nil, err
 	}
 
-	tempBitcoindDir, err := ioutil.TempDir("", "bitcoind")
+	tempBrocoindDir, err := ioutil.TempDir("", "brocoind")
 	if err != nil {
 		return nil, nil,
 			fmt.Errorf("unable to create temp directory: %v", err)
@@ -100,7 +100,7 @@ func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
 	p2pPort := NextAvailablePort()
 
 	cmdArgs := []string{
-		"-datadir=" + tempBitcoindDir,
+		"-datadir=" + tempBrocoindDir,
 		"-whitelist=127.0.0.1", // whitelist localhost to speed up relay
 		"-rpcauth=weks:469e9bb14ab2360f8e226efed5ca6f" +
 			"d$507c670e800a95284294edb5773b05544b" +
@@ -112,26 +112,26 @@ func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
 		"-debuglogfile=" + logFile,
 	}
 	cmdArgs = append(cmdArgs, extraArgs...)
-	bitcoind := exec.Command("bitcoind", cmdArgs...)
+	brocoind := exec.Command("brocoind", cmdArgs...)
 
-	err = bitcoind.Start()
+	err = brocoind.Start()
 	if err != nil {
-		if err := os.RemoveAll(tempBitcoindDir); err != nil {
+		if err := os.RemoveAll(tempBrocoindDir); err != nil {
 			fmt.Printf("unable to remote temp dir %v: %v",
-				tempBitcoindDir, err)
+				tempBrocoindDir, err)
 		}
-		return nil, nil, fmt.Errorf("couldn't start bitcoind: %v", err)
+		return nil, nil, fmt.Errorf("couldn't start brocoind: %v", err)
 	}
 
 	cleanUp := func() error {
-		_ = bitcoind.Process.Kill()
-		_ = bitcoind.Wait()
+		_ = brocoind.Process.Kill()
+		_ = brocoind.Wait()
 
 		var errStr string
 		// After shutting down the chain backend, we'll make a copy of
 		// the log file before deleting the temporary log dir.
 		logDestination := fmt.Sprintf(
-			"%s/output_bitcoind_chainbackend.log", GetLogDir(),
+			"%s/output_brocoind_chainbackend.log", GetLogDir(),
 		)
 		err := CopyFile(logDestination, logFile)
 		if err != nil {
@@ -142,10 +142,10 @@ func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
 				"cannot remove dir %s: %v\n", baseLogDir, err,
 			)
 		}
-		if err := os.RemoveAll(tempBitcoindDir); err != nil {
+		if err := os.RemoveAll(tempBrocoindDir); err != nil {
 			errStr += fmt.Sprintf(
 				"cannot remove dir %s: %v\n",
-				tempBitcoindDir, err,
+				tempBrocoindDir, err,
 			)
 		}
 		if errStr != "" {
@@ -178,7 +178,7 @@ func newBackend(miner string, netParams *chaincfg.Params, extraArgs []string) (
 			err)
 	}
 
-	bd := BitcoindBackendConfig{
+	bd := BrocoindBackendConfig{
 		rpcHost:      rpcHost,
 		rpcUser:      rpcUser,
 		rpcPass:      rpcPass,

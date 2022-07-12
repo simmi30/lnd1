@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// testGetRecoveryInfo checks whether lnd gives the right information about
+// testGetRecoveryInfo checks whether broln gives the right information about
 // the wallet recovery process.
 func testGetRecoveryInfo(net *lntest.NetworkHarness, t *harnessTest) {
 	ctxb := context.Background()
@@ -114,7 +114,7 @@ func testGetRecoveryInfo(net *lntest.NetworkHarness, t *harnessTest) {
 	checkInfo(true, true, 1, 1)
 }
 
-// testOnchainFundRecovery checks lnd's ability to rescan for onchain outputs
+// testOnchainFundRecovery checks broln's ability to rescan for onchain outputs
 // when providing a valid aezeed that owns outputs on the chain. This test
 // performs multiple restorations using the same seed and various recovery
 // windows to ensure we detect funds properly.
@@ -231,11 +231,11 @@ func testOnchainFundRecovery(net *lntest.NetworkHarness, t *harnessTest) {
 			}
 
 			// Send one BTC to the next P2WKH address.
-			net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, node)
+			net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, node)
 
 			// And another to the next NP2WKH address.
 			net.SendCoinsNP2WKH(
-				t.t, btcutil.SatoshiPerBitcoin, node,
+				t.t, btcutil.SatoshiPerBrocoin, node,
 			)
 		}
 	}
@@ -258,11 +258,11 @@ func testOnchainFundRecovery(net *lntest.NetworkHarness, t *harnessTest) {
 	// After, we will generate and skip 9 P2WKH and NP2WKH addresses, and
 	// send another BTC to the subsequent 10th address in each derivation
 	// path.
-	restoreCheckBalance(2*btcutil.SatoshiPerBitcoin, 2, 1, skipAndSend(9))
+	restoreCheckBalance(2*btcutil.SatoshiPerBrocoin, 2, 1, skipAndSend(9))
 
 	// Check that using a recovery window of 9 does not find the two most
 	// recent txns.
-	restoreCheckBalance(2*btcutil.SatoshiPerBitcoin, 2, 9, nil)
+	restoreCheckBalance(2*btcutil.SatoshiPerBrocoin, 2, 9, nil)
 
 	// Extending our recovery window to 10 should find the most recent
 	// transactions, leaving the wallet with 4 BTC total. We should also
@@ -270,11 +270,11 @@ func testOnchainFundRecovery(net *lntest.NetworkHarness, t *harnessTest) {
 	//
 	// After, we will skip 19 more addrs, sending to the 20th address past
 	// our last found address, and repeat the same checks.
-	restoreCheckBalance(4*btcutil.SatoshiPerBitcoin, 4, 10, skipAndSend(19))
+	restoreCheckBalance(4*btcutil.SatoshiPerBrocoin, 4, 10, skipAndSend(19))
 
 	// Check that recovering with a recovery window of 19 fails to find the
 	// most recent transactions.
-	restoreCheckBalance(4*btcutil.SatoshiPerBitcoin, 4, 19, nil)
+	restoreCheckBalance(4*btcutil.SatoshiPerBrocoin, 4, 19, nil)
 
 	// Ensure that using a recovery window of 20 succeeds with all UTXOs
 	// found and the final balance reflected.
@@ -287,8 +287,8 @@ func testOnchainFundRecovery(net *lntest.NetworkHarness, t *harnessTest) {
 	// would've caught the bug earlier. Carol has received 6 BTC so far from
 	// the miner, we'll send 5 back to ensure all of her UTXOs get spent to
 	// avoid fee discrepancies and a change output is formed.
-	const minerAmt = 5 * btcutil.SatoshiPerBitcoin
-	const finalBalance = 6 * btcutil.SatoshiPerBitcoin
+	const minerAmt = 5 * btcutil.SatoshiPerBrocoin
+	const finalBalance = 6 * btcutil.SatoshiPerBrocoin
 	promptChangeAddr := func(node *lntest.HarnessNode) {
 		t.t.Helper()
 

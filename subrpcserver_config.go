@@ -32,7 +32,7 @@ import (
 // subRPCServerConfigs is special sub-config in the main configuration that
 // houses the configuration for the optional sub-servers. These sub-RPC servers
 // are meant to house experimental new features that may eventually make it
-// into the main RPC server that lnd exposes. Special methods are present on
+// into the main RPC server that broln exposes. Special methods are present on
 // this struct to allow the main RPC server to create and manipulate the
 // sub-RPC servers in a generalized manner.
 type subRPCServerConfigs struct {
@@ -71,7 +71,7 @@ type subRPCServerConfigs struct {
 
 	// WatchtowerClientRPC is a sub-RPC server that exposes functionality
 	// that allows clients to interact with the active watchtower client
-	// instance within lnd in order to add, remove, list registered client
+	// instance within broln in order to add, remove, list registered client
 	// towers, etc.
 	WatchtowerClientRPC *wtclientrpc.Config `group:"wtclientrpc" namespace:"wtclientrpc"`
 }
@@ -215,7 +215,7 @@ func (s *subRPCServerConfigs) PopulateDependencies(cfg *Config,
 			subCfgValue.FieldByName("NodeSigner").Set(
 				reflect.ValueOf(nodeSigner),
 			)
-			defaultDelta := cfg.Bitcoin.TimeLockDelta
+			defaultDelta := cfg.Brocoin.TimeLockDelta
 			if cfg.registeredChains.PrimaryChain() == chainreg.LitecoinChain {
 				defaultDelta = cfg.Litecoin.TimeLockDelta
 			}

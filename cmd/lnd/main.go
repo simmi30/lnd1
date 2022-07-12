@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/brolightningnetwork/lnd"
+	"github.com/brolightningnetwork/broln"
 	"github.com/brolightningnetwork/broln/signal"
 )
 
@@ -19,7 +19,7 @@ func main() {
 
 	// Load the configuration, and parse any command line options. This
 	// function will also set up logging properly.
-	loadedConfig, err := lnd.LoadConfig(shutdownInterceptor)
+	loadedConfig, err := broln.LoadConfig(shutdownInterceptor)
 	if err != nil {
 		if e, ok := err.(*flags.Error); !ok || e.Type != flags.ErrHelp {
 			// Print error if not due to help request.
@@ -35,8 +35,8 @@ func main() {
 
 	// Call the "real" main in a nested manner so the defers will properly
 	// be executed in the case of a graceful shutdown.
-	if err = lnd.Main(
-		loadedConfig, lnd.ListenerCfg{}, implCfg, shutdownInterceptor,
+	if err = broln.Main(
+		loadedConfig, broln.ListenerCfg{}, implCfg, shutdownInterceptor,
 	); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

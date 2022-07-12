@@ -27,7 +27,7 @@ func testWumboChannels(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// We'll send coins to the wumbo node, as it'll be the one imitating
 	// the channel funding.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, wumboNode)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, wumboNode)
 
 	// Next we'll connect both nodes, then attempt to make a wumbo channel
 	// funding request to the mini node we created above. The wumbo request

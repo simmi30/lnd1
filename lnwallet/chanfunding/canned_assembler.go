@@ -13,7 +13,7 @@ import (
 // ShimIntent is an intent created by the CannedAssembler which represents a
 // funding output to be created that was constructed outside the wallet. This
 // might be used when a hardware wallet, or a channel factory is the entity
-// crafting the funding transaction, and not lnd.
+// crafting the funding transaction, and not broln.
 type ShimIntent struct {
 	// localFundingAmt is the final amount we put into the funding output.
 	localFundingAmt btcutil.Amount
@@ -148,7 +148,7 @@ func (s *ShimIntent) MultiSigKeys() (*FundingKeys, error) {
 var _ Intent = (*ShimIntent)(nil)
 
 // CannedAssembler is a type of chanfunding.Assembler wherein the funding
-// transaction is constructed outside of lnd, and may already exist. This
+// transaction is constructed outside of broln, and may already exist. This
 // Assembler serves as a shim which gives the funding flow the only thing it
 // actually needs to proceed: the channel point.
 type CannedAssembler struct {
@@ -191,7 +191,7 @@ func NewCannedAssembler(thawHeight uint32, chanPoint wire.OutPoint,
 
 // ProvisionChannel creates a new ShimIntent given the passed funding Request.
 // The returned intent is immediately able to provide the channel point and
-// funding output as they've already been created outside lnd.
+// funding output as they've already been created outside broln.
 //
 // NOTE: This method satisfies the chanfunding.Assembler interface.
 func (c *CannedAssembler) ProvisionChannel(req *Request) (Intent, error) {

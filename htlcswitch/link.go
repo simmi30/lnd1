@@ -44,7 +44,7 @@ const (
 	// The value 2016 corresponds to on average two weeks worth of blocks
 	// and is based on the maximum number of hops (20), the default CLTV
 	// delta (40), and some extra margin to account for the other lightning
-	// implementations and past lnd versions which used to have a default
+	// implementations and past broln versions which used to have a default
 	// CLTV delta of 144.
 	DefaultMaxOutgoingCltvExpiry = 2016
 

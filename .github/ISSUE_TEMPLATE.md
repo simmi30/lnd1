@@ -4,9 +4,9 @@ Describe your issue here.
 
 ### Your environment
 
-* version of `lnd`
+* version of `broln`
 * which operating system (`uname -a` on *Nix)
-* version of `btcd`, `bitcoind`, or other backend
+* version of `brond`, `brocoind`, or other backend
 * any other relevant environment details
 
 ### Steps to reproduce

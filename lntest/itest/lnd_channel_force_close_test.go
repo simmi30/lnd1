@@ -10,7 +10,7 @@ import (
 	"github.com/brsuite/brond/wire"
 	"github.com/brsuite/bronutil"
 	"github.com/go-errors/errors"
-	"github.com/brolightningnetwork/lnd"
+	"github.com/brolightningnetwork/broln"
 	"github.com/brolightningnetwork/broln/chainreg"
 	"github.com/brolightningnetwork/broln/lnrpc"
 	"github.com/brolightningnetwork/broln/lnrpc/routerrpc"
@@ -79,12 +79,12 @@ func testCommitmentTransactionDeadline(net *lntest.NetworkHarness,
 		node := net.NewNode(t.t, name, args)
 
 		// Send some coins to the node.
-		net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, node)
+		net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, node)
 
 		// For neutrino backend, we need one additional UTXO to create
 		// the sweeping tx for the remote anchor.
 		if net.BackendCfg.Name() == lntest.NeutrinoBackendName {
-			net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, node)
+			net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, node)
 		}
 
 		return node
@@ -270,11 +270,11 @@ func testChannelForceClosure(net *lntest.NetworkHarness, t *harnessTest) {
 
 			// Each time, we'll send Alice  new set of coins in
 			// order to fund the channel.
-			net.SendCoins(t, btcutil.SatoshiPerBitcoin, alice)
+			net.SendCoins(t, btcutil.SatoshiPerBrocoin, alice)
 
 			// Also give Carol some coins to allow her to sweep her
 			// anchor.
-			net.SendCoins(t, btcutil.SatoshiPerBitcoin, carol)
+			net.SendCoins(t, btcutil.SatoshiPerBrocoin, carol)
 
 			channelForceClosureTest(
 				net, ht, alice, carol, channelType,
@@ -303,14 +303,14 @@ func channelForceClosureTest(net *lntest.NetworkHarness, t *harnessTest,
 
 	// TODO(roasbeef): should check default value in config here
 	// instead, or make delay a param
-	defaultCLTV := uint32(chainreg.DefaultBitcoinTimeLockDelta)
+	defaultCLTV := uint32(chainreg.DefaultBrocoinTimeLockDelta)
 
 	// We must let Alice have an open channel before she can send a node
 	// announcement, so we open a channel with Carol,
 	net.ConnectNodes(t.t, alice, carol)
 
 	// We need one additional UTXO for sweeping the remote anchor.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	// Before we start, obtain Carol's current wallet balance, we'll check
 	// to ensure that at the end of the force closure by Alice, Carol
@@ -359,7 +359,7 @@ func channelForceClosureTest(net *lntest.NetworkHarness, t *harnessTest,
 				Dest:           carolPubKey,
 				Amt:            int64(paymentAmt),
 				PaymentHash:    makeFakePayHash(t),
-				FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+				FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 				TimeoutSeconds: 60,
 				FeeLimitMsat:   noFeeLimitMsat,
 			},
@@ -1396,7 +1396,7 @@ func testFailingChannel(net *lntest.NetworkHarness, t *harnessTest) {
 		paymentAmt = 10000
 	)
 
-	chanAmt := lnd.MaxFundingAmount
+	chanAmt := broln.MaxFundingAmount
 
 	// We'll introduce Carol, which will settle any incoming invoice with a
 	// totally unrelated preimage.

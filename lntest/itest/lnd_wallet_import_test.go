@@ -296,7 +296,7 @@ func psbtSendFromImportedAccount(t *harnessTest, srcNode, destNode,
 		accountWithBalance = defaultAccount
 	}
 	assertAccountBalance(t.t, srcNode, accountWithBalance, 0, changeUtxoAmt)
-	_ = mineBlocks(t, t.lndHarness, 1, 1)
+	_ = mineBlocks(t, t.brolnHarness, 1, 1)
 	assertAccountBalance(t.t, srcNode, accountWithBalance, changeUtxoAmt, 0)
 
 	// Finally, assert that the transaction has the expected change address
@@ -332,7 +332,7 @@ func fundChanAndCloseFromImportedAccount(t *harnessTest, srcNode, destNode,
 
 	// Now, start the channel funding process. We'll need to connect both
 	// nodes first.
-	t.lndHarness.EnsureConnected(t.t, srcNode, destNode)
+	t.brolnHarness.EnsureConnected(t.t, srcNode, destNode)
 
 	// The source node will then fund the channel through a PSBT shim.
 	var pendingChanID [32]byte
@@ -456,7 +456,7 @@ func fundChanAndCloseFromImportedAccount(t *harnessTest, srcNode, destNode,
 			chanChangeUtxoAmt,
 		)
 
-		block := mineBlocks(t, t.lndHarness, 6, 1)[0]
+		block := mineBlocks(t, t.brolnHarness, 6, 1)[0]
 		assertTxInBlock(t, block, txHash)
 
 		confBalanceAfterChan += chanChangeUtxoAmt
@@ -473,7 +473,7 @@ func fundChanAndCloseFromImportedAccount(t *harnessTest, srcNode, destNode,
 			chanChangeUtxoAmt,
 		)
 
-		block := mineBlocks(t, t.lndHarness, 6, 1)[0]
+		block := mineBlocks(t, t.brolnHarness, 6, 1)[0]
 		assertTxInBlock(t, block, txHash)
 
 		confBalanceAfterChan += chanChangeUtxoAmt
@@ -518,7 +518,7 @@ func fundChanAndCloseFromImportedAccount(t *harnessTest, srcNode, destNode,
 	require.NoError(t.t, err)
 
 	// Now that we've confirmed the opened channel works, we'll close it.
-	closeChannelAndAssert(t, t.lndHarness, srcNode, chanPoint, false)
+	closeChannelAndAssert(t, t.brolnHarness, srcNode, chanPoint, false)
 
 	// Since the channel still had funds left on the source node's side,
 	// they must've been redeemed after the close. Without a pre-negotiated
@@ -556,7 +556,7 @@ func testWalletImportAccount(net *lntest.NetworkHarness, t *harnessTest) {
 			addrType: walletrpc.AddressType_NESTED_WITNESS_PUBKEY_HASH,
 		},
 		{
-			name:     "lnd BIP-0049 variant",
+			name:     "broln BIP-0049 variant",
 			addrType: walletrpc.AddressType_HYBRID_NESTED_WITNESS_PUBKEY_HASH,
 		},
 		{
@@ -579,7 +579,7 @@ func testWalletImportAccount(net *lntest.NetworkHarness, t *harnessTest) {
 			})
 		})
 		if !success {
-			// Log failure time to help relate the lnd logs to the
+			// Log failure time to help relate the broln logs to the
 			// failure.
 			t.Logf("Failure time: %v", time.Now().Format(
 				"2006-01-02 15:04:05.000",
@@ -607,7 +607,7 @@ func runWalletImportAccountScenario(net *lntest.NetworkHarness, t *harnessTest,
 	addrType walletrpc.AddressType, carol, dave *lntest.HarnessNode) {
 
 	ctxb := context.Background()
-	const utxoAmt int64 = btcutil.SatoshiPerBitcoin
+	const utxoAmt int64 = btcutil.SatoshiPerBrocoin
 
 	ctxt, cancel := context.WithTimeout(ctxb, defaultTimeout)
 	defer cancel()
@@ -732,7 +732,7 @@ func testWalletImportPubKey(net *lntest.NetworkHarness, t *harnessTest) {
 			})
 		})
 		if !success {
-			// Log failure time to help relate the lnd logs to the
+			// Log failure time to help relate the broln logs to the
 			// failure.
 			t.Logf("Failure time: %v", time.Now().Format(
 				"2006-01-02 15:04:05.000",
@@ -746,7 +746,7 @@ func testWalletImportPubKeyScenario(net *lntest.NetworkHarness, t *harnessTest,
 	addrType walletrpc.AddressType) {
 
 	ctxb := context.Background()
-	const utxoAmt int64 = btcutil.SatoshiPerBitcoin
+	const utxoAmt int64 = btcutil.SatoshiPerBrocoin
 
 	// We'll start our test by having two nodes, Carol and Dave.
 	carol := net.NewNode(t.t, "carol", nil)

@@ -1,14 +1,14 @@
 # How to write a Ruby gRPC client for the Lightning Network Daemon
 
 This section enumerates what you need to do to write a client that communicates
-with `lnd` in Ruby.
+with `broln` in Ruby.
 
 ### Introduction
 
-`lnd` uses the `gRPC` protocol for communication with clients like `lncli`.
+`broln` uses the `gRPC` protocol for communication with clients like `lncli`.
 
 `gRPC` is based on protocol buffers and as such, you will need to compile
-the `lnd` proto file in Ruby before you can use it to communicate with `lnd`.
+the `broln` proto file in Ruby before you can use it to communicate with `broln`.
 
 ### Setup
 
@@ -28,7 +28,7 @@ Clone the Google APIs repository:
 Fetch the `lightning.proto` file (or copy it from your local source directory):
 
 ```shell
-⛰  curl -o lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/lightning.proto
+⛰  curl -o lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/broln/master/lnrpc/lightning.proto
 ```
 
 Compile the proto file:
@@ -48,11 +48,11 @@ Two files will be generated in the current directory:
 
 Every time you use the Ruby gRPC you need to require the `lightning_services_pb` file.
 
-We assume that `lnd` runs on the default `localhost:10019`.
+We assume that `broln` runs on the default `localhost:10019`.
 
-We further assume you run `lnd` with `--no-macaroons`.
+We further assume you run `broln` with `--no-macaroons`.
 
-Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `lnd` configuration and re-generate the certificate (delete tls.cert and tls.key and restart lnd).
+Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `broln` configuration and re-generate the certificate (delete tls.cert and tls.key and restart broln).
 
 ```ruby
 #!/usr/bin/env ruby
@@ -64,10 +64,10 @@ require 'lightning_services_pb'
 
 # Due to updated ECDSA generated tls.cert we need to let gprc know that
 # we need to use that cipher suite otherwise there will be a handhsake
-# error when we communicate with the lnd rpc server.
+# error when we communicate with the broln rpc server.
 ENV['GRPC_SSL_CIPHER_SUITES'] = "HIGH+ECDSA"
 
-certificate = File.read(File.expand_path("~/.lnd/tls.cert"))
+certificate = File.read(File.expand_path("~/.broln/tls.cert"))
 credentials = GRPC::Core::ChannelCredentials.new(certificate)
 stub = Lnrpc::Lightning::Stub.new('127.0.0.1:10019', credentials)
 
@@ -89,7 +89,7 @@ require 'lightning_services_pb'
 
 ENV['GRPC_SSL_CIPHER_SUITES'] = "HIGH+ECDSA"
 
-certificate = File.read(File.expand_path("~/.lnd/tls.cert"))
+certificate = File.read(File.expand_path("~/.broln/tls.cert"))
 credentials = GRPC::Core::ChannelCredentials.new(certificate)
 stub = Lnrpc::Lightning::Stub.new('127.0.0.1:10019', credentials)
 
@@ -121,9 +121,9 @@ You should now see the details of the settled invoice appear.
 To authenticate using macaroons you need to include the macaroon in the metadata of the request.
 
 ```ruby
-# Lnd admin macaroon is at ~/.lnd/data/chain/bitcoin/simnet/admin.macaroon on Linux and
-# ~/Library/Application Support/Lnd/data/chain/bitcoin/simnet/admin.macaroon on Mac
-macaroon_binary = File.read(File.expand_path("~/.lnd/data/chain/bitcoin/simnet/admin.macaroon"))
+# broln admin macaroon is at ~/.broln/data/chain/brocoin/simnet/admin.macaroon on Linux and
+# ~/Library/Application Support/broln/data/chain/brocoin/simnet/admin.macaroon on Mac
+macaroon_binary = File.read(File.expand_path("~/.broln/data/chain/brocoin/simnet/admin.macaroon"))
 macaroon = macaroon_binary.each_byte.map { |b| b.to_s(16).rjust(2,'0') }.join
 ```
 
@@ -159,9 +159,9 @@ end
 And then we would include it when we create our stub like so.
 
 ```ruby
-certificate = File.read(File.expand_path("~/.lnd/tls.cert"))
+certificate = File.read(File.expand_path("~/.broln/tls.cert"))
 credentials = GRPC::Core::ChannelCredentials.new(certificate)
-macaroon_binary = File.read(File.expand_path("~/.lnd/data/chain/bitcoin/simnet/admin.macaroon"))
+macaroon_binary = File.read(File.expand_path("~/.broln/data/chain/brocoin/simnet/admin.macaroon"))
 macaroon = macaroon_binary.each_byte.map { |b| b.to_s(16).rjust(2,'0') }.join
 
 stub = Lnrpc::Lightning::Stub.new(

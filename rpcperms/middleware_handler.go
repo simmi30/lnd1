@@ -63,7 +63,7 @@ type MiddlewareHandler struct {
 	// done is closed when the rpc client terminates.
 	done chan struct{}
 
-	// quit is closed when lnd is shutting down.
+	// quit is closed when broln is shutting down.
 	quit chan struct{}
 
 	wg sync.WaitGroup
@@ -159,7 +159,7 @@ func (h *MiddlewareHandler) intercept(requestID uint64,
 }
 
 // Run is the main loop for the middleware handler. This function will block
-// until it receives the signal that lnd is shutting down, or the rpc stream is
+// until it receives the signal that broln is shutting down, or the rpc stream is
 // cancelled by the client.
 func (h *MiddlewareHandler) Run() error {
 	// Wait for our goroutines to exit before we return.
@@ -320,13 +320,13 @@ const (
 	TypeStreamAuth InterceptType = 1
 
 	// TypeRequest is the type of intercept message that is sent when an RPC
-	// request message is sent to lnd. For client-streaming RPCs a new
+	// request message is sent to broln. For client-streaming RPCs a new
 	// message of this type is sent for each individual RPC request sent to
 	// the stream.
 	TypeRequest InterceptType = 2
 
 	// TypeResponse is the type of intercept message that is sent when an
-	// RPC response message is sent from lnd to a client. For
+	// RPC response message is sent from broln to a client. For
 	// server-streaming RPCs a new message of this type is sent for each
 	// individual RPC response sent to the stream. Middleware has the option
 	// to modify a response message before it is sent out to the client.
@@ -344,11 +344,11 @@ type InterceptionRequest struct {
 	// server streaming.
 	StreamRPC bool
 
-	// Macaroon holds the macaroon that the client sent to lnd.
+	// Macaroon holds the macaroon that the client sent to broln.
 	Macaroon *macaroon.Macaroon
 
 	// RawMacaroon holds the raw binary serialized macaroon that the client
-	// sent to lnd.
+	// sent to broln.
 	RawMacaroon []byte
 
 	// CustomCaveatName is the name of the custom caveat that the middleware

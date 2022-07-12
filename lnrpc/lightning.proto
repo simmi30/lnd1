@@ -225,7 +225,7 @@ service Lightning {
     /*
     ChannelAcceptor dispatches a bi-directional streaming RPC in which
     OpenChannel requests are sent to the client and the client responds with
-    a boolean that tells LND whether or not to accept the channel. This allows
+    a boolean that tells broln whether or not to accept the channel. This allows
     node operators to specify their own criteria for accepting inbound channels
     through a single persistent connection.
     */
@@ -246,7 +246,7 @@ service Lightning {
     /* lncli: `abandonchannel`
     AbandonChannel removes all channel state from the database except for a
     close summary. This method can be used to get rid of permanently unusable
-    channels due to bugs fixed in newer versions of lnd. This method can also be
+    channels due to bugs fixed in newer versions of broln. This method can also be
     used to remove externally funded channels where the funding transaction was
     never broadcast. Only available for non-externally funded channels in dev
     build.
@@ -421,7 +421,7 @@ service Lightning {
 
     /* lncli: `debuglevel`
     DebugLevel allows a caller to programmatically set the logging verbosity of
-    lnd. The logging can be targeted according to a coarse daemon-wide logging
+    broln. The logging can be targeted according to a coarse daemon-wide logging
     level, or in a granular fashion to specify the logging for a target
     sub-system.
     */
@@ -461,7 +461,7 @@ service Lightning {
     for the target channel identified by it channel point. The backup is
     encrypted with a key generated from the aezeed seed of the user. The
     returned backup can either be restored using the RestoreChannelBackup
-    method once lnd is running, or via the InitWallet and UnlockWallet methods
+    method once broln is running, or via the InitWallet and UnlockWallet methods
     from the WalletUnlocker service.
     */
     rpc ExportChannelBackup (ExportChannelBackupRequest)
@@ -469,7 +469,7 @@ service Lightning {
 
     /*
     ExportAllChannelBackups returns static channel backups for all existing
-    channels known to lnd. A set of regular singular static channel backups for
+    channels known to broln. A set of regular singular static channel backups for
     each channel are returned. Additionally, a multi-channel backup is returned
     as well, which contains a single encrypted blob containing the backups of
     each channel.
@@ -543,8 +543,8 @@ service Lightning {
 
     /*
     RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A
-    gRPC middleware is software component external to lnd that aims to add
-    additional business logic to lnd by observing/intercepting/validating
+    gRPC middleware is software component external to broln that aims to add
+    additional business logic to broln by observing/intercepting/validating
     incoming gRPC client requests and (if needed) replacing/overwriting outgoing
     messages before they're sent to the client. When registering the middleware
     must identify itself and indicate what custom macaroon caveats it wants to
@@ -753,7 +753,7 @@ message SendRequest {
     The maximum number of satoshis that will be paid as a fee of the payment.
     This value can be represented either as a percentage of the amount being
     sent, or as a fixed amount of the maximum fee the user is willing the pay to
-    send the payment. If not specified, lnd will use a default value of 100%
+    send the payment. If not specified, broln will use a default value of 100%
     fees for small amounts (<=1k sat) or 5% fees for larger amounts.
     */
     FeeLimit fee_limit = 8;
@@ -771,7 +771,7 @@ message SendRequest {
 
     /*
     An optional maximum total time lock for the route. This should not exceed
-    lnd's `--max-cltv-expiry` setting. If zero, then the value of
+    broln's `--max-cltv-expiry` setting. If zero, then the value of
     `--max-cltv-expiry` is enforced.
     */
     uint32 cltv_limit = 10;
@@ -1061,7 +1061,7 @@ message SendCoinsRequest {
     int64 sat_per_byte = 5 [deprecated = true];
 
     /*
-    If set, then the amount field will be ignored, and lnd will attempt to
+    If set, then the amount field will be ignored, and broln will attempt to
     send all the coins under control of the internal wallet to the specified
     address.
     */
@@ -1644,7 +1644,7 @@ message Peer {
     /*
     The latest errors received from our peer with timestamps, limited to the 10
     most recent errors. These errors are tracked across peer connections, but
-    are not persisted across lnd restarts. Note that these errors are only
+    are not persisted across broln restarts. Note that these errors are only
     stored for peers that we have channels open with, to prevent peers from
     spamming us with errors at no cost.
     */
@@ -1709,7 +1709,7 @@ message PeerEvent {
 message GetInfoRequest {
 }
 message GetInfoResponse {
-    // The version of the LND software that the node is running.
+    // The version of the broln software that the node is running.
     string version = 14;
 
     // The SHA1 commit hash that the daemon is compiled with.
@@ -1786,7 +1786,7 @@ message GetRecoveryInfoResponse {
 }
 
 message Chain {
-    // The blockchain the node is on (eg bitcoin, litecoin)
+    // The blockchain the node is on (eg brocoin, litecoin)
     string chain = 1;
 
     // The network the node is on (eg regtest, testnet, mainnet)
@@ -2165,7 +2165,7 @@ message FundingShim {
     oneof shim {
         /*
         A channel shim where the channel point was fully constructed outside
-        of lnd's wallet and the transaction might already be published.
+        of broln's wallet and the transaction might already be published.
         */
         ChanPointShim chan_point_shim = 1;
 
@@ -2196,7 +2196,7 @@ message FundingPsbtVerify {
     /*
     Can only be used if the no_publish flag was set to true in the OpenChannel
     call meaning that the caller is solely responsible for publishing the final
-    funding transaction. If skip_finalize is set to true then lnd will not wait
+    funding transaction. If skip_finalize is set to true then broln will not wait
     for a FundingPsbtFinalize state step and instead assumes that a transaction
     with the same TXID as the passed in PSBT will eventually confirm.
     IT IS ABSOLUTELY IMPERATIVE that the TXID of the transaction that is
@@ -2572,7 +2572,7 @@ message QueryRoutesRequest {
     The maximum number of satoshis that will be paid as a fee of the payment.
     This value can be represented either as a percentage of the amount being
     sent, or as a fixed amount of the maximum fee the user is willing the pay to
-    send the payment. If not specified, lnd will use a default value of 100%
+    send the payment. If not specified, broln will use a default value of 100%
     fees for small amounts (<=1k sat) or 5% fees for larger amounts.
     */
     FeeLimit fee_limit = 5;
@@ -2607,7 +2607,7 @@ message QueryRoutesRequest {
 
     /*
     An optional maximum total time lock for the route. If the source is empty or
-    ourselves, this should not exceed lnd's `--max-cltv-expiry` setting. If
+    ourselves, this should not exceed broln's `--max-cltv-expiry` setting. If
     zero, then the value of `--max-cltv-expiry` is used as the limit.
     */
     uint32 cltv_limit = 11;
@@ -3507,7 +3507,7 @@ message Payment {
     /*
     The creation index of this payment. Each payment can be uniquely identified
     by this index, which may not strictly increment by 1 for payments made in
-    older versions of lnd.
+    older versions of broln.
     */
     uint64 payment_index = 15;
 
@@ -3908,7 +3908,7 @@ message ChanBackupSnapshot {
 
     /*
     A multi-channel backup that covers all open channels currently known to
-    lnd.
+    broln.
     */
     MultiChanBackup multi_chan_backup = 2;
 }
@@ -3958,7 +3958,7 @@ message BakeMacaroonRequest {
     uint64 root_key_id = 2;
 
     /*
-    Informs the RPC on whether to allow external permissions that LND is not
+    Informs the RPC on whether to allow external permissions that broln is not
     aware of.
     */
     bool allow_external_permissions = 3;
@@ -4218,11 +4218,11 @@ message RPCMiddlewareRequest {
     oneof intercept_type {
         /*
         Intercept stream authentication: each new streaming RPC call that is
-        initiated against lnd and contains the middleware's custom macaroon
+        initiated against broln and contains the middleware's custom macaroon
         caveat can be approved or denied based upon the macaroon in the stream
         header. This message will only be sent for streaming RPCs, unary RPCs
         must handle the macaroon authentication in the request interception to
-        avoid an additional message round trip between lnd and the middleware.
+        avoid an additional message round trip between broln and the middleware.
         */
         StreamAuth stream_auth = 4;
 
@@ -4300,15 +4300,15 @@ message RPCMiddlewareResponse {
     uint64 ref_msg_id = 1;
 
     /*
-    The middleware can only send two types of messages to lnd: The initial
+    The middleware can only send two types of messages to broln: The initial
     registration message that identifies the middleware and after that only
     feedback messages to requests sent to the middleware.
     */
     oneof middleware_message {
         /*
         The registration message identifies the middleware that's being
-        registered in lnd. The registration message must be sent immediately
-        after initiating the RegisterRpcMiddleware stream, otherwise lnd will
+        registered in broln. The registration message must be sent immediately
+        after initiating the RegisterRpcMiddleware stream, otherwise broln will
         time out the attempt and terminate the request. NOTE: The middleware
         will only receive interception messages for requests that contain a
         macaroon with the custom caveat that the middleware declares it is

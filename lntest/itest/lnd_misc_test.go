@@ -52,7 +52,7 @@ func testDisconnectingTargetPeer(net *lntest.NetworkHarness, t *harnessTest) {
 	assertConnected(t, alice, bob)
 
 	// Give Alice some coins so she can fund a channel.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	chanAmt := funding.MaxBtcFundingAmount
 	pushAmt := btcutil.Amount(0)
@@ -192,7 +192,7 @@ func testSphinxReplayPersistence(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPoint := openChannelAndAssert(
 		t, net, carol, dave,
@@ -210,7 +210,7 @@ func testSphinxReplayPersistence(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, fred)
 
 	net.ConnectNodes(t.t, fred, carol)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, fred)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, fred)
 
 	chanPointFC := openChannelAndAssert(
 		t, net, fred, carol,
@@ -366,7 +366,7 @@ func testListChannels(net *lntest.NetworkHarness, t *harnessTest) {
 	net.ConnectNodes(t.t, alice, bob)
 
 	// Give Alice some coins so she can fund a channel.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	// Open a channel with 100k satoshis between Alice and Bob with Alice
 	// being the sole funder of the channel. The minial HTLC amount is set to
@@ -735,7 +735,7 @@ func testGarbageCollectLinkNodes(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// We'll need to mine some blocks in order to mark the channel fully
 	// closed.
-	_, err = net.Miner.Client.Generate(chainreg.DefaultBitcoinTimeLockDelta - defaultCSV)
+	_, err = net.Miner.Client.Generate(chainreg.DefaultBrocoinTimeLockDelta - defaultCSV)
 	if err != nil {
 		t.Fatalf("unable to generate blocks: %v", err)
 	}
@@ -834,7 +834,7 @@ func testDataLossProtection(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// Before we make a channel, we'll load up Carol with some coins sent
 	// directly from the miner.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// timeTravel is a method that will make Carol open a channel to the
 	// passed node, settle a series of payments, then reset the node back
@@ -1126,7 +1126,7 @@ func testRejectHTLC(net *lntest.NetworkHarness, t *harnessTest) {
 	net.ConnectNodes(t.t, carol, net.Bob)
 
 	// Send coins to Carol.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// Send coins to Alice.
 	net.SendCoins(t.t, btcutil.SatoshiPerBitcent, net.Alice)
@@ -1230,7 +1230,7 @@ func testRejectHTLC(net *lntest.NetworkHarness, t *harnessTest) {
 	}
 
 	// Alice attempts to pay Bobs invoice. This payment should be rejected since
-	// we are using Carol as an intermediary hop, Carol is running lnd with
+	// we are using Carol as an intermediary hop, Carol is running broln with
 	// --rejecthtlc.
 	err = completePaymentRequests(
 		net.Alice, net.Alice.RouterClient,
@@ -1455,7 +1455,7 @@ func testAbandonChannel(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// Now that we're done with the test, the channel can be closed. This
 	// is necessary to avoid unexpected outcomes of other tests that use
-	// Bob's lnd instance.
+	// Bob's broln instance.
 	closeChannelAndAssert(t, net, net.Bob, chanPoint, true)
 
 	// Cleanup by mining the force close and sweep transaction.
@@ -1474,9 +1474,9 @@ func testSweepAllCoins(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// Next, we'll give Ainz exactly 2 utxos of 1 BTC each, with one of
 	// them being p2wkh and the other being a n2wpkh address.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, ainz)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, ainz)
 
-	net.SendCoinsNP2WKH(t.t, btcutil.SatoshiPerBitcoin, ainz)
+	net.SendCoinsNP2WKH(t.t, btcutil.SatoshiPerBrocoin, ainz)
 
 	// Ensure that we can't send coins to our own Pubkey.
 	ctxt, _ := context.WithTimeout(ctxb, defaultTimeout)

@@ -465,7 +465,7 @@ func (p *mockIteratorDecoder) DecodeHopIterator(r io.Reader, rHash []byte,
 		binary.BigEndian.PutUint64(nextHopBytes[:], f.NextHop.ToUint64())
 
 		hops[i] = hop.NewLegacyPayload(&sphinx.HopData{
-			Realm:         [1]byte{}, // hop.BitcoinNetwork
+			Realm:         [1]byte{}, // hop.BrocoinNetwork
 			NextAddress:   nextHopBytes,
 			ForwardAmount: uint64(f.AmountToForward),
 			OutgoingCltv:  f.OutgoingCTLV,

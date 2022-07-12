@@ -385,16 +385,16 @@ func TestEdgeInsertionDeletion(t *testing.T) {
 		AuthProof: &ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 		ChannelPoint: outpoint,
 		Capacity:     9000,
 	}
 	copy(edgeInfo.NodeKey1Bytes[:], node1Pub.SerializeCompressed())
 	copy(edgeInfo.NodeKey2Bytes[:], node2Pub.SerializeCompressed())
-	copy(edgeInfo.BitcoinKey1Bytes[:], node1Pub.SerializeCompressed())
-	copy(edgeInfo.BitcoinKey2Bytes[:], node2Pub.SerializeCompressed())
+	copy(edgeInfo.BrocoinKey1Bytes[:], node1Pub.SerializeCompressed())
+	copy(edgeInfo.BrocoinKey2Bytes[:], node2Pub.SerializeCompressed())
 
 	if err := graph.AddChannelEdge(&edgeInfo); err != nil {
 		t.Fatalf("unable to create channel edge: %v", err)
@@ -459,8 +459,8 @@ func createEdge(height, txIndex uint32, txPosition uint16, outPointIndex uint32,
 		AuthProof: &ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 		ChannelPoint: outpoint,
 		Capacity:     9000,
@@ -468,8 +468,8 @@ func createEdge(height, txIndex uint32, txPosition uint16, outPointIndex uint32,
 
 	copy(edgeInfo.NodeKey1Bytes[:], node1Pub.SerializeCompressed())
 	copy(edgeInfo.NodeKey2Bytes[:], node2Pub.SerializeCompressed())
-	copy(edgeInfo.BitcoinKey1Bytes[:], node1Pub.SerializeCompressed())
-	copy(edgeInfo.BitcoinKey2Bytes[:], node2Pub.SerializeCompressed())
+	copy(edgeInfo.BrocoinKey1Bytes[:], node1Pub.SerializeCompressed())
+	copy(edgeInfo.BrocoinKey2Bytes[:], node2Pub.SerializeCompressed())
 
 	return edgeInfo, shortChanID
 }
@@ -648,11 +648,11 @@ func assertEdgeInfoEqual(t *testing.T, e1 *ChannelEdgeInfo,
 	if !bytes.Equal(e1.NodeKey2Bytes[:], e2.NodeKey2Bytes[:]) {
 		t.Fatalf("nodekey2 doesn't match")
 	}
-	if !bytes.Equal(e1.BitcoinKey1Bytes[:], e2.BitcoinKey1Bytes[:]) {
-		t.Fatalf("bitcoinkey1 doesn't match")
+	if !bytes.Equal(e1.BrocoinKey1Bytes[:], e2.BrocoinKey1Bytes[:]) {
+		t.Fatalf("brocoinkey1 doesn't match")
 	}
-	if !bytes.Equal(e1.BitcoinKey2Bytes[:], e2.BitcoinKey2Bytes[:]) {
-		t.Fatalf("bitcoinkey2 doesn't match")
+	if !bytes.Equal(e1.BrocoinKey2Bytes[:], e2.BrocoinKey2Bytes[:]) {
+		t.Fatalf("brocoinkey2 doesn't match")
 	}
 
 	if !bytes.Equal(e1.Features, e2.Features) {
@@ -668,11 +668,11 @@ func assertEdgeInfoEqual(t *testing.T, e1 *ChannelEdgeInfo,
 	if !bytes.Equal(e1.AuthProof.NodeSig2Bytes, e2.AuthProof.NodeSig2Bytes) {
 		t.Fatalf("nodesig2 doesn't match")
 	}
-	if !bytes.Equal(e1.AuthProof.BitcoinSig1Bytes, e2.AuthProof.BitcoinSig1Bytes) {
-		t.Fatalf("bitcoinsig1 doesn't match")
+	if !bytes.Equal(e1.AuthProof.BrocoinSig1Bytes, e2.AuthProof.BrocoinSig1Bytes) {
+		t.Fatalf("brocoinsig1 doesn't match")
 	}
-	if !bytes.Equal(e1.AuthProof.BitcoinSig2Bytes, e2.AuthProof.BitcoinSig2Bytes) {
-		t.Fatalf("bitcoinsig2 doesn't match")
+	if !bytes.Equal(e1.AuthProof.BrocoinSig2Bytes, e2.AuthProof.BrocoinSig2Bytes) {
+		t.Fatalf("brocoinsig2 doesn't match")
 	}
 
 	if e1.ChannelPoint != e2.ChannelPoint {
@@ -722,8 +722,8 @@ func createChannelEdge(db kvdb.Backend, node1, node2 *LightningNode) (*ChannelEd
 		AuthProof: &ChannelAuthProof{
 			NodeSig1Bytes:    testSig.Serialize(),
 			NodeSig2Bytes:    testSig.Serialize(),
-			BitcoinSig1Bytes: testSig.Serialize(),
-			BitcoinSig2Bytes: testSig.Serialize(),
+			BrocoinSig1Bytes: testSig.Serialize(),
+			BrocoinSig2Bytes: testSig.Serialize(),
 		},
 		ChannelPoint:    outpoint,
 		Capacity:        1000,
@@ -731,8 +731,8 @@ func createChannelEdge(db kvdb.Backend, node1, node2 *LightningNode) (*ChannelEd
 	}
 	copy(edgeInfo.NodeKey1Bytes[:], firstNode.PubKeyBytes[:])
 	copy(edgeInfo.NodeKey2Bytes[:], secondNode.PubKeyBytes[:])
-	copy(edgeInfo.BitcoinKey1Bytes[:], firstNode.PubKeyBytes[:])
-	copy(edgeInfo.BitcoinKey2Bytes[:], secondNode.PubKeyBytes[:])
+	copy(edgeInfo.BrocoinKey1Bytes[:], firstNode.PubKeyBytes[:])
+	copy(edgeInfo.BrocoinKey2Bytes[:], secondNode.PubKeyBytes[:])
 
 	edge1 := &ChannelEdgePolicy{
 		SigBytes:                  testSig.Serialize(),
@@ -1349,16 +1349,16 @@ func fillTestGraph(t require.TestingT, graph *ChannelGraph, numNodes,
 				AuthProof: &ChannelAuthProof{
 					NodeSig1Bytes:    testSig.Serialize(),
 					NodeSig2Bytes:    testSig.Serialize(),
-					BitcoinSig1Bytes: testSig.Serialize(),
-					BitcoinSig2Bytes: testSig.Serialize(),
+					BrocoinSig1Bytes: testSig.Serialize(),
+					BrocoinSig2Bytes: testSig.Serialize(),
 				},
 				ChannelPoint: op,
 				Capacity:     1000,
 			}
 			copy(edgeInfo.NodeKey1Bytes[:], node1.PubKeyBytes[:])
 			copy(edgeInfo.NodeKey2Bytes[:], node2.PubKeyBytes[:])
-			copy(edgeInfo.BitcoinKey1Bytes[:], node1.PubKeyBytes[:])
-			copy(edgeInfo.BitcoinKey2Bytes[:], node2.PubKeyBytes[:])
+			copy(edgeInfo.BrocoinKey1Bytes[:], node1.PubKeyBytes[:])
+			copy(edgeInfo.BrocoinKey2Bytes[:], node2.PubKeyBytes[:])
 			err := graph.AddChannelEdge(&edgeInfo)
 			require.NoError(t, err)
 
@@ -1535,22 +1535,22 @@ func TestGraphPruning(t *testing.T) {
 			AuthProof: &ChannelAuthProof{
 				NodeSig1Bytes:    testSig.Serialize(),
 				NodeSig2Bytes:    testSig.Serialize(),
-				BitcoinSig1Bytes: testSig.Serialize(),
-				BitcoinSig2Bytes: testSig.Serialize(),
+				BrocoinSig1Bytes: testSig.Serialize(),
+				BrocoinSig2Bytes: testSig.Serialize(),
 			},
 			ChannelPoint: op,
 			Capacity:     1000,
 		}
 		copy(edgeInfo.NodeKey1Bytes[:], graphNodes[i].PubKeyBytes[:])
 		copy(edgeInfo.NodeKey2Bytes[:], graphNodes[i+1].PubKeyBytes[:])
-		copy(edgeInfo.BitcoinKey1Bytes[:], graphNodes[i].PubKeyBytes[:])
-		copy(edgeInfo.BitcoinKey2Bytes[:], graphNodes[i+1].PubKeyBytes[:])
+		copy(edgeInfo.BrocoinKey1Bytes[:], graphNodes[i].PubKeyBytes[:])
+		copy(edgeInfo.BrocoinKey2Bytes[:], graphNodes[i+1].PubKeyBytes[:])
 		if err := graph.AddChannelEdge(&edgeInfo); err != nil {
 			t.Fatalf("unable to add node: %v", err)
 		}
 
 		pkScript, err := genMultiSigP2WSH(
-			edgeInfo.BitcoinKey1Bytes[:], edgeInfo.BitcoinKey2Bytes[:],
+			edgeInfo.BrocoinKey1Bytes[:], edgeInfo.BrocoinKey2Bytes[:],
 		)
 		if err != nil {
 			t.Fatalf("unable to gen multi-sig p2wsh: %v", err)

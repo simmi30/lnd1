@@ -26,9 +26,9 @@ import (
 var (
 	harnessNetParams = &chaincfg.RegressionNetParams
 
-	// lndExecutable is the full path to the lnd binary.
-	lndExecutable = flag.String(
-		"lndexec", itestLndBinary, "full path to lnd binary",
+	// brolnExecutable is the full path to the broln binary.
+	brolnExecutable = flag.String(
+		"brolnexec", itestbrolnBinary, "full path to broln binary",
 	)
 
 	slowMineDelay = 20 * time.Millisecond
@@ -40,7 +40,7 @@ const (
 	defaultTimeout      = lntest.DefaultTimeout
 	minerMempoolTimeout = lntest.MinerMempoolTimeout
 	channelCloseTimeout = lntest.ChannelCloseTimeout
-	itestLndBinary      = "../../lnd-itest"
+	itestbrolnBinary      = "../../broln-itest"
 	anchorSize          = 330
 	noFeeLimitMsat      = math.MaxInt64
 
@@ -59,9 +59,9 @@ type harnessTest struct {
 	// current test case.
 	testCase *testCase
 
-	// lndHarness is a reference to the current network harness. Will be
+	// brolnHarness is a reference to the current network harness. Will be
 	// nil if not yet set up.
-	lndHarness *lntest.NetworkHarness
+	brolnHarness *lntest.NetworkHarness
 }
 
 // newHarnessTest creates a new instance of a harnessTest from a regular
@@ -80,8 +80,8 @@ func (h *harnessTest) Skipf(format string, args ...interface{}) {
 // integration tests should mark test failures solely with this method due to
 // the error stack traces it produces.
 func (h *harnessTest) Fatalf(format string, a ...interface{}) {
-	if h.lndHarness != nil {
-		h.lndHarness.SaveProfilesPages(h.t)
+	if h.brolnHarness != nil {
+		h.brolnHarness.SaveProfilesPages(h.t)
 	}
 
 	stacktrace := errors.Wrap(fmt.Sprintf(format, a...), 1).ErrorStack()
@@ -111,7 +111,7 @@ func (h *harnessTest) RunTestCase(testCase *testCase) {
 		}
 	}()
 
-	testCase.test(h.lndHarness, h)
+	testCase.test(h.brolnHarness, h)
 }
 
 func (h *harnessTest) Logf(format string, args ...interface{}) {
@@ -122,26 +122,26 @@ func (h *harnessTest) Log(args ...interface{}) {
 	h.t.Log(args...)
 }
 
-func (h *harnessTest) getLndBinary() string {
-	binary := itestLndBinary
-	lndExec := ""
-	if lndExecutable != nil && *lndExecutable != "" {
-		lndExec = *lndExecutable
+func (h *harnessTest) getbrolnBinary() string {
+	binary := itestbrolnBinary
+	brolnExec := ""
+	if brolnExecutable != nil && *brolnExecutable != "" {
+		brolnExec = *brolnExecutable
 	}
-	if lndExec == "" && runtime.GOOS == "windows" {
+	if brolnExec == "" && runtime.GOOS == "windows" {
 		// Windows (even in a bash like environment like git bash as on
 		// Travis) doesn't seem to like relative paths to exe files...
 		currentDir, err := os.Getwd()
 		if err != nil {
 			h.Fatalf("unable to get working directory: %v", err)
 		}
-		targetPath := filepath.Join(currentDir, "../../lnd-itest.exe")
+		targetPath := filepath.Join(currentDir, "../../broln-itest.exe")
 		binary, err = filepath.Abs(targetPath)
 		if err != nil {
 			h.Fatalf("unable to get absolute path: %v", err)
 		}
-	} else if lndExec != "" {
-		binary = lndExec
+	} else if brolnExec != "" {
+		binary = brolnExec
 	}
 
 	return binary

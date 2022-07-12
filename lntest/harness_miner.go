@@ -17,7 +17,7 @@ import (
 
 const (
 	// minerLogFilename is the default log filename for the miner node.
-	minerLogFilename = "output_btcd_miner.log"
+	minerLogFilename = "output_brond_miner.log"
 
 	// minerLogDir is the default log dir for the miner node.
 	minerLogDir = ".minerlogs"
@@ -40,22 +40,22 @@ type HarnessMiner struct {
 	logFilename string
 }
 
-// NewMiner creates a new miner using btcd backend with the default log file
+// NewMiner creates a new miner using brond backend with the default log file
 // dir and name.
 func NewMiner() (*HarnessMiner, error) {
 	return newMiner(minerLogDir, minerLogFilename)
 }
 
-// NewTempMiner creates a new miner using btcd backend with the specified log
+// NewTempMiner creates a new miner using brond backend with the specified log
 // file dir and name.
 func NewTempMiner(tempDir, tempLogFilename string) (*HarnessMiner, error) {
 	return newMiner(tempDir, tempLogFilename)
 }
 
-// newMiner creates a new miner using btcd's rpctest.
+// newMiner creates a new miner using brond's rpctest.
 func newMiner(minerDirName, logFilename string) (*HarnessMiner, error) {
 	handler := &rpcclient.NotificationHandlers{}
-	btcdBinary := GetBtcdBinary()
+	brondBinary := GetBrondBinary()
 	baseLogPath := fmt.Sprintf("%s/%s", GetLogDir(), minerDirName)
 
 	args := []string{
@@ -70,7 +70,7 @@ func newMiner(minerDirName, logFilename string) (*HarnessMiner, error) {
 		"--nostalldetect",
 	}
 
-	miner, err := rpctest.New(harnessNetParams, handler, args, btcdBinary)
+	miner, err := rpctest.New(harnessNetParams, handler, args, brondBinary)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create mining node: %v", err)
 	}
@@ -110,7 +110,7 @@ func (h *HarnessMiner) saveLogs() error {
 
 	for _, file := range files {
 		newFilename := strings.Replace(
-			file.Name(), "btcd.log", h.logFilename, 1,
+			file.Name(), "brond.log", h.logFilename, 1,
 		)
 		copyPath := fmt.Sprintf("%s/../%s", h.logPath, newFilename)
 

@@ -266,7 +266,7 @@ func (d *DB) FetchPayments() ([]*MPPayment, error) {
 
 			payments = append(payments, p)
 
-			// For older versions of lnd, duplicate payments to a
+			// For older versions of broln, duplicate payments to a
 			// payment has was possible. These will be found in a
 			// sub-bucket indexed by their sequence number if
 			// available.

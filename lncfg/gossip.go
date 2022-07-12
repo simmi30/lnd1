@@ -12,9 +12,9 @@ type Gossip struct {
 
 	PinnedSyncers discovery.PinnedSyncers
 
-	MaxChannelUpdateBurst int `long:"max-channel-update-burst" description:"The maximum number of updates for a specific channel and direction that lnd will accept over the channel update interval."`
+	MaxChannelUpdateBurst int `long:"max-channel-update-burst" description:"The maximum number of updates for a specific channel and direction that broln will accept over the channel update interval."`
 
-	ChannelUpdateInterval time.Duration `long:"channel-update-interval" description:"The interval used to determine how often lnd should allow a burst of new updates for a specific channel and direction."`
+	ChannelUpdateInterval time.Duration `long:"channel-update-interval" description:"The interval used to determine how often broln should allow a burst of new updates for a specific channel and direction."`
 }
 
 // Parse the pubkeys for the pinned syncers.

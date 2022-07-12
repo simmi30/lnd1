@@ -1,32 +1,32 @@
 # Wallet management
 
-The wallet in the context of `lnd` is a database file (located in the data
-directory, for example `~/.lnd/data/chain/bitcoin/mainnet/wallet.db` on Linux)
+The wallet in the context of `broln` is a database file (located in the data
+directory, for example `~/.broln/data/chain/brocoin/mainnet/wallet.db` on Linux)
 that contains all addresses and private keys for the on-chain **and** off-chain
 (LN) funds.
 
-The wallet is independent of the chain backend that is used (`bitcoind`, `btcd`
+The wallet is independent of the chain backend that is used (`brocoind`, `brond`
 or `neutrino`) and must therefore be created as the first step after starting
-up a fresh `lnd` node.
+up a fresh `broln` node.
 
 To protect the sensitive content of the wallet, the database is encrypted with
 a password chosen by the user when creating the wallet (simply called "wallet
-password"). `lnd` will not store that password anywhere by itself (as that would
-defeat the purpose of the password) so every time `lnd` is restarted, its wallet
+password"). `broln` will not store that password anywhere by itself (as that would
+defeat the purpose of the password) so every time `broln` is restarted, its wallet
 needs to be unlocked with that password. This can either be done [manually
-through the command line](#unlocking-a-wallet) or (starting with `lnd` version
+through the command line](#unlocking-a-wallet) or (starting with `broln` version
 `v0.13.0-beta`) [automatically from a file](#auto-unlocking-a-wallet).
 
 ## Creating a wallet
 
-If `lnd` is being run for the first time, create a new wallet with:
+If `broln` is being run for the first time, create a new wallet with:
 ```shell
 ⛰   lncli create
 ```
 This will prompt for a wallet password, and optionally a cipher seed
 passphrase.
 
-`lnd` will then print a 24 word cipher seed mnemonic, which can be used to
+`broln` will then print a 24 word cipher seed mnemonic, which can be used to
 recover the wallet in case of data loss. The user should write this down and
 keep in a safe place.
 
@@ -36,11 +36,11 @@ done through the `create` command. Please refer to the
 
 ## Unlocking a wallet
 
-Every time `lnd` starts up fresh (e.g. after a system restart or a version
+Every time `broln` starts up fresh (e.g. after a system restart or a version
 upgrade) the user-chosen wallet password needs to be entered to unlock (decrypt)
 the wallet database.
 
-This will be indicated in `lnd`'s log with a message like this:
+This will be indicated in `broln`'s log with a message like this:
 
 ```text
 2021-05-06 11:36:11.445 [INF] LTND: Waiting for wallet encryption password. Use `lncli create` to create a wallet, `lncli unlock` to unlock an existing wallet, or `lncli changepassword` to change the password of an existing wallet and unlock it.
@@ -55,9 +55,9 @@ and then typing the wallet password.
 ## Auto-unlocking a wallet
 
 In some situations (for example automated, cluster based setups) it can be
-impractical to manually unlock the wallet every time `lnd` is restarted.
+impractical to manually unlock the wallet every time `broln` is restarted.
 
-In `lnd` version `v0.13.0-beta` and later there is a configuration option to
+In `broln` version `v0.13.0-beta` and later there is a configuration option to
 tell the wallet to auto-unlock itself by reading the password from a file. This
 can only be activated _after_ the wallet was created manually.
 
@@ -69,15 +69,15 @@ database is not in itself more secure than leaving the database unencrypted in
 the first place. This example might be useful in a containerized environment
 though where the secrets are mounted to a file anyway.
 
-- Start `lnd` without the flag:
+- Start `broln` without the flag:
   ```shell
-  ⛰   lnd --bitcoin.active --bitcoin.xxxx .....
+  ⛰   broln --brocoin.active --brocoin.xxxx .....
   ```
 - Create the wallet and write down the seed in a safe place:
   ```shell
   ⛰   lncli create
   ```
-- Stop `lnd` again:
+- Stop `broln` again:
   ```shell
   ⛰   lncli stop
   ```
@@ -89,22 +89,22 @@ though where the secrets are mounted to a file anyway.
   ```shell
   ⛰   chmod 0400 /some/safe/location/password.txt
   ```
-- Start `lnd` with the auto-unlock flag:
+- Start `broln` with the auto-unlock flag:
   ```shell
-  ⛰   lnd --bitcoin.active --bitcoin.xxxx ..... \
+  ⛰   broln --brocoin.active --brocoin.xxxx ..... \
          --wallet-unlock-password-file=/some/safe/location/password.txt
   ```
 
 As with every command line flag, the `wallet-unlock-password-file` option can
-also be added to `lnd`'s configuration file, for example:
+also be added to `broln`'s configuration file, for example:
 
 ```text
 [Application Options]
 debuglevel=debug
 wallet-unlock-password-file=/some/safe/location/password.txt
 
-[Bitcoin]
-bitcoin.active=1
+[Brocoin]
+brocoin.active=1
 ...
 ```
 
@@ -117,23 +117,23 @@ named pipes.
 We will use the password manager [`pass`](https://www.passwordstore.org/) as an
 example here but it should work similarly with other password managers.
 
-- Start `lnd` without the flag:
+- Start `broln` without the flag:
   ```shell
-  ⛰   lnd --bitcoin.active --bitcoin.xxxx .....
+  ⛰   broln --brocoin.active --brocoin.xxxx .....
   ```
 - Create the wallet and write down the seed in a safe place:
   ```shell
   ⛰   lncli create
   ```
-- Stop `lnd` again:
+- Stop `broln` again:
   ```shell
   ⛰   lncli stop
   ```
 - Store the password in `pass`:
   ```shell
-  ⛰   pass insert lnd/my-wallet-password
+  ⛰   pass insert broln/my-wallet-password
   ```
-- Create a startup script for starting `lnd`, for example `run-lnd.sh`:
+- Create a startup script for starting `broln`, for example `run-broln.sh`:
   ```shell
   #!/bin/bash
 
@@ -147,21 +147,21 @@ example here but it should work similarly with other password managers.
   # from the pipe at the same time. That's why we need to run this process in
   # the background (the ampersand & at the end) because it would block our
   # script from continuing otherwise.
-  pass lnd/my-wallet-password > /tmp/wallet-password-pipe &
+  pass broln/my-wallet-password > /tmp/wallet-password-pipe &
   
-  # Now we can start lnd.
-  lnd --bitcoin.active --bitcoin.xxxx ..... \
+  # Now we can start broln.
+  broln --brocoin.active --brocoin.xxxx ..... \
     --wallet-unlock-password-file=/tmp/wallet-password-pipe
   ```
-- Run the startup script instead of running `lnd` directly.
+- Run the startup script instead of running `broln` directly.
   ```shell
-  ⛰   ./run-lnd.sh
+  ⛰   ./run-broln.sh
   ```
 
 ## Changing the password
 
 Changing the wallet password is possible but only while the wallet is locked.
-So after restarting `lnd`, instead of using the `unlock` command, the
+So after restarting `broln`, instead of using the `unlock` command, the
 `changepassword` command can be used:
 
 ```shell
@@ -188,4 +188,4 @@ Using that flag with **real funds (mainnet) is extremely risky for two reasons**
    steal the funds if they copy the file.
 
 The `--noseedbackup` flag should only ever be used in a test setup, for example
-on Bitcoin testnet, regtest or simnet.
+on Brocoin testnet, regtest or simnet.

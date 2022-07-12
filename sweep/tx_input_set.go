@@ -280,7 +280,7 @@ func (t *txInputSet) add(input input.Input, constraints addConstraints) bool {
 //
 // TODO(roasbeef): Consider including some negative yield inputs too to clean
 // up the utxo set even if it costs us some fees up front.  In the spirit of
-// minimizing any negative externalities we cause for the Bitcoin system as a
+// minimizing any negative externalities we cause for the Brocoin system as a
 // whole.
 func (t *txInputSet) addPositiveYieldInputs(sweepableInputs []txInput) {
 	for i, inp := range sweepableInputs {

@@ -81,7 +81,7 @@ func getTestCaseSplitTranche() ([]*testCase, uint, uint) {
 }
 
 // TestLightningNetworkDaemon performs a series of integration tests amongst a
-// programmatically driven network of lnd nodes.
+// programmatically driven network of broln nodes.
 func TestLightningNetworkDaemon(t *testing.T) {
 	// If no tests are registered, then we can exit early.
 	if len(allTestCases) == 0 {
@@ -94,16 +94,16 @@ func TestLightningNetworkDaemon(t *testing.T) {
 	testCases, trancheIndex, trancheOffset := getTestCaseSplitTranche()
 	lntest.ApplyPortOffset(uint32(trancheIndex) * 1000)
 
-	// Before we start any node, we need to make sure that any btcd node
+	// Before we start any node, we need to make sure that any brond node
 	// that is started through the RPC harness uses a unique port as well to
 	// avoid any port collisions.
-	rpctest.ListenAddressGenerator = lntest.GenerateBtcdListenerAddresses
+	rpctest.ListenAddressGenerator = lntest.GenerateBrondListenerAddresses
 
 	// Declare the network harness here to gain access to its
 	// 'OnTxAccepted' call back.
-	var lndHarness *lntest.NetworkHarness
+	var brolnHarness *lntest.NetworkHarness
 
-	// Create an instance of the btcd's rpctest.Harness that will act as
+	// Create an instance of the brond's rpctest.Harness that will act as
 	// the miner for all tests. This will be used to fund the wallets of
 	// the nodes within the test network and to drive blockchain related
 	// events within the network. Revert the default setting of accepting
@@ -156,30 +156,30 @@ func TestLightningNetworkDaemon(t *testing.T) {
 		require.Fail(t, "unknown db backend")
 	}
 
-	// Now we can set up our test harness (LND instance), with the chain
+	// Now we can set up our test harness (broln instance), with the chain
 	// backend we just created.
 	ht := newHarnessTest(t, nil)
-	binary := ht.getLndBinary()
-	lndHarness, err = lntest.NewNetworkHarness(
+	binary := ht.getbrolnBinary()
+	brolnHarness, err = lntest.NewNetworkHarness(
 		miner, chainBackend, binary, dbBackend,
 	)
 	if err != nil {
 		ht.Fatalf("unable to create lightning network harness: %v", err)
 	}
-	defer lndHarness.Stop()
+	defer brolnHarness.Stop()
 
 	// Spawn a new goroutine to watch for any fatal errors that any of the
-	// running lnd processes encounter. If an error occurs, then the test
+	// running broln processes encounter. If an error occurs, then the test
 	// case should naturally as a result and we log the server error here to
 	// help debug.
 	go func() {
 		for {
 			select {
-			case err, more := <-lndHarness.ProcessErrors():
+			case err, more := <-brolnHarness.ProcessErrors():
 				if !more {
 					return
 				}
-				ht.Logf("lnd finished with error (stderr):\n%v",
+				ht.Logf("broln finished with error (stderr):\n%v",
 					err)
 			}
 		}
@@ -192,8 +192,8 @@ func TestLightningNetworkDaemon(t *testing.T) {
 		ht.Fatalf("unable to generate blocks: %v", err)
 	}
 
-	// With the btcd harness created, we can now complete the
-	// initialization of the network. args - list of lnd arguments,
+	// With the brond harness created, we can now complete the
+	// initialization of the network. args - list of broln arguments,
 	// example: "--debuglevel=debug"
 	// TODO(roasbeef): create master balanced channel with all the monies?
 	aliceBobArgs := []string{
@@ -213,18 +213,18 @@ func TestLightningNetworkDaemon(t *testing.T) {
 				testCase.name, " ", "_",
 			)
 
-			err = lndHarness.SetUp(
+			err = brolnHarness.SetUp(
 				t1, cleanTestCaseName, aliceBobArgs,
 			)
 			require.NoError(t1,
 				err, "unable to set up test lightning network",
 			)
 			defer func() {
-				require.NoError(t1, lndHarness.TearDown())
+				require.NoError(t1, brolnHarness.TearDown())
 			}()
 
-			lndHarness.EnsureConnected(
-				t1, lndHarness.Alice, lndHarness.Bob,
+			brolnHarness.EnsureConnected(
+				t1, brolnHarness.Alice, brolnHarness.Bob,
 			)
 
 			logLine := fmt.Sprintf(
@@ -232,23 +232,23 @@ func TestLightningNetworkDaemon(t *testing.T) {
 				testCase.name,
 			)
 
-			lndHarness.Alice.AddToLog(logLine)
-			lndHarness.Bob.AddToLog(logLine)
+			brolnHarness.Alice.AddToLog(logLine)
+			brolnHarness.Bob.AddToLog(logLine)
 
 			// Start every test with the default static fee estimate.
-			lndHarness.SetFeeEstimate(12500)
+			brolnHarness.SetFeeEstimate(12500)
 
 			// Create a separate harness test for the testcase to
 			// avoid overwriting the external harness test that is
 			// tied to the parent test.
-			ht := newHarnessTest(t1, lndHarness)
+			ht := newHarnessTest(t1, brolnHarness)
 			ht.RunTestCase(testCase)
 		})
 
 		// Stop at the first failure. Mimic behavior of original test
 		// framework.
 		if !success {
-			// Log failure time to help relate the lnd logs to the
+			// Log failure time to help relate the broln logs to the
 			// failure.
 			t.Logf("Failure time: %v", time.Now().Format(
 				"2006-01-02 15:04:05.000",

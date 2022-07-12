@@ -2,18 +2,18 @@ package chainreg
 
 import (
 	"github.com/brsuite/brond/chaincfg"
-	bitcoinCfg "github.com/brsuite/brond/chaincfg"
+	brocoinCfg "github.com/brsuite/brond/chaincfg"
 	"github.com/brsuite/brond/chaincfg/chainhash"
-	bitcoinWire "github.com/brsuite/brond/wire"
+	brocoinWire "github.com/brsuite/brond/wire"
 	"github.com/brolightningnetwork/broln/keychain"
 	litecoinCfg "github.com/ltcsuite/ltcd/chaincfg"
 	litecoinWire "github.com/ltcsuite/ltcd/wire"
 )
 
-// BitcoinNetParams couples the p2p parameters of a network with the
+// BrocoinNetParams couples the p2p parameters of a network with the
 // corresponding RPC port of a daemon running on the particular network.
-type BitcoinNetParams struct {
-	*bitcoinCfg.Params
+type BrocoinNetParams struct {
+	*brocoinCfg.Params
 	RPCPort  string
 	CoinType uint32
 }
@@ -26,33 +26,33 @@ type LitecoinNetParams struct {
 	CoinType uint32
 }
 
-// BitcoinTestNetParams contains parameters specific to the 3rd version of the
+// BrocoinTestNetParams contains parameters specific to the 3rd version of the
 // test network.
-var BitcoinTestNetParams = BitcoinNetParams{
-	Params:   &bitcoinCfg.TestNet3Params,
+var BrocoinTestNetParams = BrocoinNetParams{
+	Params:   &brocoinCfg.TestNet3Params,
 	RPCPort:  "18740",
 	CoinType: keychain.CoinTypeTestnet,
 }
 
-// BitcoinMainNetParams contains parameters specific to the current Bitcoin
+// BrocoinMainNetParams contains parameters specific to the current Brocoin
 // mainnet.
-var BitcoinMainNetParams = BitcoinNetParams{
-	Params:   &bitcoinCfg.MainNetParams,
+var BrocoinMainNetParams = BrocoinNetParams{
+	Params:   &brocoinCfg.MainNetParams,
 	RPCPort:  "8360",
-	CoinType: keychain.CoinTypeBitcoin,
+	CoinType: keychain.CoinTypeBrocoin,
 }
 
-// BitcoinSimNetParams contains parameters specific to the simulation test
+// BrocoinSimNetParams contains parameters specific to the simulation test
 // network.
-var BitcoinSimNetParams = BitcoinNetParams{
-	Params:   &bitcoinCfg.SimNetParams,
+var BrocoinSimNetParams = BrocoinNetParams{
+	Params:   &brocoinCfg.SimNetParams,
 	RPCPort:  "18556",
 	CoinType: keychain.CoinTypeTestnet,
 }
 
-// BitcoinSigNetParams contains parameters specific to the signet test network.
-var BitcoinSigNetParams = BitcoinNetParams{
-	Params:   &bitcoinCfg.SigNetParams,
+// BrocoinSigNetParams contains parameters specific to the signet test network.
+var BrocoinSigNetParams = BrocoinNetParams{
+	Params:   &brocoinCfg.SigNetParams,
 	RPCPort:  "38332",
 	CoinType: keychain.CoinTypeTestnet,
 }
@@ -89,10 +89,10 @@ var LitecoinRegTestNetParams = LitecoinNetParams{
 	CoinType: keychain.CoinTypeTestnet,
 }
 
-// BitcoinRegTestNetParams contains parameters specific to a local bitcoin
+// BrocoinRegTestNetParams contains parameters specific to a local brocoin
 // regtest network.
-var BitcoinRegTestNetParams = BitcoinNetParams{
-	Params:   &bitcoinCfg.RegressionNetParams,
+var BrocoinRegTestNetParams = BrocoinNetParams{
+	Params:   &brocoinCfg.RegressionNetParams,
 	RPCPort:  "18871",
 	CoinType: keychain.CoinTypeTestnet,
 }
@@ -101,11 +101,11 @@ var BitcoinRegTestNetParams = BitcoinNetParams{
 // differ for litecoin to the chain parameters typed for btcsuite derivation.
 // This function is used in place of using something like interface{} to
 // abstract over _which_ chain (or fork) the parameters are for.
-func ApplyLitecoinParams(params *BitcoinNetParams,
+func ApplyLitecoinParams(params *BrocoinNetParams,
 	litecoinParams *LitecoinNetParams) {
 
 	params.Name = litecoinParams.Name
-	params.Net = bitcoinWire.BitcoinNet(litecoinParams.Net)
+	params.Net = brocoinWire.BrocoinNet(litecoinParams.Net)
 	params.DefaultPort = litecoinParams.DefaultPort
 	params.CoinbaseMaturity = litecoinParams.CoinbaseMaturity
 
@@ -142,9 +142,9 @@ func ApplyLitecoinParams(params *BitcoinNetParams,
 
 // IsTestnet tests if the givern params correspond to a testnet
 // parameter configuration.
-func IsTestnet(params *BitcoinNetParams) bool {
+func IsTestnet(params *BrocoinNetParams) bool {
 	switch params.Params.Net {
-	case bitcoinWire.TestNet3, bitcoinWire.BitcoinNet(litecoinWire.TestNet4):
+	case brocoinWire.TestNet3, brocoinWire.BrocoinNet(litecoinWire.TestNet4):
 		return true
 	default:
 		return false

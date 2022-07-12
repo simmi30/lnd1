@@ -42,7 +42,7 @@ var (
 	}
 
 	// onionPrefixBytes is a special purpose IPv6 prefix to encode Onion v2
-	// addresses with. Because Neutrino uses the address manager of btcd
+	// addresses with. Because Neutrino uses the address manager of brond
 	// which only understands net.IP addresses instead of net.Addr, we need
 	// to convert any .onion addresses into fake IPv6 addresses if we want
 	// to use a Tor hidden service as a Neutrino backend. This is the same
@@ -294,7 +294,7 @@ func IsOnionFakeIP(addr net.Addr) bool {
 
 // OnionHostToFakeIP encodes an Onion v2 address into a fake IPv6 address that
 // encodes the same information but can be used for libraries that operate on an
-// IP address base only, like btcd's address manager. For example, this will
+// IP address base only, like brond's address manager. For example, this will
 // turn the onion host ld47qlr6h2b7hrrf.onion into the ip6 address
 // fd87:d87e:eb43:58f9:f82e:3e3e:83f3:c625.
 func OnionHostToFakeIP(host string) (net.IP, error) {

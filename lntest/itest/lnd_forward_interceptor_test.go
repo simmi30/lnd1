@@ -511,7 +511,7 @@ func (c *interceptorTestContext) prepareTestCases() []*interceptorTestCase {
 func (c *interceptorTestContext) openChannel(from, to *lntest.HarnessNode,
 	chanSize btcutil.Amount) {
 
-	c.net.SendCoins(c.t.t, btcutil.SatoshiPerBitcoin, from)
+	c.net.SendCoins(c.t.t, btcutil.SatoshiPerBrocoin, from)
 
 	chanPoint := openChannelAndAssert(
 		c.t, c.net, from, to,
@@ -598,7 +598,7 @@ func (c *interceptorTestContext) buildRoute(ctx context.Context, amtMsat int64,
 
 	req := &routerrpc.BuildRouteRequest{
 		AmtMsat:        amtMsat,
-		FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+		FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 		HopPubkeys:     rpcHops,
 		PaymentAddr:    payAddr,
 	}

@@ -46,12 +46,12 @@ const (
 	// rpcActive means that the RPC server is ready to accept calls.
 	rpcActive
 
-	// serverActive means that the lnd server is ready to accept calls.
+	// serverActive means that the broln server is ready to accept calls.
 	serverActive
 )
 
 var (
-	// ErrWaitingToStart is returned if LND is still wating to start,
+	// ErrWaitingToStart is returned if broln is still wating to start,
 	// possibly blocked until elected as the leader.
 	ErrWaitingToStart = fmt.Errorf("waiting to start, RPC services not " +
 		"available")
@@ -79,7 +79,7 @@ var (
 	// access. We also allow these methods to be called even if not all
 	// mandatory middlewares are registered yet. If the wallet is locked
 	// then a middleware cannot register itself, creating an impossible
-	// situation. Also, a middleware might want to check the state of lnd
+	// situation. Also, a middleware might want to check the state of broln
 	// by calling the State service before it registers itself. So we also
 	// need to exclude those calls from the mandatory middleware check.
 	macaroonWhitelist = map[string]struct{}{
@@ -696,7 +696,7 @@ func (r *InterceptorChain) checkRPCState(srv interface{}) error {
 
 	switch state {
 
-	// Do not accept any RPC calls (unless to the state service) until LND
+	// Do not accept any RPC calls (unless to the state service) until broln
 	// has not started.
 	case waitingToStart:
 		return ErrWaitingToStart
@@ -726,7 +726,7 @@ func (r *InterceptorChain) checkRPCState(srv interface{}) error {
 
 		return ErrRPCStarting
 
-	// If the RPC server or lnd server is active, we allow calls to any
+	// If the RPC server or broln server is active, we allow calls to any
 	// service except the WalletUnlocker.
 	case rpcActive, serverActive:
 		_, ok := srv.(lnrpc.WalletUnlockerServer)
@@ -887,7 +887,7 @@ func (r *InterceptorChain) checkMandatoryMiddleware(fullMethod string) error {
 	}
 
 	// Not a white listed call so make sure every mandatory middleware is
-	// currently connected to lnd.
+	// currently connected to broln.
 	for _, name := range r.mandatoryMiddleware {
 		if _, ok := r.registeredMiddleware[name]; !ok {
 			return fmt.Errorf("mandatory middleware '%s' is "+
@@ -1018,7 +1018,7 @@ type serverStreamWrapper struct {
 	interceptor *InterceptorChain
 }
 
-// SendMsg is called when lnd sends a message to the client. This is wrapped to
+// SendMsg is called when broln sends a message to the client. This is wrapped to
 // intercept streaming RPC responses.
 func (w *serverStreamWrapper) SendMsg(m interface{}) error {
 	newMsg, err := w.interceptor.interceptResponse(
@@ -1031,7 +1031,7 @@ func (w *serverStreamWrapper) SendMsg(m interface{}) error {
 	return w.ServerStream.SendMsg(newMsg)
 }
 
-// RecvMsg is called when lnd wants to receive a message from the client. This
+// RecvMsg is called when broln wants to receive a message from the client. This
 // is wrapped to intercept streaming RPC requests.
 func (w *serverStreamWrapper) RecvMsg(m interface{}) error {
 	err := w.ServerStream.RecvMsg(m)

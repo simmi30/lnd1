@@ -1938,7 +1938,7 @@ type SendRequest struct {
 	//The maximum number of satoshis that will be paid as a fee of the payment.
 	//This value can be represented either as a percentage of the amount being
 	//sent, or as a fixed amount of the maximum fee the user is willing the pay to
-	//send the payment. If not specified, lnd will use a default value of 100%
+	//send the payment. If not specified, broln will use a default value of 100%
 	//fees for small amounts (<=1k sat) or 5% fees for larger amounts.
 	FeeLimit *FeeLimit `protobuf:"bytes,8,opt,name=fee_limit,json=feeLimit,proto3" json:"fee_limit,omitempty"`
 	//
@@ -1950,7 +1950,7 @@ type SendRequest struct {
 	LastHopPubkey []byte `protobuf:"bytes,13,opt,name=last_hop_pubkey,json=lastHopPubkey,proto3" json:"last_hop_pubkey,omitempty"`
 	//
 	//An optional maximum total time lock for the route. This should not exceed
-	//lnd's `--max-cltv-expiry` setting. If zero, then the value of
+	//broln's `--max-cltv-expiry` setting. If zero, then the value of
 	//`--max-cltv-expiry` is enforced.
 	CltvLimit uint32 `protobuf:"varint,10,opt,name=cltv_limit,json=cltvLimit,proto3" json:"cltv_limit,omitempty"`
 	//
@@ -3131,7 +3131,7 @@ type SendCoinsRequest struct {
 	// Deprecated: Do not use.
 	SatPerByte int64 `protobuf:"varint,5,opt,name=sat_per_byte,json=satPerByte,proto3" json:"sat_per_byte,omitempty"`
 	//
-	//If set, then the amount field will be ignored, and lnd will attempt to
+	//If set, then the amount field will be ignored, and broln will attempt to
 	//send all the coins under control of the internal wallet to the specified
 	//address.
 	SendAll bool `protobuf:"varint,6,opt,name=send_all,json=sendAll,proto3" json:"send_all,omitempty"`
@@ -5034,7 +5034,7 @@ type Peer struct {
 	//
 	//The latest errors received from our peer with timestamps, limited to the 10
 	//most recent errors. These errors are tracked across peer connections, but
-	//are not persisted across lnd restarts. Note that these errors are only
+	//are not persisted across broln restarts. Note that these errors are only
 	//stored for peers that we have channels open with, to prevent peers from
 	//spamming us with errors at no cost.
 	Errors []*TimestampedError `protobuf:"bytes,12,rep,name=errors,proto3" json:"errors,omitempty"`
@@ -5476,7 +5476,7 @@ type GetInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The version of the LND software that the node is running.
+	// The version of the broln software that the node is running.
 	Version string `protobuf:"bytes,14,opt,name=version,proto3" json:"version,omitempty"`
 	// The SHA1 commit hash that the daemon is compiled with.
 	CommitHash string `protobuf:"bytes,20,opt,name=commit_hash,json=commitHash,proto3" json:"commit_hash,omitempty"`
@@ -5788,7 +5788,7 @@ type Chain struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The blockchain the node is on (eg bitcoin, litecoin)
+	// The blockchain the node is on (eg brocoin, litecoin)
 	Chain string `protobuf:"bytes,1,opt,name=chain,proto3" json:"chain,omitempty"`
 	// The network the node is on (eg regtest, testnet, mainnet)
 	Network string `protobuf:"bytes,2,opt,name=network,proto3" json:"network,omitempty"`
@@ -7328,7 +7328,7 @@ type isFundingShim_Shim interface {
 type FundingShim_ChanPointShim struct {
 	//
 	//A channel shim where the channel point was fully constructed outside
-	//of lnd's wallet and the transaction might already be published.
+	//of broln's wallet and the transaction might already be published.
 	ChanPointShim *ChanPointShim `protobuf:"bytes,1,opt,name=chan_point_shim,json=chanPointShim,proto3,oneof"`
 }
 
@@ -7406,7 +7406,7 @@ type FundingPsbtVerify struct {
 	//
 	//Can only be used if the no_publish flag was set to true in the OpenChannel
 	//call meaning that the caller is solely responsible for publishing the final
-	//funding transaction. If skip_finalize is set to true then lnd will not wait
+	//funding transaction. If skip_finalize is set to true then broln will not wait
 	//for a FundingPsbtFinalize state step and instead assumes that a transaction
 	//with the same TXID as the passed in PSBT will eventually confirm.
 	//IT IS ABSOLUTELY IMPERATIVE that the TXID of the transaction that is
@@ -8518,7 +8518,7 @@ type QueryRoutesRequest struct {
 	//The maximum number of satoshis that will be paid as a fee of the payment.
 	//This value can be represented either as a percentage of the amount being
 	//sent, or as a fixed amount of the maximum fee the user is willing the pay to
-	//send the payment. If not specified, lnd will use a default value of 100%
+	//send the payment. If not specified, broln will use a default value of 100%
 	//fees for small amounts (<=1k sat) or 5% fees for larger amounts.
 	FeeLimit *FeeLimit `protobuf:"bytes,5,opt,name=fee_limit,json=feeLimit,proto3" json:"fee_limit,omitempty"`
 	//
@@ -8543,7 +8543,7 @@ type QueryRoutesRequest struct {
 	IgnoredPairs []*NodePair `protobuf:"bytes,10,rep,name=ignored_pairs,json=ignoredPairs,proto3" json:"ignored_pairs,omitempty"`
 	//
 	//An optional maximum total time lock for the route. If the source is empty or
-	//ourselves, this should not exceed lnd's `--max-cltv-expiry` setting. If
+	//ourselves, this should not exceed broln's `--max-cltv-expiry` setting. If
 	//zero, then the value of `--max-cltv-expiry` is used as the limit.
 	CltvLimit uint32 `protobuf:"varint,11,opt,name=cltv_limit,json=cltvLimit,proto3" json:"cltv_limit,omitempty"`
 	//
@@ -11984,7 +11984,7 @@ type Payment struct {
 	//
 	//The creation index of this payment. Each payment can be uniquely identified
 	//by this index, which may not strictly increment by 1 for payments made in
-	//older versions of lnd.
+	//older versions of broln.
 	PaymentIndex  uint64               `protobuf:"varint,15,opt,name=payment_index,json=paymentIndex,proto3" json:"payment_index,omitempty"`
 	FailureReason PaymentFailureReason `protobuf:"varint,16,opt,name=failure_reason,json=failureReason,proto3,enum=lnrpc.PaymentFailureReason" json:"failure_reason,omitempty"`
 }
@@ -14008,7 +14008,7 @@ type ChanBackupSnapshot struct {
 	SingleChanBackups *ChannelBackups `protobuf:"bytes,1,opt,name=single_chan_backups,json=singleChanBackups,proto3" json:"single_chan_backups,omitempty"`
 	//
 	//A multi-channel backup that covers all open channels currently known to
-	//lnd.
+	//broln.
 	MultiChanBackup *MultiChanBackup `protobuf:"bytes,2,opt,name=multi_chan_backup,json=multiChanBackup,proto3" json:"multi_chan_backup,omitempty"`
 }
 
@@ -14373,7 +14373,7 @@ type BakeMacaroonRequest struct {
 	// The root key ID used to create the macaroon, must be a positive integer.
 	RootKeyId uint64 `protobuf:"varint,2,opt,name=root_key_id,json=rootKeyId,proto3" json:"root_key_id,omitempty"`
 	//
-	//Informs the RPC on whether to allow external permissions that LND is not
+	//Informs the RPC on whether to allow external permissions that broln is not
 	//aware of.
 	AllowExternalPermissions bool `protobuf:"varint,3,opt,name=allow_external_permissions,json=allowExternalPermissions,proto3" json:"allow_external_permissions,omitempty"`
 }
@@ -15457,11 +15457,11 @@ type isRPCMiddlewareRequest_InterceptType interface {
 type RPCMiddlewareRequest_StreamAuth struct {
 	//
 	//Intercept stream authentication: each new streaming RPC call that is
-	//initiated against lnd and contains the middleware's custom macaroon
+	//initiated against broln and contains the middleware's custom macaroon
 	//caveat can be approved or denied based upon the macaroon in the stream
 	//header. This message will only be sent for streaming RPCs, unary RPCs
 	//must handle the macaroon authentication in the request interception to
-	//avoid an additional message round trip between lnd and the middleware.
+	//avoid an additional message round trip between broln and the middleware.
 	StreamAuth *StreamAuth `protobuf:"bytes,4,opt,name=stream_auth,json=streamAuth,proto3,oneof"`
 }
 
@@ -15636,7 +15636,7 @@ type RPCMiddlewareResponse struct {
 	//message.
 	RefMsgId uint64 `protobuf:"varint,1,opt,name=ref_msg_id,json=refMsgId,proto3" json:"ref_msg_id,omitempty"`
 	//
-	//The middleware can only send two types of messages to lnd: The initial
+	//The middleware can only send two types of messages to broln: The initial
 	//registration message that identifies the middleware and after that only
 	//feedback messages to requests sent to the middleware.
 	//
@@ -15713,8 +15713,8 @@ type isRPCMiddlewareResponse_MiddlewareMessage interface {
 type RPCMiddlewareResponse_Register struct {
 	//
 	//The registration message identifies the middleware that's being
-	//registered in lnd. The registration message must be sent immediately
-	//after initiating the RegisterRpcMiddleware stream, otherwise lnd will
+	//registered in broln. The registration message must be sent immediately
+	//after initiating the RegisterRpcMiddleware stream, otherwise broln will
 	//time out the attempt and terminate the request. NOTE: The middleware
 	//will only receive interception messages for requests that contain a
 	//macaroon with the custom caveat that the middleware declares it is

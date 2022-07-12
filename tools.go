@@ -4,12 +4,12 @@
 package broln
 
 import (
-	// This is a workaround to make sure go mod keeps around the btcd
+	// This is a workaround to make sure go mod keeps around the brond
 	// dependencies in the go.sum file that we only use during integration
 	// tests and only for certain operating systems. For example, this
 	// specific import makes sure the indirect dependency
 	// github.com/btcsuite/winsvc is kept in the go.sum file. Because of the
-	// build tag, this dependency never ends up in the final lnd binary.
+	// build tag, this dependency never ends up in the final broln binary.
 	_ "github.com/brsuite/brond"
 
 	// Instead of defining a commit we want to use for those golang based

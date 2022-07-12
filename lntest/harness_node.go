@@ -70,7 +70,7 @@ func postgresDatabaseDsn(dbName string) string {
 // BackendConfig is an interface that abstracts away the specific chain backend
 // node implementation.
 type BackendConfig interface {
-	// GenArgs returns the arguments needed to be passed to LND at startup
+	// GenArgs returns the arguments needed to be passed to broln at startup
 	// for using this node as a chain backend.
 	GenArgs() []string
 
@@ -159,7 +159,7 @@ func (cfg BaseNodeConfig) DBPath() string {
 
 func (cfg BaseNodeConfig) ChanBackupPath() string {
 	return filepath.Join(
-		cfg.DataDir, "chain", "bitcoin",
+		cfg.DataDir, "chain", "brocoin",
 		fmt.Sprintf(
 			"%v/%v", cfg.NetParams.Name,
 			chanbackup.DefaultBackupFileName,
@@ -196,23 +196,23 @@ func (cfg *BaseNodeConfig) GenArgs() []string {
 
 	switch cfg.NetParams {
 	case &chaincfg.TestNet3Params:
-		args = append(args, "--bitcoin.testnet")
+		args = append(args, "--brocoin.testnet")
 	case &chaincfg.SimNetParams:
-		args = append(args, "--bitcoin.simnet")
+		args = append(args, "--brocoin.simnet")
 	case &chaincfg.RegressionNetParams:
-		args = append(args, "--bitcoin.regtest")
+		args = append(args, "--brocoin.regtest")
 	}
 
 	backendArgs := cfg.BackendCfg.GenArgs()
 	args = append(args, backendArgs...)
 
 	nodeArgs := []string{
-		"--bitcoin.active",
+		"--brocoin.active",
 		"--nobootstrap",
 		"--debuglevel=debug",
-		"--bitcoin.defaultchanconfs=1",
+		"--brocoin.defaultchanconfs=1",
 		fmt.Sprintf("--db.batch-commit-interval=%v", commitInterval),
-		fmt.Sprintf("--bitcoin.defaultremotedelay=%v", DefaultCSV),
+		fmt.Sprintf("--brocoin.defaultremotedelay=%v", DefaultCSV),
 		fmt.Sprintf("--rpclisten=%v", cfg.RPCAddr()),
 		fmt.Sprintf("--restlisten=%v", cfg.RESTAddr()),
 		fmt.Sprintf("--restcors=https://%v", cfg.RESTAddr()),
@@ -298,7 +298,7 @@ func (cfg *BaseNodeConfig) GenArgs() []string {
 // }
 type policyUpdateMap map[string]map[string][]*lnrpc.RoutingPolicy
 
-// HarnessNode represents an instance of lnd running within our test network
+// HarnessNode represents an instance of broln running within our test network
 // harness. Each HarnessNode instance also fully embeds an RPC client in
 // order to pragmatically drive the node.
 type HarnessNode struct {
@@ -337,7 +337,7 @@ type HarnessNode struct {
 	// backupDbDir is the path where a database backup is stored, if any.
 	backupDbDir string
 
-	// postgresDbName is the name of the postgres database where lnd data is
+	// postgresDbName is the name of the postgres database where broln data is
 	// stored in.
 	postgresDbName string
 
@@ -399,7 +399,7 @@ func nextNodeID() int {
 func newNode(cfg *BaseNodeConfig) (*HarnessNode, error) {
 	if cfg.BaseDir == "" {
 		var err error
-		cfg.BaseDir, err = ioutil.TempDir("", "lndtest-node")
+		cfg.BaseDir, err = ioutil.TempDir("", "brolntest-node")
 		if err != nil {
 			return nil, err
 		}
@@ -410,7 +410,7 @@ func newNode(cfg *BaseNodeConfig) (*HarnessNode, error) {
 	cfg.TLSKeyPath = filepath.Join(cfg.DataDir, "tls.key")
 
 	networkDir := filepath.Join(
-		cfg.DataDir, "chain", "bitcoin", cfg.NetParams.Name,
+		cfg.DataDir, "chain", "brocoin", cfg.NetParams.Name,
 	)
 	cfg.AdminMacPath = filepath.Join(networkDir, "admin.macaroon")
 	cfg.ReadMacPath = filepath.Join(networkDir, "readonly.macaroon")
@@ -585,11 +585,11 @@ func (hn *HarnessNode) InvoiceMacPath() string {
 	return hn.Cfg.InvoiceMacPath
 }
 
-// startLnd handles the startup of lnd, creating log files, and possibly kills
+// startbroln handles the startup of broln, creating log files, and possibly kills
 // the process when needed.
-func (hn *HarnessNode) startLnd(lndBinary string, lndError chan<- error) error {
+func (hn *HarnessNode) startbroln(brolnBinary string, brolnError chan<- error) error {
 	args := hn.Cfg.GenArgs()
-	hn.cmd = exec.Command(lndBinary, args...)
+	hn.cmd = exec.Command(brolnBinary, args...)
 
 	// Redirect stderr output to buffer
 	var errb bytes.Buffer
@@ -620,7 +620,7 @@ func (hn *HarnessNode) startLnd(lndBinary string, lndError chan<- error) error {
 
 		err := hn.cmd.Wait()
 		if err != nil {
-			lndError <- fmt.Errorf("%v\n%v", err, errb.String())
+			brolnError <- fmt.Errorf("%v\n%v", err, errb.String())
 		}
 
 		// Make sure log file is closed and renamed if necessary.
@@ -634,13 +634,13 @@ func (hn *HarnessNode) startLnd(lndBinary string, lndError chan<- error) error {
 	return nil
 }
 
-// Start launches a new process running lnd. Additionally, the PID of the
+// Start launches a new process running broln. Additionally, the PID of the
 // launched process is saved in order to possibly kill the process forcibly
 // later.
 //
 // This may not clean up properly if an error is returned, so the caller should
 // call shutdown() regardless of the return value.
-func (hn *HarnessNode) start(lndBinary string, lndError chan<- error,
+func (hn *HarnessNode) start(brolnBinary string, brolnError chan<- error,
 	wait bool) error {
 
 	// Init the runCtx.
@@ -648,8 +648,8 @@ func (hn *HarnessNode) start(lndBinary string, lndError chan<- error,
 	hn.runCtx = ctxt
 	hn.cancel = cancel
 
-	// Start lnd and prepare logs.
-	if err := hn.startLnd(lndBinary, lndError); err != nil {
+	// Start broln and prepare logs.
+	if err := hn.startbroln(brolnBinary, brolnError); err != nil {
 		return err
 	}
 
@@ -710,7 +710,7 @@ func (hn *HarnessNode) WaitUntilStateReached(
 	})
 }
 
-// WaitUntilServerActive waits until the lnd daemon is fully started.
+// WaitUntilServerActive waits until the broln daemon is fully started.
 func (hn *HarnessNode) WaitUntilServerActive() error {
 	return hn.waitTillServerState(func(s lnrpc.WalletState) bool {
 		return s == lnrpc.WalletState_SERVER_ACTIVE
@@ -932,7 +932,7 @@ func (hn *HarnessNode) InitRPCClients(c *grpc.ClientConn) {
 	}
 }
 
-// initLightningClient blocks until the lnd server is fully started and
+// initLightningClient blocks until the broln server is fully started and
 // subscribes the harness node to graph topology updates. This method also
 // spawns a lightning network watcher for this node, which watches for topology
 // changes.
@@ -1071,7 +1071,7 @@ func (hn *HarnessNode) ConnectRPCWithMacaroon(mac *macaroon.Macaroon) (
 }
 
 // ConnectRPC uses the TLS certificate and admin macaroon files written by the
-// lnd node to create a gRPC client connection.
+// broln node to create a gRPC client connection.
 func (hn *HarnessNode) ConnectRPC(useMacs bool) (*grpc.ClientConn, error) {
 	// If we don't want to use macaroons, just pass nil, the next method
 	// will handle it correctly.
@@ -1107,7 +1107,7 @@ func (hn *HarnessNode) cleanup() error {
 	return os.RemoveAll(hn.Cfg.BaseDir)
 }
 
-// Stop attempts to stop the active lnd process.
+// Stop attempts to stop the active broln process.
 func (hn *HarnessNode) stop() error {
 	// Do nothing if the process is not running.
 	if hn.runCtx == nil {
@@ -1145,7 +1145,7 @@ func (hn *HarnessNode) stop() error {
 	// Stop the runCtx and wait for goroutines to finish.
 	hn.cancel()
 
-	// Wait for lnd process to exit.
+	// Wait for broln process to exit.
 	err := wait.NoError(func() error {
 		if hn.cmd.ProcessState == nil {
 			return fmt.Errorf("process did not exit")
@@ -1195,7 +1195,7 @@ func (hn *HarnessNode) stop() error {
 	return nil
 }
 
-// shutdown stops the active lnd process and cleans up any temporary
+// shutdown stops the active broln process and cleans up any temporary
 // directories created along the way.
 func (hn *HarnessNode) shutdown() error {
 	if err := hn.stop(); err != nil {
@@ -1207,7 +1207,7 @@ func (hn *HarnessNode) shutdown() error {
 	return nil
 }
 
-// kill kills the lnd process
+// kill kills the broln process
 func (hn *HarnessNode) kill() error {
 	return hn.cmd.Process.Kill()
 }
@@ -1603,7 +1603,7 @@ func (hn *HarnessNode) handleClosedChannelUpdate(
 	updates []*lnrpc.ClosedChannelUpdate) {
 
 	// For each channel closed, we'll mark that we've detected a channel
-	// closure while lnd was pruning the channel graph.
+	// closure while broln was pruning the channel graph.
 	for _, closedChan := range updates {
 		op, err := MakeOutpoint(closedChan.ChanPoint)
 		if err != nil {

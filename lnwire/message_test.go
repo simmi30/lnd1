@@ -632,13 +632,13 @@ func newMsgChannelAnnouncement(t testing.TB,
 		Features:        rawFeatureVector(),
 		NodeID1:         randRawKey(t),
 		NodeID2:         randRawKey(t),
-		BitcoinKey1:     randRawKey(t),
-		BitcoinKey2:     randRawKey(t),
+		BrocoinKey1:     randRawKey(t),
+		BrocoinKey2:     randRawKey(t),
 		ExtraOpaqueData: createExtraData(t, r),
 		NodeSig1:        testNodeSig,
 		NodeSig2:        testNodeSig,
-		BitcoinSig1:     testNodeSig,
-		BitcoinSig2:     testNodeSig,
+		BrocoinSig1:     testNodeSig,
+		BrocoinSig2:     testNodeSig,
 	}
 
 	_, err := r.Read(msg.ChainHash[:])
@@ -715,7 +715,7 @@ func newMsgAnnounceSignatures(t testing.TB,
 		),
 		ExtraOpaqueData:  createExtraData(t, r),
 		NodeSignature:    testNodeSig,
-		BitcoinSignature: testNodeSig,
+		BrocoinSignature: testNodeSig,
 	}
 
 	_, err := r.Read(msg.ChannelID[:])

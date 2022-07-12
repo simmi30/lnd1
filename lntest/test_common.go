@@ -54,9 +54,9 @@ var (
 	goroutineDump = flag.Bool("goroutinedump", false,
 		"write goroutine dump from node n to file pprof-n.log")
 
-	// btcdExecutable is the full path to the btcd binary.
-	btcdExecutable = flag.String(
-		"btcdexec", "", "full path to btcd binary",
+	// brondExecutable is the full path to the brond binary.
+	brondExecutable = flag.String(
+		"brondexec", "", "full path to brond binary",
 	)
 )
 
@@ -103,20 +103,20 @@ func GetLogDir() string {
 	return "."
 }
 
-// GetBtcdBinary returns the full path to the binary of the custom built btcd
+// GetBrondBinary returns the full path to the binary of the custom built brond
 // executable or an empty string if none is set.
-func GetBtcdBinary() string {
-	if btcdExecutable != nil {
-		return *btcdExecutable
+func GetBrondBinary() string {
+	if brondExecutable != nil {
+		return *brondExecutable
 	}
 
 	return ""
 }
 
-// GenerateBtcdListenerAddresses is a function that returns two listener
+// GenerateBrondListenerAddresses is a function that returns two listener
 // addresses with unique ports and should be used to overwrite rpctest's
 // default generator which is prone to use colliding ports.
-func GenerateBtcdListenerAddresses() (string, string) {
+func GenerateBrondListenerAddresses() (string, string) {
 	return fmt.Sprintf(ListenerFormat, NextAvailablePort()),
 		fmt.Sprintf(ListenerFormat, NextAvailablePort())
 }

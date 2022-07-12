@@ -152,7 +152,7 @@
     },
     "/v1/channels/abandon/{channel_point.funding_txid_str}/{channel_point.output_index}": {
       "delete": {
-        "summary": "lncli: `abandonchannel`\nAbandonChannel removes all channel state from the database except for a\nclose summary. This method can be used to get rid of permanently unusable\nchannels due to bugs fixed in newer versions of lnd. This method can also be\nused to remove externally funded channels where the funding transaction was\nnever broadcast. Only available for non-externally funded channels in dev\nbuild.",
+        "summary": "lncli: `abandonchannel`\nAbandonChannel removes all channel state from the database except for a\nclose summary. This method can be used to get rid of permanently unusable\nchannels due to bugs fixed in newer versions of broln. This method can also be\nused to remove externally funded channels where the funding transaction was\nnever broadcast. Only available for non-externally funded channels in dev\nbuild.",
         "operationId": "Lightning_AbandonChannel",
         "responses": {
           "200": {
@@ -213,7 +213,7 @@
     },
     "/v1/channels/acceptor": {
       "post": {
-        "summary": "ChannelAcceptor dispatches a bi-directional streaming RPC in which\nOpenChannel requests are sent to the client and the client responds with\na boolean that tells LND whether or not to accept the channel. This allows\nnode operators to specify their own criteria for accepting inbound channels\nthrough a single persistent connection.",
+        "summary": "ChannelAcceptor dispatches a bi-directional streaming RPC in which\nOpenChannel requests are sent to the client and the client responds with\na boolean that tells broln whether or not to accept the channel. This allows\nnode operators to specify their own criteria for accepting inbound channels\nthrough a single persistent connection.",
         "operationId": "Lightning_ChannelAcceptor",
         "responses": {
           "200": {
@@ -256,7 +256,7 @@
     },
     "/v1/channels/backup": {
       "get": {
-        "summary": "ExportAllChannelBackups returns static channel backups for all existing\nchannels known to lnd. A set of regular singular static channel backups for\neach channel are returned. Additionally, a multi-channel backup is returned\nas well, which contains a single encrypted blob containing the backups of\neach channel.",
+        "summary": "ExportAllChannelBackups returns static channel backups for all existing\nchannels known to broln. A set of regular singular static channel backups for\neach channel are returned. Additionally, a multi-channel backup is returned\nas well, which contains a single encrypted blob containing the backups of\neach channel.",
         "operationId": "Lightning_ExportAllChannelBackups",
         "responses": {
           "200": {
@@ -377,7 +377,7 @@
     },
     "/v1/channels/backup/{chan_point.funding_txid_str}/{chan_point.output_index}": {
       "get": {
-        "summary": "lncli: `exportchanbackup`\nExportChannelBackup attempts to return an encrypted static channel backup\nfor the target channel identified by it channel point. The backup is\nencrypted with a key generated from the aezeed seed of the user. The\nreturned backup can either be restored using the RestoreChannelBackup\nmethod once lnd is running, or via the InitWallet and UnlockWallet methods\nfrom the WalletUnlocker service.",
+        "summary": "lncli: `exportchanbackup`\nExportChannelBackup attempts to return an encrypted static channel backup\nfor the target channel identified by it channel point. The backup is\nencrypted with a key generated from the aezeed seed of the user. The\nreturned backup can either be restored using the RestoreChannelBackup\nmethod once broln is running, or via the InitWallet and UnlockWallet methods\nfrom the WalletUnlocker service.",
         "operationId": "Lightning_ExportChannelBackup",
         "responses": {
           "200": {
@@ -918,7 +918,7 @@
     },
     "/v1/debuglevel": {
       "post": {
-        "summary": "lncli: `debuglevel`\nDebugLevel allows a caller to programmatically set the logging verbosity of\nlnd. The logging can be targeted according to a coarse daemon-wide logging\nlevel, or in a granular fashion to specify the logging for a target\nsub-system.",
+        "summary": "lncli: `debuglevel`\nDebugLevel allows a caller to programmatically set the logging verbosity of\nbroln. The logging can be targeted according to a coarse daemon-wide logging\nlevel, or in a granular fashion to specify the logging for a target\nsub-system.",
         "operationId": "Lightning_DebugLevel",
         "responses": {
           "200": {
@@ -1321,7 +1321,7 @@
           },
           {
             "name": "cltv_limit",
-            "description": "An optional maximum total time lock for the route. If the source is empty or\nourselves, this should not exceed lnd's `--max-cltv-expiry` setting. If\nzero, then the value of `--max-cltv-expiry` is used as the limit.",
+            "description": "An optional maximum total time lock for the route. If the source is empty or\nourselves, this should not exceed broln's `--max-cltv-expiry` setting. If\nzero, then the value of `--max-cltv-expiry` is used as the limit.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -1742,7 +1742,7 @@
     },
     "/v1/middleware": {
       "post": {
-        "summary": "RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A\ngRPC middleware is software component external to lnd that aims to add\nadditional business logic to lnd by observing/intercepting/validating\nincoming gRPC client requests and (if needed) replacing/overwriting outgoing\nmessages before they're sent to the client. When registering the middleware\nmust identify itself and indicate what custom macaroon caveats it wants to\nbe responsible for. Only requests that contain a macaroon with that specific\ncustom caveat are then sent to the middleware for inspection. The other\noption is to register for the read-only mode in which all requests/responses\nare forwarded for interception to the middleware but the middleware is not\nallowed to modify any responses. As a security measure, _no_ middleware can\nmodify responses for requests made with _unencumbered_ macaroons!",
+        "summary": "RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A\ngRPC middleware is software component external to broln that aims to add\nadditional business logic to broln by observing/intercepting/validating\nincoming gRPC client requests and (if needed) replacing/overwriting outgoing\nmessages before they're sent to the client. When registering the middleware\nmust identify itself and indicate what custom macaroon caveats it wants to\nbe responsible for. Only requests that contain a macaroon with that specific\ncustom caveat are then sent to the middleware for inspection. The other\noption is to register for the read-only mode in which all requests/responses\nare forwarded for interception to the middleware but the middleware is not\nallowed to modify any responses. As a security measure, _no_ middleware can\nmodify responses for requests made with _unencumbered_ macaroons!",
         "operationId": "Lightning_RegisterRPCMiddleware",
         "responses": {
           "200": {
@@ -2957,7 +2957,7 @@
         },
         "allow_external_permissions": {
           "type": "boolean",
-          "description": "Informs the RPC on whether to allow external permissions that LND is not\naware of."
+          "description": "Informs the RPC on whether to allow external permissions that broln is not\naware of."
         }
       }
     },
@@ -3068,7 +3068,7 @@
       "properties": {
         "chain": {
           "type": "string",
-          "title": "The blockchain the node is on (eg bitcoin, litecoin)"
+          "title": "The blockchain the node is on (eg brocoin, litecoin)"
         },
         "network": {
           "type": "string",
@@ -3085,7 +3085,7 @@
         },
         "multi_chan_backup": {
           "$ref": "#/definitions/lnrpcMultiChanBackup",
-          "description": "A multi-channel backup that covers all open channels currently known to\nlnd."
+          "description": "A multi-channel backup that covers all open channels currently known to\nbroln."
         }
       }
     },
@@ -4289,7 +4289,7 @@
         },
         "skip_finalize": {
           "type": "boolean",
-          "description": "Can only be used if the no_publish flag was set to true in the OpenChannel\ncall meaning that the caller is solely responsible for publishing the final\nfunding transaction. If skip_finalize is set to true then lnd will not wait\nfor a FundingPsbtFinalize state step and instead assumes that a transaction\nwith the same TXID as the passed in PSBT will eventually confirm.\nIT IS ABSOLUTELY IMPERATIVE that the TXID of the transaction that is\neventually published does have the _same TXID_ as the verified PSBT. That\nmeans no inputs or outputs can change, only signatures can be added. If the\nTXID changes between this call and the publish step then the channel will\nnever be created and the funds will be in limbo."
+          "description": "Can only be used if the no_publish flag was set to true in the OpenChannel\ncall meaning that the caller is solely responsible for publishing the final\nfunding transaction. If skip_finalize is set to true then broln will not wait\nfor a FundingPsbtFinalize state step and instead assumes that a transaction\nwith the same TXID as the passed in PSBT will eventually confirm.\nIT IS ABSOLUTELY IMPERATIVE that the TXID of the transaction that is\neventually published does have the _same TXID_ as the verified PSBT. That\nmeans no inputs or outputs can change, only signatures can be added. If the\nTXID changes between this call and the publish step then the channel will\nnever be created and the funds will be in limbo."
         }
       }
     },
@@ -4298,7 +4298,7 @@
       "properties": {
         "chan_point_shim": {
           "$ref": "#/definitions/lnrpcChanPointShim",
-          "description": "A channel shim where the channel point was fully constructed outside\nof lnd's wallet and the transaction might already be published."
+          "description": "A channel shim where the channel point was fully constructed outside\nof broln's wallet and the transaction might already be published."
         },
         "psbt_shim": {
           "$ref": "#/definitions/lnrpcPsbtShim",
@@ -4345,7 +4345,7 @@
       "properties": {
         "version": {
           "type": "string",
-          "description": "The version of the LND software that the node is running."
+          "description": "The version of the broln software that the node is running."
         },
         "commit_hash": {
           "type": "string",
@@ -5551,7 +5551,7 @@
         "payment_index": {
           "type": "string",
           "format": "uint64",
-          "description": "The creation index of this payment. Each payment can be uniquely identified\nby this index, which may not strictly increment by 1 for payments made in\nolder versions of lnd."
+          "description": "The creation index of this payment. Each payment can be uniquely identified\nby this index, which may not strictly increment by 1 for payments made in\nolder versions of broln."
         },
         "failure_reason": {
           "$ref": "#/definitions/lnrpcPaymentFailureReason"
@@ -5627,7 +5627,7 @@
           "items": {
             "$ref": "#/definitions/lnrpcTimestampedError"
           },
-          "description": "The latest errors received from our peer with timestamps, limited to the 10\nmost recent errors. These errors are tracked across peer connections, but\nare not persisted across lnd restarts. Note that these errors are only\nstored for peers that we have channels open with, to prevent peers from\nspamming us with errors at no cost."
+          "description": "The latest errors received from our peer with timestamps, limited to the 10\nmost recent errors. These errors are tracked across peer connections, but\nare not persisted across broln restarts. Note that these errors are only\nstored for peers that we have channels open with, to prevent peers from\nspamming us with errors at no cost."
         },
         "flap_count": {
           "type": "integer",
@@ -5878,7 +5878,7 @@
         },
         "stream_auth": {
           "$ref": "#/definitions/lnrpcStreamAuth",
-          "description": "Intercept stream authentication: each new streaming RPC call that is\ninitiated against lnd and contains the middleware's custom macaroon\ncaveat can be approved or denied based upon the macaroon in the stream\nheader. This message will only be sent for streaming RPCs, unary RPCs\nmust handle the macaroon authentication in the request interception to\navoid an additional message round trip between lnd and the middleware."
+          "description": "Intercept stream authentication: each new streaming RPC call that is\ninitiated against broln and contains the middleware's custom macaroon\ncaveat can be approved or denied based upon the macaroon in the stream\nheader. This message will only be sent for streaming RPCs, unary RPCs\nmust handle the macaroon authentication in the request interception to\navoid an additional message round trip between broln and the middleware."
         },
         "request": {
           "$ref": "#/definitions/lnrpcRPCMessage",
@@ -6093,7 +6093,7 @@
         },
         "send_all": {
           "type": "boolean",
-          "description": "If set, then the amount field will be ignored, and lnd will attempt to\nsend all the coins under control of the internal wallet to the specified\naddress."
+          "description": "If set, then the amount field will be ignored, and broln will attempt to\nsend all the coins under control of the internal wallet to the specified\naddress."
         },
         "label": {
           "type": "string",
@@ -6234,7 +6234,7 @@
         },
         "fee_limit": {
           "$ref": "#/definitions/lnrpcFeeLimit",
-          "description": "The maximum number of satoshis that will be paid as a fee of the payment.\nThis value can be represented either as a percentage of the amount being\nsent, or as a fixed amount of the maximum fee the user is willing the pay to\nsend the payment. If not specified, lnd will use a default value of 100%\nfees for small amounts (\u003c=1k sat) or 5% fees for larger amounts."
+          "description": "The maximum number of satoshis that will be paid as a fee of the payment.\nThis value can be represented either as a percentage of the amount being\nsent, or as a fixed amount of the maximum fee the user is willing the pay to\nsend the payment. If not specified, broln will use a default value of 100%\nfees for small amounts (\u003c=1k sat) or 5% fees for larger amounts."
         },
         "outgoing_chan_id": {
           "type": "string",
@@ -6249,7 +6249,7 @@
         "cltv_limit": {
           "type": "integer",
           "format": "int64",
-          "description": "An optional maximum total time lock for the route. This should not exceed\nlnd's `--max-cltv-expiry` setting. If zero, then the value of\n`--max-cltv-expiry` is enforced."
+          "description": "An optional maximum total time lock for the route. This should not exceed\nbroln's `--max-cltv-expiry` setting. If zero, then the value of\n`--max-cltv-expiry` is enforced."
         },
         "dest_custom_records": {
           "type": "object",

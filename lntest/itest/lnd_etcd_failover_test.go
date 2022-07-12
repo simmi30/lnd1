@@ -31,7 +31,7 @@ func assertLeader(ht *harnessTest, observer cluster.LeaderElector,
 	}
 }
 
-// testEtcdFailover tests that in a cluster setup where two LND nodes form a
+// testEtcdFailover tests that in a cluster setup where two broln nodes form a
 // single cluster (sharing the same identity) one can hand over the leader role
 // to the other (failing over after graceful shutdown or forceful abort).
 func testEtcdFailover(net *lntest.NetworkHarness, ht *harnessTest) {
@@ -50,7 +50,7 @@ func testEtcdFailover(net *lntest.NetworkHarness, ht *harnessTest) {
 		test := test
 
 		ht.t.Run(test.name, func(t1 *testing.T) {
-			ht1 := newHarnessTest(t1, ht.lndHarness)
+			ht1 := newHarnessTest(t1, ht.brolnHarness)
 			ht1.RunTestCase(&testCase{
 				name: test.name,
 				test: func(_ *lntest.NetworkHarness,

@@ -63,7 +63,7 @@ func newIntegratedRoutingContext(t *testing.T) *integratedRoutingContext {
 	graph.source = source
 
 	// Initiate the test context with a set of default configuration values.
-	// We don't use the lnd defaults here, because otherwise changing the
+	// We don't use the broln defaults here, because otherwise changing the
 	// defaults would break the unit tests. The actual values picked aren't
 	// critical to excite certain behavior, but do need to be aligned with
 	// the test case assertions.

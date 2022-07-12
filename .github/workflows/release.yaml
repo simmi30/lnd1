@@ -45,10 +45,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
-          name: lnd ${{ env.RELEASE_VERSION }}
+          name: broln ${{ env.RELEASE_VERSION }}
           draft: true
           prerelease: false
-          files: lnd-${{ env.RELEASE_VERSION }}/*
+          files: broln-${{ env.RELEASE_VERSION }}/*
           body: |
             # Database Migrations
             TODO
@@ -86,7 +86,7 @@ jobs:
             ots verify manifest-roasbeef-${{ env.RELEASE_VERSION }}.sig.ots -f manifest-roasbeef-${{ env.RELEASE_VERSION }}.sig
             ```
 
-            Alternatively, [the open timestamps website](https://opentimestamps.org/) can be used to verify timestamps if one doesn't have a `bitcoind` instance accessible locally. 
+            Alternatively, [the open timestamps website](https://opentimestamps.org/) can be used to verify timestamps if one doesn't have a `brocoind` instance accessible locally. 
 
             These timestamps should give users confidence in the integrity of this release even after the key that signed the release expires. 
 
@@ -109,24 +109,24 @@ jobs:
 
             ## Verifying the Docker Images
 
-            To verify the `lnd` and `lncli` binaries inside the docker images against the signed, reproducible release binaries, there is a verification script in the image that can be called (before starting the container for example):
+            To verify the `broln` and `lncli` binaries inside the docker images against the signed, reproducible release binaries, there is a verification script in the image that can be called (before starting the container for example):
 
             ```shell
-            $ docker run --rm --entrypoint="" lightninglabs/lnd:${{ env.RELEASE_VERSION }} /verify-install.sh ${{ env.RELEASE_VERSION }}
+            $ docker run --rm --entrypoint="" lightninglabs/broln:${{ env.RELEASE_VERSION }} /verify-install.sh ${{ env.RELEASE_VERSION }}
             $ OK=$?
             $ if [ "$OK" -ne "0" ]; then echo "Verification failed!"; exit 1; done
-            $ docker run lightninglabs/lnd [command-line options]
+            $ docker run lightninglabs/broln [command-line options]
             ```
 
             # Building the Contained Release 
 
             Users are able to rebuild the target release themselves without having to fetch any of the dependencies. In order to do so, assuming
-            that `vendor.tar.gz` and `lnd-source-${{ env.RELEASE_VERSION }}.tar.gz` are in the current directory, follow these steps:
+            that `vendor.tar.gz` and `broln-source-${{ env.RELEASE_VERSION }}.tar.gz` are in the current directory, follow these steps:
 
             ```
             tar -xvzf vendor.tar.gz
-            tar -xvzf lnd-source-${{ env.RELEASE_VERSION }}.tar.gz
-            GO111MODULE=on go install -v -mod=vendor -ldflags "-X github.com/brolightningnetwork/broln/build.Commit=${{ env.RELEASE_VERSION }}" ./cmd/lnd
+            tar -xvzf broln-source-${{ env.RELEASE_VERSION }}.tar.gz
+            GO111MODULE=on go install -v -mod=vendor -ldflags "-X github.com/brolightningnetwork/broln/build.Commit=${{ env.RELEASE_VERSION }}" ./cmd/broln
             GO111MODULE=on go install -v -mod=vendor -ldflags "-X github.com/brolightningnetwork/broln/build.Commit=${{ env.RELEASE_VERSION }}" ./cmd/lncli
             ```
 

@@ -27,7 +27,7 @@ const (
 	WalletState_LOCKED       WalletState = 1
 	WalletState_UNLOCKED     WalletState = 2
 	WalletState_RPC_ACTIVE   WalletState = 3
-	// SERVER_ACTIVE means that the lnd server is ready to accept calls.
+	// SERVER_ACTIVE means that the broln server is ready to accept calls.
 	WalletState_SERVER_ACTIVE    WalletState = 4
 	WalletState_WAITING_TO_START WalletState = 255
 )

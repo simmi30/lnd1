@@ -635,7 +635,7 @@ func TestFetchPaymentWithSequenceNumber(t *testing.T) {
 // appendDuplicatePayment adds a duplicate payment to an existing payment. Note
 // that this function requires a unique sequence number.
 //
-// This code is *only* intended to replicate legacy duplicate payments in lnd,
+// This code is *only* intended to replicate legacy duplicate payments in broln,
 // our current schema does not allow duplicates.
 func appendDuplicatePayment(t *testing.T, db *DB, paymentHash lntypes.Hash,
 	seqNr uint64, preImg lntypes.Preimage) {

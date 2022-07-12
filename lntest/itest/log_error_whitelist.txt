@@ -55,7 +55,7 @@
 <time> [ERR] CRTR: Resuming payment <hex> failed: router shutting down.
 <time> [ERR] CRTR: unable to add channel: edge not found
 <time> [ERR] CRTR: Unable to retrieve channel by id: edge not found
-<time> [ERR] DISC: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first bitcoin signature
+<time> [ERR] DISC: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first brocoin signature
 <time> [ERR] DISC: router shutting down
 <time> [ERR] DISC: unable add proof to the channel chanID=<hex>: edge marked as zombie
 <time> [ERR] DISC: unable add proof to the channel chanID=<hex>: edge not found
@@ -79,7 +79,7 @@
 <time> [ERR] FNDG: Unable to advance pending state of ChannelPoint(<chan_point>): error waiting for funding confirmation for ChannelPoint(<chan_point>): funding manager shutting down
 <time> [ERR] FNDG: Unable to advance pending state of ChannelPoint(<chan_point>): error waiting for funding confirmation for ChannelPoint(<chan_point>): waiting for fundingconfirmation failed
 <time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: ChainNotifier shutting down, cannot complete funding flow for ChannelPoint(<chan_point>)
-<time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: channel announcement failed: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first bitcoin signature
+<time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: channel announcement failed: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first brocoin signature
 <time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: channel announcement failed: funding manager shutting down
 <time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: channel announcement failed: gossiper is shutting down
 <time> [ERR] FNDG: Unable to advance state(<chan_point>): error sending channel announcement: channel announcement failed: router shutting down
@@ -96,7 +96,7 @@
 <time> [ERR] FNDG: unable to cancel reservation: no active reservations for peer(<hex>)
 <time> [ERR] FNDG: Unable to handle funding accept message for peer_key=<hex>, pending_chan_id=<hex>: aborting PSBT flow: user canceled funding
 <time> [ERR] FNDG: unable to report short chan id: link <hex> not found
-<time> [ERR] FNDG: Unable to send channel proof: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first bitcoin signature
+<time> [ERR] FNDG: Unable to send channel proof: channel  announcement proof for short_chan_id=<cid> isn't valid: can't verify first brocoin signature
 <time> [ERR] FNDG: Unable to send channel proof: gossiper is shutting down
 <time> [ERR] FNDG: Unable to send channel proof: unable add proof to the channel chanID=<hex>: edge marked as zombie
 <time> [ERR] FNDG: Unable to send channel proof: unable add proof to the channel chanID=<hex>: edge not found

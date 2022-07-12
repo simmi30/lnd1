@@ -12,7 +12,7 @@ LABEL maintainer="Olaoluwa Osuntokun <laolu@lightning.engineering>"
 # queries required to connect to linked containers succeed.
 ENV GODEBUG netdns=cgo
 
-# Install dependencies and install/build lnd.
+# Install dependencies and install/build broln.
 RUN apk add --no-cache --update alpine-sdk \
     git \
     make 
@@ -27,7 +27,7 @@ RUN cd /go/src/github.com/brolightningnetwork/broln \
 # Start a new, final image to reduce size.
 FROM alpine as final
 
-# Expose lnd ports (server, rpc).
+# Expose broln ports (server, rpc).
 EXPOSE 9782 10019
 
 # Copy the binaries and entrypoint from the builder image.
@@ -39,5 +39,5 @@ RUN apk add --no-cache \
     bash
 
 # Copy the entrypoint script.
-COPY "docker/broln/start-lnd.sh" .
-RUN chmod +x start-lnd.sh
+COPY "docker/broln/start-broln.sh" .
+RUN chmod +x start-broln.sh

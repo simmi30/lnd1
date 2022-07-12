@@ -19,14 +19,14 @@ const (
 	DefaultRPCGraphCacheDuration = time.Minute
 )
 
-// Caches holds the configuration for various caches within lnd.
+// Caches holds the configuration for various caches within broln.
 type Caches struct {
-	// RejectCacheSize is the maximum number of entries stored in lnd's
+	// RejectCacheSize is the maximum number of entries stored in broln's
 	// reject cache, which is used for efficiently rejecting gossip updates.
 	// Memory usage is roughly 25b per entry.
 	RejectCacheSize int `long:"reject-cache-size" description:"Maximum number of entries contained in the reject cache, which is used to speed up filtering of new channel announcements and channel updates from peers. Each entry requires 25 bytes."`
 
-	// ChannelCacheSize is the maximum number of entries stored in lnd's
+	// ChannelCacheSize is the maximum number of entries stored in broln's
 	// channel cache, which is used reduce memory allocations in reply to
 	// peers querying for gossip traffic. Memory usage is roughly 2Kb per
 	// entry.

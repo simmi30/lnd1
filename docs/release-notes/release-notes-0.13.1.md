@@ -10,19 +10,19 @@ widespread relay of potential cooperative channel closures.
 
 [A new flag has been added](https://github.com/brolightningnetwork/broln/pull/5457)
 to permit users to set the new password file config while at the same time,
-allowing `lnd` to start up and accept new wallet initialization/creation via the
-RPC interface. The new wallet-unlock-allow-create option instructs lnd to not
+allowing `broln` to start up and accept new wallet initialization/creation via the
+RPC interface. The new wallet-unlock-allow-create option instructs broln to not
 fail if no wallet exists yet but instead spin up its unlocker RPC as it would
 without the wallet-unlock-password-file being present.  This is not recommended
 for auto-provisioned or high-security systems because the wallet creation RPC
-is unauthenticated and an attacker could inject a seed while lnd is in that
+is unauthenticated and an attacker could inject a seed while broln is in that
 state.
 
 ## RPC Server
 
 [The `Shutdown` command will now return an
 error](https://github.com/brolightningnetwork/broln/pull/5364) if one attempts to
-call the command while `lnd` is rescanning.
+call the command while `broln` is rescanning.
 
 New clients connecting/disconnecting to the transaction subscription stream
 [are now logged](https://github.com/brolightningnetwork/broln/pull/5358).
@@ -94,7 +94,7 @@ channels](https://github.com/brolightningnetwork/broln/pull/5428).
 when the referenced TLS cert file doesn't
 exist](https://github.com/brolightningnetwork/broln/pull/5416).
 
-[When `lnd` receives an HTLC failure message sourced from a private channel,
+[When `broln` receives an HTLC failure message sourced from a private channel,
 we'll now properly apply the update to the internal hop hints using during path
 finding](https://github.com/brolightningnetwork/broln/pull/5332).
 
@@ -103,7 +103,7 @@ server to fail due to newly added AMP
 logic](https://github.com/brolightningnetwork/broln/pull/5419).
 
 The `ListLeases` call that was introduced in 0.13.0 also listed leases that were
-already expired. Only when `lnd` is restarted, these leases were cleaned up. We
+already expired. Only when `broln` is restarted, these leases were cleaned up. We
 now [filter out](https://github.com/brolightningnetwork/broln/pull/5472) the expired
 leases.
 

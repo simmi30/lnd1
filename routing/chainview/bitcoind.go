@@ -16,9 +16,9 @@ import (
 	"github.com/brolightningnetwork/broln/channeldb"
 )
 
-// BitcoindFilteredChainView is an implementation of the FilteredChainView
-// interface which is backed by bitcoind.
-type BitcoindFilteredChainView struct {
+// BrocoindFilteredChainView is an implementation of the FilteredChainView
+// interface which is backed by brocoind.
+type BrocoindFilteredChainView struct {
 	started int32 // To be used atomically.
 	stopped int32 // To be used atomically.
 
@@ -29,9 +29,9 @@ type BitcoindFilteredChainView struct {
 	bestHeightMtx sync.Mutex
 	bestHeight    uint32
 
-	// TODO: Factor out common logic between bitcoind and btcd into a
+	// TODO: Factor out common logic between brocoind and brond into a
 	// NodeFilteredView interface.
-	chainClient *chain.BitcoindClient
+	chainClient *chain.BrocoindClient
 
 	// blockEventQueue is the ordered queue used to keep the order
 	// of connected and disconnected blocks sent to the reader of the
@@ -58,17 +58,17 @@ type BitcoindFilteredChainView struct {
 	wg   sync.WaitGroup
 }
 
-// A compile time check to ensure BitcoindFilteredChainView implements the
+// A compile time check to ensure BrocoindFilteredChainView implements the
 // chainview.FilteredChainView.
-var _ FilteredChainView = (*BitcoindFilteredChainView)(nil)
+var _ FilteredChainView = (*BrocoindFilteredChainView)(nil)
 
-// NewBitcoindFilteredChainView creates a new instance of a FilteredChainView
-// from RPC credentials and a ZMQ socket address for a bitcoind instance.
-func NewBitcoindFilteredChainView(
-	chainConn *chain.BitcoindConn,
-	blockCache *blockcache.BlockCache) *BitcoindFilteredChainView {
+// NewBrocoindFilteredChainView creates a new instance of a FilteredChainView
+// from RPC credentials and a ZMQ socket address for a brocoind instance.
+func NewBrocoindFilteredChainView(
+	chainConn *chain.BrocoindConn,
+	blockCache *blockcache.BlockCache) *BrocoindFilteredChainView {
 
-	chainView := &BitcoindFilteredChainView{
+	chainView := &BrocoindFilteredChainView{
 		chainFilter:     make(map[wire.OutPoint]struct{}),
 		filterUpdates:   make(chan filterUpdate),
 		filterBlockReqs: make(chan *filterBlockReq),
@@ -76,7 +76,7 @@ func NewBitcoindFilteredChainView(
 		quit:            make(chan struct{}),
 	}
 
-	chainView.chainClient = chainConn.NewBitcoindClient()
+	chainView.chainClient = chainConn.NewBrocoindClient()
 	chainView.blockQueue = newBlockEventQueue()
 
 	return chainView
@@ -85,7 +85,7 @@ func NewBitcoindFilteredChainView(
 // Start starts all goroutines necessary for normal operation.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) Start() error {
+func (b *BrocoindFilteredChainView) Start() error {
 	// Already started?
 	if atomic.AddInt32(&b.started, 1) != 1 {
 		return nil
@@ -124,13 +124,13 @@ func (b *BitcoindFilteredChainView) Start() error {
 // method.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) Stop() error {
+func (b *BrocoindFilteredChainView) Stop() error {
 	// Already shutting down?
 	if atomic.AddInt32(&b.stopped, 1) != 1 {
 		return nil
 	}
 
-	// Shutdown the rpc client, this gracefully disconnects from bitcoind's
+	// Shutdown the rpc client, this gracefully disconnects from brocoind's
 	// zmq socket, and cleans up all related resources.
 	b.chainClient.Stop()
 
@@ -147,7 +147,7 @@ func (b *BitcoindFilteredChainView) Stop() error {
 // onFilteredBlockConnected is called for each block that's connected to the
 // end of the main chain. Based on our current chain filter, the block may or
 // may not include any relevant transactions.
-func (b *BitcoindFilteredChainView) onFilteredBlockConnected(height int32,
+func (b *BrocoindFilteredChainView) onFilteredBlockConnected(height int32,
 	hash chainhash.Hash, txns []*wtxmgr.TxRecord) {
 
 	mtxs := make([]*wire.MsgTx, len(txns))
@@ -190,7 +190,7 @@ func (b *BitcoindFilteredChainView) onFilteredBlockConnected(height int32,
 
 // onFilteredBlockDisconnected is a callback which is executed once a block is
 // disconnected from the end of the main chain.
-func (b *BitcoindFilteredChainView) onFilteredBlockDisconnected(height int32,
+func (b *BrocoindFilteredChainView) onFilteredBlockDisconnected(height int32,
 	hash chainhash.Hash) {
 
 	log.Debugf("got disconnected block at height %d: %v", height,
@@ -213,7 +213,7 @@ func (b *BitcoindFilteredChainView) onFilteredBlockDisconnected(height int32,
 // selected lock, then the internal chainFilter will also be updated.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*FilteredBlock, error) {
+func (b *BrocoindFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*FilteredBlock, error) {
 	req := &filterBlockReq{
 		blockHash: blockHash,
 		resp:      make(chan *FilteredBlock, 1),
@@ -235,7 +235,7 @@ func (b *BitcoindFilteredChainView) FilterBlock(blockHash *chainhash.Hash) (*Fil
 // filtration.
 //
 // TODO(roasbeef): change to use loadfilter RPC's
-func (b *BitcoindFilteredChainView) chainFilterer() {
+func (b *BrocoindFilteredChainView) chainFilterer() {
 	defer b.wg.Done()
 
 	// filterBlock is a helper function that scans the given block, and
@@ -446,7 +446,7 @@ func (b *BitcoindFilteredChainView) chainFilterer() {
 // rewound to ensure all relevant notifications are dispatched.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
+func (b *BrocoindFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
 	updateHeight uint32) error {
 
 	newUtxos := make([]wire.OutPoint, len(ops))
@@ -473,7 +473,7 @@ func (b *BitcoindFilteredChainView) UpdateFilter(ops []channeldb.EdgePoint,
 // set is to be returned.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
+func (b *BrocoindFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
 	return b.blockQueue.newBlocks
 }
 
@@ -482,13 +482,13 @@ func (b *BitcoindFilteredChainView) FilteredBlocks() <-chan *FilteredBlock {
 // main chain in the case of a re-org.
 //
 // NOTE: This is part of the FilteredChainView interface.
-func (b *BitcoindFilteredChainView) DisconnectedBlocks() <-chan *FilteredBlock {
+func (b *BrocoindFilteredChainView) DisconnectedBlocks() <-chan *FilteredBlock {
 	return b.blockQueue.staleBlocks
 }
 
 // GetBlock is used to retrieve the block with the given hash. This function
 // wraps the blockCache's GetBlock function.
-func (b *BitcoindFilteredChainView) GetBlock(hash *chainhash.Hash) (
+func (b *BrocoindFilteredChainView) GetBlock(hash *chainhash.Hash) (
 	*wire.MsgBlock, error) {
 
 	return b.blockCache.GetBlock(hash, b.chainClient.GetBlock)

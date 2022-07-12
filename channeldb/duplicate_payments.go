@@ -18,7 +18,7 @@ var (
 	// duplicatePaymentsBucket is the name of a optional sub-bucket within
 	// the payment hash bucket, that is used to hold duplicate payments to a
 	// payment hash. This is needed to support information from earlier
-	// versions of lnd, where it was possible to pay to a payment hash more
+	// versions of broln, where it was possible to pay to a payment hash more
 	// than once.
 	duplicatePaymentsBucket = []byte("payment-duplicate-bucket")
 
@@ -214,7 +214,7 @@ func fetchDuplicatePayments(paymentHashBucket kvdb.RBucket) ([]*MPPayment,
 
 	var payments []*MPPayment
 
-	// For older versions of lnd, duplicate payments to a payment has was
+	// For older versions of broln, duplicate payments to a payment has was
 	// possible. These will be found in a sub-bucket indexed by their
 	// sequence number if available.
 	dup := paymentHashBucket.NestedReadBucket(duplicatePaymentsBucket)

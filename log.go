@@ -58,33 +58,33 @@ type replaceableLogger struct {
 // log file. This must be performed early during application startup by
 // calling InitLogRotator() on the main log writer instance in the config.
 var (
-	// lndPkgLoggers is a list of all lnd package level loggers that are
+	// brolnPkgLoggers is a list of all broln package level loggers that are
 	// registered. They are tracked here so they can be replaced once the
 	// SetupLoggers function is called with the final root logger.
-	lndPkgLoggers []*replaceableLogger
+	brolnPkgLoggers []*replaceableLogger
 
-	// addLndPkgLogger is a helper function that creates a new replaceable
-	// main lnd package level logger and adds it to the list of loggers that
+	// addbrolnPkgLogger is a helper function that creates a new replaceable
+	// main broln package level logger and adds it to the list of loggers that
 	// are replaced again later, once the final root logger is ready.
-	addLndPkgLogger = func(subsystem string) *replaceableLogger {
+	addbrolnPkgLogger = func(subsystem string) *replaceableLogger {
 		l := &replaceableLogger{
 			Logger:    build.NewSubLogger(subsystem, nil),
 			subsystem: subsystem,
 		}
-		lndPkgLoggers = append(lndPkgLoggers, l)
+		brolnPkgLoggers = append(brolnPkgLoggers, l)
 		return l
 	}
 
-	// Loggers that need to be accessible from the lnd package can be placed
+	// Loggers that need to be accessible from the broln package can be placed
 	// here. Loggers that are only used in sub modules can be added directly
 	// by using the addSubLogger method. We declare all loggers so we never
 	// run into a nil reference if they are used early. But the SetupLoggers
 	// function should always be called as soon as possible to finish
 	// setting them up properly with a root logger.
-	ltndLog = addLndPkgLogger("LTND")
-	rpcsLog = addLndPkgLogger("RPCS")
-	srvrLog = addLndPkgLogger("SRVR")
-	atplLog = addLndPkgLogger("ATPL")
+	ltndLog = addbrolnPkgLogger("LTND")
+	rpcsLog = addbrolnPkgLogger("RPCS")
+	srvrLog = addbrolnPkgLogger("SRVR")
+	atplLog = addbrolnPkgLogger("ATPL")
 )
 
 // genSubLogger creates a logger for a subsystem. We provide an instance of
@@ -114,13 +114,13 @@ func SetupLoggers(root *build.RotatingLogWriter, interceptor signal.Interceptor)
 	genLogger := genSubLogger(root, interceptor)
 
 	// Now that we have the proper root logger, we can replace the
-	// placeholder lnd package loggers.
-	for _, l := range lndPkgLoggers {
+	// placeholder broln package loggers.
+	for _, l := range brolnPkgLoggers {
 		l.Logger = build.NewSubLogger(l.subsystem, genLogger)
 		SetSubLogger(root, l.subsystem, l.Logger)
 	}
 
-	// Some of the loggers declared in the main lnd package are also used
+	// Some of the loggers declared in the main broln package are also used
 	// in sub packages.
 	signal.UseLogger(ltndLog)
 	autopilot.UseLogger(atplLog)

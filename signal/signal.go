@@ -22,7 +22,7 @@ var (
 	started int32
 )
 
-// systemdNotifyReady notifies systemd about LND being ready, logs the result of
+// systemdNotifyReady notifies systemd about broln being ready, logs the result of
 // the operation or possible error. Besides logging, systemd being unavailable
 // is ignored.
 func systemdNotifyReady() error {
@@ -47,7 +47,7 @@ func systemdNotifyReady() error {
 	return nil
 }
 
-// systemdNotifyStop notifies systemd that LND is stopping and logs error if
+// systemdNotifyStop notifies systemd that broln is stopping and logs error if
 // the notification failed. It also logs if the notification was actually sent.
 // Systemd being unavailable is intentionally ignored.
 func systemdNotifyStop() {
@@ -62,7 +62,7 @@ func systemdNotifyStop() {
 	}
 }
 
-// Notifier handles notifications about status of LND.
+// Notifier handles notifications about status of broln.
 type Notifier struct {
 	// notifiedReady remembers whether Ready was sent to avoid sending it
 	// multiple times.
@@ -87,7 +87,7 @@ func (notifier *Notifier) NotifyReady(walletUnlocked bool) error {
 	return nil
 }
 
-// notifyStop notifies other applications that LND is stopping.
+// notifyStop notifies other applications that broln is stopping.
 func (notifier *Notifier) notifyStop() {
 	systemdNotifyStop()
 }

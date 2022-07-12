@@ -48,7 +48,7 @@ func TestDefaultRoutingFeeLimitForAmount(t *testing.T) {
 }
 
 // TestDustLimitForSize tests that we receive the expected dust limits for
-// various script types from btcd's GetDustThreshold function.
+// various script types from brond's GetDustThreshold function.
 func TestDustLimitForSize(t *testing.T) {
 	t.Parallel()
 

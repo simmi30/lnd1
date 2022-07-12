@@ -19,10 +19,10 @@ type ChannelAnnouncement struct {
 	NodeSig2 Sig
 
 	// This signatures are used by nodes in order to create cross
-	// references between node's channel and node. Requiring the bitcoin
+	// references between node's channel and node. Requiring the brocoin
 	// signatures proves they control the channel.
-	BitcoinSig1 Sig
-	BitcoinSig2 Sig
+	BrocoinSig1 Sig
+	BrocoinSig2 Sig
 
 	// Features is the feature vector that encodes the features supported
 	// by the target node. This field can be used to signal the type of the
@@ -46,8 +46,8 @@ type ChannelAnnouncement struct {
 
 	// Public keys which corresponds to the keys which was declared in
 	// multisig funding transaction output.
-	BitcoinKey1 [33]byte
-	BitcoinKey2 [33]byte
+	BrocoinKey1 [33]byte
+	BrocoinKey2 [33]byte
 
 	// ExtraOpaqueData is the set of data that was appended to this
 	// message, some of which we may not actually know how to iterate or
@@ -70,15 +70,15 @@ func (a *ChannelAnnouncement) Decode(r io.Reader, pver uint32) error {
 	return ReadElements(r,
 		&a.NodeSig1,
 		&a.NodeSig2,
-		&a.BitcoinSig1,
-		&a.BitcoinSig2,
+		&a.BrocoinSig1,
+		&a.BrocoinSig2,
 		&a.Features,
 		a.ChainHash[:],
 		&a.ShortChannelID,
 		&a.NodeID1,
 		&a.NodeID2,
-		&a.BitcoinKey1,
-		&a.BitcoinKey2,
+		&a.BrocoinKey1,
+		&a.BrocoinKey2,
 		&a.ExtraOpaqueData,
 	)
 }
@@ -96,11 +96,11 @@ func (a *ChannelAnnouncement) Encode(w *bytes.Buffer, pver uint32) error {
 		return err
 	}
 
-	if err := WriteSig(w, a.BitcoinSig1); err != nil {
+	if err := WriteSig(w, a.BrocoinSig1); err != nil {
 		return err
 	}
 
-	if err := WriteSig(w, a.BitcoinSig2); err != nil {
+	if err := WriteSig(w, a.BrocoinSig2); err != nil {
 		return err
 	}
 
@@ -124,11 +124,11 @@ func (a *ChannelAnnouncement) Encode(w *bytes.Buffer, pver uint32) error {
 		return err
 	}
 
-	if err := WriteBytes(w, a.BitcoinKey1[:]); err != nil {
+	if err := WriteBytes(w, a.BrocoinKey1[:]); err != nil {
 		return err
 	}
 
-	if err := WriteBytes(w, a.BitcoinKey2[:]); err != nil {
+	if err := WriteBytes(w, a.BrocoinKey2[:]); err != nil {
 		return err
 	}
 
@@ -170,11 +170,11 @@ func (a *ChannelAnnouncement) DataToSign() ([]byte, error) {
 		return nil, err
 	}
 
-	if err := WriteBytes(buf, a.BitcoinKey1[:]); err != nil {
+	if err := WriteBytes(buf, a.BrocoinKey1[:]); err != nil {
 		return nil, err
 	}
 
-	if err := WriteBytes(buf, a.BitcoinKey2[:]); err != nil {
+	if err := WriteBytes(buf, a.BrocoinKey2[:]); err != nil {
 		return nil, err
 	}
 

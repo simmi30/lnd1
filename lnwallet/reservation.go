@@ -166,7 +166,7 @@ type ChannelReservation struct {
 	fundingTx *wire.MsgTx
 
 	// In order of sorted inputs. Sorting is done in accordance
-	// to BIP-69: https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki.
+	// to BIP-69: https://github.com/brocoin/bips/blob/master/bip-0069.mediawiki.
 	ourFundingInputScripts   []*input.Script
 	theirFundingInputScripts []*input.Script
 
@@ -636,7 +636,7 @@ func (r *ChannelReservation) TheirContribution() *ChannelContribution {
 // transaction belonging to itself, and also a signature for the counterparty's
 // version of the commitment transaction. The signatures for the wallet's
 // inputs to the funding transaction are returned in sorted order according to
-// BIP-69: https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki.
+// BIP-69: https://github.com/brocoin/bips/blob/master/bip-0069.mediawiki.
 //
 // NOTE: These signatures will only be populated after a call to
 // .ProcessContribution()
@@ -653,7 +653,7 @@ func (r *ChannelReservation) OurSignatures() ([]*input.Script,
 // signatures to the counterparty's inputs to the funding transaction will be
 // fully verified. Signatures are expected to be passed in sorted order
 // according to BIP-69:
-// https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki.
+// https://github.com/brocoin/bips/blob/master/bip-0069.mediawiki.
 // Additionally, verification is performed in order to ensure that the
 // counterparty supplied a valid signature to our version of the commitment
 // transaction.  Once this method returns, callers should broadcast the

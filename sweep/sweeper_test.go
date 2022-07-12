@@ -1209,7 +1209,7 @@ func TestBumpFeeRBF(t *testing.T) {
 	// We'll then attempt to sweep an input, which we'll use to bump its fee
 	// later on.
 	input := createTestInput(
-		btcutil.SatoshiPerBitcoin, input.CommitmentTimeLock,
+		btcutil.SatoshiPerBrocoin, input.CommitmentTimeLock,
 	)
 	sweepResult, err := ctx.sweeper.SweepInput(
 		&input, Params{Fee: lowFeePref},
@@ -1791,7 +1791,7 @@ func TestRequiredTxOuts(t *testing.T) {
 	var inputs []*input.BaseInput
 	for i := 0; i < 20; i++ {
 		input := createTestInput(
-			int64(btcutil.SatoshiPerBitcoin+i*500),
+			int64(btcutil.SatoshiPerBrocoin+i*500),
 			input.CommitmentTimeLock,
 		)
 
@@ -2244,7 +2244,7 @@ func TestSweeperShutdownHandling(t *testing.T) {
 	ctx := createSweeperTestContext(t)
 
 	// Make the backing notifier break down. This is what happens during
-	// lnd shut down, since the notifier is stopped before the sweeper.
+	// broln shut down, since the notifier is stopped before the sweeper.
 	require.Len(t, ctx.notifier.epochChan, 1)
 	for epochChan := range ctx.notifier.epochChan {
 		close(epochChan)

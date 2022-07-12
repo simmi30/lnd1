@@ -13,7 +13,7 @@ import (
 )
 
 // ValidateChannelAnn validates the channel announcement message and checks
-// that node signatures covers the announcement message, and that the bitcoin
+// that node signatures covers the announcement message, and that the brocoin
 // signatures covers the node keys.
 func ValidateChannelAnn(a *lnwire.ChannelAnnouncement) error {
 	// First, we'll compute the digest (h) which is to be signed by each of
@@ -26,33 +26,33 @@ func ValidateChannelAnn(a *lnwire.ChannelAnnouncement) error {
 	}
 	dataHash := chainhash.DoubleHashB(data)
 
-	// First we'll verify that the passed bitcoin key signature is indeed a
+	// First we'll verify that the passed brocoin key signature is indeed a
 	// signature over the computed hash digest.
-	bitcoinSig1, err := a.BitcoinSig1.ToSignature()
+	brocoinSig1, err := a.BrocoinSig1.ToSignature()
 	if err != nil {
 		return err
 	}
-	bitcoinKey1, err := btcec.ParsePubKey(a.BitcoinKey1[:], btcec.S256())
+	brocoinKey1, err := btcec.ParsePubKey(a.BrocoinKey1[:], btcec.S256())
 	if err != nil {
 		return err
 	}
-	if !bitcoinSig1.Verify(dataHash, bitcoinKey1) {
-		return errors.New("can't verify first bitcoin signature")
+	if !brocoinSig1.Verify(dataHash, brocoinKey1) {
+		return errors.New("can't verify first brocoin signature")
 	}
 
-	// If that checks out, then we'll verify that the second bitcoin
-	// signature is a valid signature of the bitcoin public key over hash
+	// If that checks out, then we'll verify that the second brocoin
+	// signature is a valid signature of the brocoin public key over hash
 	// digest as well.
-	bitcoinSig2, err := a.BitcoinSig2.ToSignature()
+	brocoinSig2, err := a.BrocoinSig2.ToSignature()
 	if err != nil {
 		return err
 	}
-	bitcoinKey2, err := btcec.ParsePubKey(a.BitcoinKey2[:], btcec.S256())
+	brocoinKey2, err := btcec.ParsePubKey(a.BrocoinKey2[:], btcec.S256())
 	if err != nil {
 		return err
 	}
-	if !bitcoinSig2.Verify(dataHash, bitcoinKey2) {
-		return errors.New("can't verify second bitcoin signature")
+	if !brocoinSig2.Verify(dataHash, brocoinKey2) {
+		return errors.New("can't verify second brocoin signature")
 	}
 
 	// Both node signatures attached should indeed be a valid signature

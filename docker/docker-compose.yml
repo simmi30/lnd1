@@ -1,27 +1,27 @@
 version: '2'
 services:
-    # btc is an image of bitcoin node which used as base image for btcd and
+    # btc is an image of brocoin node which used as base image for brond and
     # btccli. The environment variables default values determined on stage of
     # container start within starting script.
-    btcd:
-      image: btcd
-      container_name: btcd
+    brond:
+      image: brond
+      container_name: brond
       build:
-        context: btcd/
+        context: brond/
       volumes:
         - shared:/rpc
-        - bitcoin:/data
+        - brocoin:/data
       environment:
         - RPCUSER
         - RPCPASS
         - NETWORK
         - DEBUG
         - MINING_ADDRESS
-      entrypoint: ["./start-btcd.sh"]
+      entrypoint: ["./start-brond.sh"]
 
-    lnd:
-      image: lnd
-      container_name: lnd
+    broln:
+      image: broln
+      container_name: broln
       build:
         context: ../
         dockerfile: dev.Dockerfile
@@ -33,23 +33,23 @@ services:
         - DEBUG
       volumes:
         - shared:/rpc
-        - lnd:/root/.lnd
-      entrypoint: ["./start-lnd.sh"]
+        - broln:/root/.broln
+      entrypoint: ["./start-broln.sh"]
       links:
-        - "btcd:blockchain"
+        - "brond:blockchain"
 
 volumes:
-  # shared volume is need to store the btcd rpc certificates and use it within
-  # btcctl and lnd containers.
+  # shared volume is need to store the brond rpc certificates and use it within
+  # bronctl and broln containers.
   shared:
     driver: local
 
-  # bitcoin volume is needed for maintaining blockchain persistence
-  # during btcd container recreation.
-  bitcoin:
+  # brocoin volume is needed for maintaining blockchain persistence
+  # during brond container recreation.
+  brocoin:
     driver: local
 
-  # lnd volume is used for persisting lnd application data and chain state
+  # broln volume is used for persisting broln application data and chain state
   # during container lifecycle.
-  lnd:
+  broln:
     driver: local

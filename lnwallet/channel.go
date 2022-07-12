@@ -2821,7 +2821,7 @@ func (lc *LightningChannel) fetchParent(entry *PaymentDescriptor,
 
 	switch {
 	// We check if the parent entry is not found at this point.
-	// This could happen for old versions of lnd, and we return an
+	// This could happen for old versions of broln, and we return an
 	// error to gracefully shut down the state machine if such an
 	// entry is still in the logs.
 	case addEntry == nil:

@@ -100,7 +100,7 @@ var (
 // PsbtIntent is an intent created by the PsbtAssembler which represents a
 // funding output to be created by a PSBT. This might be used when a hardware
 // wallet, or a channel factory is the entity crafting the funding transaction,
-// and not lnd.
+// and not broln.
 type PsbtIntent struct {
 	// ShimIntent is the wrapped basic intent that contains common fields
 	// we also use in the PSBT funding case.
@@ -476,7 +476,7 @@ func (i *PsbtIntent) ShouldPublishFundingTX() bool {
 }
 
 // PsbtAssembler is a type of chanfunding.Assembler wherein the funding
-// transaction is constructed outside of lnd by using partially signed bitcoin
+// transaction is constructed outside of broln by using partially signed brocoin
 // transactions (PSBT).
 type PsbtAssembler struct {
 	// fundingAmt is the total amount of coins in the funding output.
@@ -512,7 +512,7 @@ func NewPsbtAssembler(fundingAmt btcutil.Amount, basePsbt *psbt.Packet,
 
 // ProvisionChannel creates a new ShimIntent given the passed funding Request.
 // The returned intent is immediately able to provide the channel point and
-// funding output as they've already been created outside lnd.
+// funding output as they've already been created outside broln.
 //
 // NOTE: This method satisfies the chanfunding.Assembler interface.
 func (p *PsbtAssembler) ProvisionChannel(req *Request) (Intent, error) {

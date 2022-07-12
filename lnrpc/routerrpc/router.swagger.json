@@ -50,7 +50,7 @@
     },
     "/v2/router/htlcinterceptor": {
       "post": {
-        "summary": "*\nHtlcInterceptor dispatches a bi-directional streaming RPC in which\nForwarded HTLC requests are sent to the client and the client responds with\na boolean that tells LND if this htlc should be intercepted.\nIn case of interception, the htlc can be either settled, cancelled or\nresumed later by using the ResolveHoldForward endpoint.",
+        "summary": "*\nHtlcInterceptor dispatches a bi-directional streaming RPC in which\nForwarded HTLC requests are sent to the client and the client responds with\na boolean that tells broln if this htlc should be intercepted.\nIn case of interception, the htlc can be either settled, cancelled or\nresumed later by using the ResolveHoldForward endpoint.",
         "operationId": "Router_HtlcInterceptor",
         "responses": {
           "200": {
@@ -935,7 +935,7 @@
         "payment_index": {
           "type": "string",
           "format": "uint64",
-          "description": "The creation index of this payment. Each payment can be uniquely identified\nby this index, which may not strictly increment by 1 for payments made in\nolder versions of lnd."
+          "description": "The creation index of this payment. Each payment can be uniquely identified\nby this index, which may not strictly increment by 1 for payments made in\nolder versions of broln."
         },
         "failure_reason": {
           "$ref": "#/definitions/lnrpcPaymentFailureReason"
@@ -1581,7 +1581,7 @@
         "cltv_limit": {
           "type": "integer",
           "format": "int32",
-          "description": "An optional maximum total time lock for the route. This should not exceed\nlnd's `--max-cltv-expiry` setting. If zero, then the value of\n`--max-cltv-expiry` is enforced."
+          "description": "An optional maximum total time lock for the route. This should not exceed\nbroln's `--max-cltv-expiry` setting. If zero, then the value of\n`--max-cltv-expiry` is enforced."
         },
         "route_hints": {
           "type": "array",
@@ -1621,7 +1621,7 @@
         "max_shard_size_msat": {
           "type": "string",
           "format": "uint64",
-          "description": "The largest payment split that should be attempted when making a payment if\nsplitting is necessary. Setting this value will effectively cause lnd to\nsplit more aggressively, vs only when it thinks it needs to. Note that this\nvalue is in milli-satoshis."
+          "description": "The largest payment split that should be attempted when making a payment if\nsplitting is necessary. Setting this value will effectively cause broln to\nsplit more aggressively, vs only when it thinks it needs to. Note that this\nvalue is in milli-satoshis."
         },
         "amp": {
           "type": "boolean",

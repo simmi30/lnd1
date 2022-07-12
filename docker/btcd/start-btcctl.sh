@@ -56,4 +56,4 @@ PARAMS=$(echo $PARAMS \
 )
 
 PARAMS="$PARAMS $@"
-exec btcctl $PARAMS
+exec bronctl $PARAMS

@@ -572,7 +572,7 @@ func (c *ChannelArbitrator) relaunchResolvers(commitSet *CommitSet,
 	}
 	commitHash := contractResolutions.CommitHash
 
-	// In prior versions of lnd, the information needed to supplement the
+	// In prior versions of broln, the information needed to supplement the
 	// resolvers (in most cases, the full amount of the HTLC) was found in
 	// the chain action map, which is now deprecated.  As a result, if the
 	// commitSet is nil (an older node with unresolved HTLCs at time of

@@ -147,7 +147,7 @@ type TransactionSubscription interface {
 // Go wallet, a local or remote wallet via an RPC mechanism, or possibly even
 // a daemon assisted hardware wallet. This interface serves the purpose of
 // allowing LightningWallet to be seamlessly compatible with several wallets
-// such as: uspv, btcwallet, Bitcoin Core, Electrum, etc. This interface then
+// such as: uspv, btcwallet, Brocoin Core, Electrum, etc. This interface then
 // serves as a "base wallet", with Lightning Network awareness taking place at
 // a "higher" level of abstraction. Essentially, an overlay wallet.
 // Implementors of this interface must closely adhere to the documented
@@ -241,7 +241,7 @@ type WalletController interface {
 	ImportPublicKey(pubKey *btcec.PublicKey,
 		addrType waddrmgr.AddressType) error
 
-	// SendOutputs funds, signs, and broadcasts a Bitcoin transaction paying
+	// SendOutputs funds, signs, and broadcasts a Brocoin transaction paying
 	// out to the specified outputs. In the case the wallet has insufficient
 	// funds, or the outputs are non-standard, an error should be returned.
 	// This method also takes the target fee expressed in sat/kw that should
@@ -251,7 +251,7 @@ type WalletController interface {
 	SendOutputs(outputs []*wire.TxOut, feeRate chainfee.SatPerKWeight,
 		minConfs int32, label string) (*wire.MsgTx, error)
 
-	// CreateSimpleTx creates a Bitcoin transaction paying to the specified
+	// CreateSimpleTx creates a Brocoin transaction paying to the specified
 	// outputs. The transaction is not broadcasted to the network. In the
 	// case the wallet has insufficient funds, or the outputs are
 	// non-standard, an error should be returned. This method also takes
@@ -331,7 +331,7 @@ type WalletController interface {
 	ListLeasedOutputs() ([]*wtxmgr.LockedOutput, error)
 
 	// PublishTransaction performs cursory validation (dust checks, etc),
-	// then finally broadcasts the passed transaction to the Bitcoin network.
+	// then finally broadcasts the passed transaction to the Brocoin network.
 	// If the transaction is rejected because it is conflicting with an
 	// already known transaction, ErrDoubleSpend is returned. If the
 	// transaction is already known (published already), no error will be
@@ -369,7 +369,7 @@ type WalletController interface {
 	// required fields (UTXO information, BIP32 derivation information,
 	// witness or sig scripts) set.
 	// If no error is returned, the PSBT is ready to be given to the next
-	// signer or to be finalized if lnd was the last signer.
+	// signer or to be finalized if broln was the last signer.
 	//
 	// NOTE: This method only signs inputs (and only those it can sign), it
 	// does not perform any other tasks (such as coin selection, UTXO
@@ -379,10 +379,10 @@ type WalletController interface {
 
 	// FinalizePsbt expects a partial transaction with all inputs and
 	// outputs fully declared and tries to sign all inputs that belong to
-	// the specified account. Lnd must be the last signer of the
+	// the specified account. broln must be the last signer of the
 	// transaction. That means, if there are any unsigned non-witness inputs
 	// or inputs without UTXO information attached or inputs without witness
-	// data that do not belong to lnd's wallet, this method will fail. If no
+	// data that do not belong to broln's wallet, this method will fail. If no
 	// error is returned, the PSBT is ready to be extracted and the final TX
 	// within to be broadcast.
 	//
@@ -421,7 +421,7 @@ type WalletController interface {
 	Stop() error
 
 	// BackEnd returns a name for the wallet's backing chain service,
-	// which could be e.g. btcd, bitcoind, neutrino, or another consensus
+	// which could be e.g. brond, brocoind, neutrino, or another consensus
 	// service.
 	BackEnd() string
 }
@@ -488,7 +488,7 @@ type WalletDriver struct {
 	New func(args ...interface{}) (WalletController, error)
 
 	// BackEnds returns a list of available chain service drivers for the
-	// wallet driver. This could be e.g. bitcoind, btcd, neutrino, etc.
+	// wallet driver. This could be e.g. brocoind, brond, neutrino, etc.
 	BackEnds func() []string
 }
 

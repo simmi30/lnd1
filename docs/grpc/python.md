@@ -1,41 +1,41 @@
 # How to write a Python gRPC client for the Lightning Network Daemon
 
 This section enumerates what you need to do to write a client that communicates
-with `lnd` in Python.
+with `broln` in Python.
 
 ## Setup and Installation
 
-Lnd uses the gRPC protocol for communication with clients like lncli. gRPC is
-based on protocol buffers and as such, you will need to compile the lnd proto
-file in Python before you can use it to communicate with lnd.
+broln uses the gRPC protocol for communication with clients like lncli. gRPC is
+based on protocol buffers and as such, you will need to compile the broln proto
+file in Python before you can use it to communicate with broln.
 
 1. Create a virtual environment for your project
     ```shell
-    ⛰  virtualenv lnd
+    ⛰  virtualenv broln
     ```
 2. Activate the virtual environment
     ```shell
-    ⛰  source lnd/bin/activate
+    ⛰  source broln/bin/activate
     ```
 3. Install dependencies (googleapis-common-protos is required due to the use of
   google/api/annotations.proto)
     ```shell
-    lnd ⛰  pip install grpcio grpcio-tools googleapis-common-protos
+    broln ⛰  pip install grpcio grpcio-tools googleapis-common-protos
     ```
 4. Clone the google api's repository (required due to the use of
   google/api/annotations.proto)
     ```shell
-    lnd ⛰  git clone https://github.com/googleapis/googleapis.git
+    broln ⛰  git clone https://github.com/googleapis/googleapis.git
     ```
-5. Copy the lnd lightning.proto file (you'll find this at
+5. Copy the broln lightning.proto file (you'll find this at
   [lnrpc/lightning.proto](https://github.com/brolightningnetwork/broln/blob/master/lnrpc/lightning.proto))
   or just download it
     ```shell
-    lnd ⛰  curl -o lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/lightning.proto
+    broln ⛰  curl -o lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/broln/master/lnrpc/lightning.proto
     ```
 6. Compile the proto file
     ```shell
-    lnd ⛰  python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. lightning.proto
+    broln ⛰  python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. lightning.proto
     ```
 
 After following these steps, two files `lightning_pb2.py` and
@@ -53,16 +53,16 @@ extra steps (after completing all 6 step described above) to get the
 `router_pb2.py` and `router_pb2_grpc.py`:
 
 ```shell
-lnd ⛰  curl -o router.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/routerrpc/router.proto
-lnd ⛰  python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. router.proto
+broln ⛰  curl -o router.proto -s https://raw.githubusercontent.com/lightningnetwork/broln/master/lnrpc/routerrpc/router.proto
+broln ⛰  python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. router.proto
 ```
 
 ### Imports and Client
 
 Every time you use Python gRPC, you will have to import the generated rpc modules
-and set up a channel and stub to your connect to your `lnd` node.
+and set up a channel and stub to your connect to your `broln` node.
 
-Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `lnd` configuration and re-generate the certificate (delete tls.cert and tls.key and restart lnd).
+Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `broln` configuration and re-generate the certificate (delete tls.cert and tls.key and restart broln).
 
 ```python
 import lightning_pb2 as ln
@@ -72,12 +72,12 @@ import os
 
 # Due to updated ECDSA generated tls.cert we need to let gprc know that
 # we need to use that cipher suite otherwise there will be a handhsake
-# error when we communicate with the lnd rpc server.
+# error when we communicate with the broln rpc server.
 os.environ["GRPC_SSL_CIPHER_SUITES"] = 'HIGH+ECDSA'
 
-# Lnd cert is at ~/.lnd/tls.cert on Linux and
-# ~/Library/Application Support/Lnd/tls.cert on Mac
-cert = open(os.path.expanduser('~/.lnd/tls.cert'), 'rb').read()
+# broln cert is at ~/.broln/tls.cert on Linux and
+# ~/Library/Application Support/broln/tls.cert on Mac
+cert = open(os.path.expanduser('~/.broln/tls.cert'), 'rb').read()
 creds = grpc.ssl_channel_credentials(cert)
 channel = grpc.secure_channel('localhost:10019', creds)
 stub = lnrpc.LightningStub(channel)
@@ -86,7 +86,7 @@ stub = lnrpc.LightningStub(channel)
 ## Examples
 
 Let's walk through some examples of Python gRPC clients. These examples assume
-that you have at least two `lnd` nodes running, the RPC location of one of which
+that you have at least two `broln` nodes running, the RPC location of one of which
 is at the default `localhost:10019`, with an open channel between the two nodes.
 
 ### Simple RPC
@@ -108,12 +108,12 @@ for invoice in stub.SubscribeInvoices(request):
 Now, create an invoice for your node at `localhost:10019`and send a payment to
 it from another node.
 ```shell
-lnd ⛰  lncli addinvoice --amt=100
+broln ⛰  lncli addinvoice --amt=100
 {
 	"r_hash": <R_HASH>,
 	"pay_req": <PAY_REQ>
 }
-lnd ⛰  lncli sendpayment --pay_req=<PAY_REQ>
+broln ⛰  lncli sendpayment --pay_req=<PAY_REQ>
 ```
 
 Your Python console should now display the details of the recently satisfied
@@ -157,9 +157,9 @@ To authenticate using macaroons you need to include the macaroon in the metadata
 ```python
 import codecs
 
-# Lnd admin macaroon is at ~/.lnd/data/chain/bitcoin/simnet/admin.macaroon on Linux and
-# ~/Library/Application Support/Lnd/data/chain/bitcoin/simnet/admin.macaroon on Mac
-with open(os.path.expanduser('~/.lnd/data/chain/bitcoin/simnet/admin.macaroon'), 'rb') as f:
+# broln admin macaroon is at ~/.broln/data/chain/brocoin/simnet/admin.macaroon on Linux and
+# ~/Library/Application Support/broln/data/chain/brocoin/simnet/admin.macaroon on Mac
+with open(os.path.expanduser('~/.broln/data/chain/brocoin/simnet/admin.macaroon'), 'rb') as f:
     macaroon_bytes = f.read()
     macaroon = codecs.encode(macaroon_bytes, 'hex')
 ```
@@ -199,7 +199,7 @@ stub.GetInfo(ln.GetInfoRequest())
 
 ## Conclusion
 
-With the above, you should have all the `lnd` related `gRPC` dependencies
+With the above, you should have all the `broln` related `gRPC` dependencies
 installed locally into your virtual environment. In order to get up to speed
 with `protofbuf` usage from Python, see [this official `protobuf` tutorial for
 Python](https://developers.google.com/protocol-buffers/docs/pythontutorial).
@@ -215,7 +215,7 @@ on how to use them.
 
 ## Special Scenarios
 
-Due to a conflict between lnd's `UpdateChannelPolicy` gRPC endpoint and the python reserved word list, the follow syntax is required in order to use `PolicyUpdateRequest` with the `global` variable.
+Due to a conflict between broln's `UpdateChannelPolicy` gRPC endpoint and the python reserved word list, the follow syntax is required in order to use `PolicyUpdateRequest` with the `global` variable.
 Here is an example of a working format that allows for use of a reserved word `global` in this scenario.
 
 ```

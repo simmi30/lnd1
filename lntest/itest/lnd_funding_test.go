@@ -46,7 +46,7 @@ func testBasicChannelFunding(net *lntest.NetworkHarness, t *harnessTest) {
 
 		// Each time, we'll send Carol a new set of coins in order to
 		// fund the channel.
-		net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+		net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 		daveArgs := nodeArgsForCommitType(daveCommitType)
 		dave := net.NewNode(t.t, "Dave", daveArgs)
@@ -378,7 +378,7 @@ func testExternalFundingChanPoint(net *lntest.NetworkHarness, t *harnessTest) {
 
 	// Carol will be funding the channel, so we'll send some coins over to
 	// her and ensure they have enough confirmations before we proceed.
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	// Before we start the test, we'll ensure both sides are connected to
 	// the funding flow can properly be executed.
@@ -494,7 +494,7 @@ func testChannelFundingPersistence(net *lntest.NetworkHarness, t *harnessTest) {
 	// confirmation before it's open, with the current set of defaults,
 	// we'll need to create a new node instance.
 	const numConfs = 5
-	carolArgs := []string{fmt.Sprintf("--bitcoin.defaultchanconfs=%v", numConfs)}
+	carolArgs := []string{fmt.Sprintf("--brocoin.defaultchanconfs=%v", numConfs)}
 	carol := net.NewNode(t.t, "Carol", carolArgs)
 
 	// Clean up carol's node when the test finishes.

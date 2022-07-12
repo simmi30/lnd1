@@ -126,7 +126,7 @@ var (
 	// while implementations are battle tested in the real world.
 	//
 	// At the moment, this value depends on which chain is active. It is set
-	// to the value under the Bitcoin chain as default.
+	// to the value under the Brocoin chain as default.
 	//
 	// TODO(roasbeef): add command line param to modify
 	MaxFundingAmount = funding.MaxBtcFundingAmount
@@ -166,7 +166,7 @@ type server struct {
 	identityKeyLoc keychain.KeyLocator
 
 	// nodeSigner is an implementation of the MessageSigner implementation
-	// that's backed by the identity private key of the running lnd node.
+	// that's backed by the identity private key of the running broln node.
 	nodeSigner *netann.NodeSigner
 
 	chanStatusMgr *netann.ChanStatusManager
@@ -319,7 +319,7 @@ type server struct {
 
 	hostAnn *netann.HostAnnouncer
 
-	// livelinessMonitor monitors that lnd has access to critical resources.
+	// livelinessMonitor monitors that broln has access to critical resources.
 	livelinessMonitor *healthcheck.Monitor
 
 	customMessageServer *subscribe.Server
@@ -491,7 +491,7 @@ func newServer(cfg *Config, listenAddrs []net.Addr,
 	listeners := make([]net.Listener, len(listenAddrs))
 	for i, listenAddr := range listenAddrs {
 		// Note: though brontide.NewListener uses ResolveTCPAddr, it
-		// doesn't need to call the general lndResolveTCP function
+		// doesn't need to call the general brolnResolveTCP function
 		// since we are resolving a local address.
 		listeners[i], err = brontide.NewListener(
 			nodeKeyECDH, listenAddr.String(),
@@ -892,7 +892,7 @@ func newServer(cfg *Config, listenAddrs []net.Addr,
 
 	s.controlTower = routing.NewControlTower(paymentControl)
 
-	strictPruning := (cfg.Bitcoin.Node == "neutrino" ||
+	strictPruning := (cfg.Brocoin.Node == "neutrino" ||
 		cfg.Routing.StrictZombiePruning)
 	s.chanRouter, err = routing.New(routing.Config{
 		Graph:               chanGraph,
@@ -1141,10 +1141,10 @@ func newServer(cfg *Config, listenAddrs []net.Addr,
 		SubscribeBreachComplete:       s.breachArbiter.SubscribeBreachComplete,
 	}, dbs.ChanStateDB)
 
-	// Select the configuration and furnding parameters for Bitcoin or
+	// Select the configuration and furnding parameters for Brocoin or
 	// Litecoin, depending on the primary registered chain.
 	primaryChain := cfg.registeredChains.PrimaryChain()
-	chainCfg := cfg.Bitcoin
+	chainCfg := cfg.Brocoin
 	minRemoteDelay := funding.MinBtcRemoteDelay
 	maxRemoteDelay := funding.MaxBtcRemoteDelay
 	if primaryChain == chainreg.LitecoinChain {
@@ -1521,7 +1521,7 @@ func (s *server) createLivenessMonitor(cfg *Config, cc *chainreg.ChainControl) {
 		"disk space",
 		func() error {
 			free, err := healthcheck.AvailableDiskSpaceRatio(
-				cfg.LndDir,
+				cfg.brolnDir,
 			)
 			if err != nil {
 				return err
@@ -1943,24 +1943,24 @@ func (s *server) Start() error {
 		}
 
 		// Let users overwrite the DNS seed nodes. We only allow them
-		// for bitcoin mainnet/testnet and litecoin mainnet, all other
+		// for brocoin mainnet/testnet and litecoin mainnet, all other
 		// combinations will just be ignored.
-		if s.cfg.Bitcoin.Active && s.cfg.Bitcoin.MainNet {
+		if s.cfg.Brocoin.Active && s.cfg.Brocoin.MainNet {
 			setSeedList(
-				s.cfg.Bitcoin.DNSSeeds,
-				chainreg.BitcoinMainnetGenesis,
+				s.cfg.Brocoin.DNSSeeds,
+				chainreg.BrocoinMainnetGenesis,
 			)
 		}
-		if s.cfg.Bitcoin.Active && s.cfg.Bitcoin.TestNet3 {
+		if s.cfg.Brocoin.Active && s.cfg.Brocoin.TestNet3 {
 			setSeedList(
-				s.cfg.Bitcoin.DNSSeeds,
-				chainreg.BitcoinTestnetGenesis,
+				s.cfg.Brocoin.DNSSeeds,
+				chainreg.BrocoinTestnetGenesis,
 			)
 		}
-		if s.cfg.Bitcoin.Active && s.cfg.Bitcoin.SigNet {
+		if s.cfg.Brocoin.Active && s.cfg.Brocoin.SigNet {
 			setSeedList(
-				s.cfg.Bitcoin.DNSSeeds,
-				chainreg.BitcoinSignetGenesis,
+				s.cfg.Brocoin.DNSSeeds,
+				chainreg.BrocoinSignetGenesis,
 			)
 		}
 		if s.cfg.Litecoin.Active && s.cfg.Litecoin.MainNet {
@@ -2322,7 +2322,7 @@ func initNetworkBootstrappers(s *server) ([]discovery.NetworkPeerBootstrapper, e
 
 	// If this isn't simnet mode, then one of our additional bootstrapping
 	// sources will be the set of running DNS seeds.
-	if !s.cfg.Bitcoin.SimNet || !s.cfg.Litecoin.SimNet {
+	if !s.cfg.Brocoin.SimNet || !s.cfg.Litecoin.SimNet {
 		dnsSeeds, ok := chainreg.ChainDNSSeeds[*s.cfg.ActiveNetParams.GenesisHash]
 
 		// If we have a set of DNS seeds for this chain, then we'll add
@@ -2638,7 +2638,7 @@ func (s *server) createNewHiddenService() error {
 
 	// Once the port mapping has been set, we can go ahead and automatically
 	// create our onion service. The service's private key will be saved to
-	// disk in order to regain access to this service when restarting `lnd`.
+	// disk in order to regain access to this service when restarting `broln`.
 	onionCfg := tor.AddOnionConfig{
 		VirtualPort: defaultPeerPort,
 		TargetPorts: listenPorts,
@@ -3759,7 +3759,7 @@ func (s *server) peerTerminationWatcher(p *peer.Brontide, ready chan struct{}) {
 		// If we are, the peer's address won't be known
 		// to us (we'll see a private address, which is
 		// the address used by our onion service to dial
-		// to lnd), so we don't have enough information
+		// to broln), so we don't have enough information
 		// to attempt a reconnect.
 		srvrLog.Debugf("Ignoring reconnection attempt "+
 			"to inbound peer %v without "+
@@ -4349,9 +4349,9 @@ func newSweepPkScriptGen(
 // boostrapping to actively seek our peers using the set of active network
 // bootsrappers.
 func shouldPeerBootstrap(cfg *Config) bool {
-	isSimnet := (cfg.Bitcoin.SimNet || cfg.Litecoin.SimNet)
-	isSignet := (cfg.Bitcoin.SigNet || cfg.Litecoin.SigNet)
-	isRegtest := (cfg.Bitcoin.RegTest || cfg.Litecoin.RegTest)
+	isSimnet := (cfg.Brocoin.SimNet || cfg.Litecoin.SimNet)
+	isSignet := (cfg.Brocoin.SigNet || cfg.Litecoin.SigNet)
+	isRegtest := (cfg.Brocoin.RegTest || cfg.Litecoin.RegTest)
 	isDevNetwork := isSimnet || isSignet || isRegtest
 
 	// TODO(yy): remove the check on simnet/regtest such that the itest is

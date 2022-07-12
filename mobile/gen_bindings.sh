@@ -26,7 +26,7 @@ else
 fi
 
 # Name of the package for the generated APIs.
-pkg="lndmobile"
+pkg="brolnmobile"
 
 # The package where the protobuf definitions originally are found.
 target_pkg="github.com/brolightningnetwork/broln/lnrpc"

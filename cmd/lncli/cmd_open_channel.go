@@ -29,16 +29,16 @@ Please create a PSBT that sends %v (%d satoshi) to the funding address %s.
 Note: The whole process should be completed within 10 minutes, otherwise there
 is a risk of the remote node timing out and canceling the funding process.
 
-Example with bitcoind:
-	bitcoin-cli walletcreatefundedpsbt [] '[{"%s":%.8f}]'
+Example with brocoind:
+	brocoin-cli walletcreatefundedpsbt [] '[{"%s":%.8f}]'
 
 If you are using a wallet that can fund a PSBT directly (currently not possible
-with bitcoind), you can use this PSBT that contains the same address and amount:
+with brocoind), you can use this PSBT that contains the same address and amount:
 %s
 
 !!! WARNING !!!
 DO NOT PUBLISH the finished transaction by yourself or with another tool.
-lnd MUST publish it in the proper funding flow order OR THE FUNDS CAN BE LOST!
+broln MUST publish it in the proper funding flow order OR THE FUNDS CAN BE LOST!
 
 Paste the funded PSBT here to continue the funding flow.
 If your PSBT is very long (specifically, more than 4096 characters), please save
@@ -47,7 +47,7 @@ truncate the pasted text if it's too long.
 Base64 encoded PSBT (or path to text file): `
 
 	userMsgSign = `
-PSBT verified by lnd, please continue the funding flow by signing the PSBT by
+PSBT verified by broln, please continue the funding flow by signing the PSBT by
 all required parties/devices. Once the transaction is fully signed, paste it
 again here either in base64 PSBT or hex encoded raw wire TX format.
 
@@ -178,7 +178,7 @@ var openChannelCommand = cli.Command{
 		cli.BoolFlag{
 			Name: "psbt",
 			Usage: "start an interactive mode that initiates " +
-				"funding through a partially signed bitcoin " +
+				"funding through a partially signed brocoin " +
 				"transaction (PSBT), allowing the channel " +
 				"funds to be added and signed from a hardware " +
 				"or other offline device.",
@@ -194,7 +194,7 @@ var openChannelCommand = cli.Command{
 			Name: "no_publish",
 			Usage: "when using the interactive PSBT mode to open " +
 				"multiple channels in a batch, this flag " +
-				"instructs lnd to not publish the full batch " +
+				"instructs broln to not publish the full batch " +
 				"transaction just yet. For safety reasons " +
 				"this flag should be set for each of the " +
 				"batch's transactions except the very last",
@@ -371,7 +371,7 @@ func openChannel(ctx *cli.Context) error {
 }
 
 // openChannelPsbt starts an interactive channel open protocol that uses a
-// partially signed bitcoin transaction (PSBT) to fund the channel output. The
+// partially signed brocoin transaction (PSBT) to fund the channel output. The
 // protocol involves several steps between the RPC server and the CLI client:
 //
 // RPC server                           CLI client
@@ -480,7 +480,7 @@ func openChannelPsbt(rpcCtx context.Context, ctx *cli.Context,
 			// Recv blocks until a message or error arrives.
 			resp, err := stream.Recv()
 			if err == io.EOF {
-				srvErr <- fmt.Errorf("lnd shutting down: %v",
+				srvErr <- fmt.Errorf("broln shutting down: %v",
 					err)
 				return
 			} else if err != nil {
@@ -575,7 +575,7 @@ func openChannelPsbt(rpcCtx context.Context, ctx *cli.Context,
 			}
 			err = sendFundingState(ctxc, ctx, verifyMsg)
 			if err != nil {
-				return fmt.Errorf("verifying PSBT by lnd "+
+				return fmt.Errorf("verifying PSBT by broln "+
 					"failed: %v", err)
 			}
 
@@ -583,7 +583,7 @@ func openChannelPsbt(rpcCtx context.Context, ctx *cli.Context,
 			// be signed by the user.
 			fmt.Print(userMsgSign)
 
-			// Read the signed PSBT and send it to lnd.
+			// Read the signed PSBT and send it to broln.
 			finalTxStr, err := readTerminalOrFile(quit)
 			if err == io.EOF {
 				return nil

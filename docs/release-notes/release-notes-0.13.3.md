@@ -6,7 +6,7 @@
 
 ## Safety
 
-* [The `htlcswitch.Switch` has been modified to take into account the total dust sum on the incoming and outgoing channels before forwarding. After the defined threshold is reached, dust HTLC's will start to be failed. The default threshold is 500K satoshis and can be modified by setting `--dust-threshold=` when running `lnd`.](https://github.com/brolightningnetwork/broln/pull/5770)
+* [The `htlcswitch.Switch` has been modified to take into account the total dust sum on the incoming and outgoing channels before forwarding. After the defined threshold is reached, dust HTLC's will start to be failed. The default threshold is 500K satoshis and can be modified by setting `--dust-threshold=` when running `broln`.](https://github.com/brolightningnetwork/broln/pull/5770)
 
 # Contributors (Alphabetical Order)
 

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Clock is an interface that provides a time functions for LND packages.
+// Clock is an interface that provides a time functions for broln packages.
 // This is useful during testing when a concrete time reference is needed.
 type Clock interface {
 	// Now returns the current local time (as defined by the Clock).

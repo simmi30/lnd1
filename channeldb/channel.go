@@ -735,7 +735,7 @@ type OpenChannel struct {
 
 	// RevocationKeyLocator stores the KeyLocator information that we will
 	// need to derive the shachain root for this channel. This allows us to
-	// have private key isolation from lnd.
+	// have private key isolation from broln.
 	RevocationKeyLocator keychain.KeyLocator
 
 	// TODO(roasbeef): eww

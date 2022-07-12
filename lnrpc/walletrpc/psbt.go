@@ -46,14 +46,14 @@ func verifyInputsUnspent(inputs []*wire.TxIn, utxos []*lnwallet.Utxo) error {
 }
 
 // lockInputs requests a lock lease for all inputs specified in a PSBT packet
-// by using the internal, static lock ID of lnd's wallet.
+// by using the internal, static lock ID of broln's wallet.
 func lockInputs(w lnwallet.WalletController, packet *psbt.Packet) (
 	[]*wtxmgr.LockedOutput, error) {
 
 	locks := make([]*wtxmgr.LockedOutput, len(packet.UnsignedTx.TxIn))
 	for idx, rawInput := range packet.UnsignedTx.TxIn {
 		lock := &wtxmgr.LockedOutput{
-			LockID:   LndInternalLockID,
+			LockID:   brolnInternalLockID,
 			Outpoint: rawInput.PreviousOutPoint,
 		}
 
@@ -68,7 +68,7 @@ func lockInputs(w lnwallet.WalletController, packet *psbt.Packet) (
 			for i := 0; i < idx; i++ {
 				op := locks[i].Outpoint
 				if err := w.ReleaseOutput(
-					LndInternalLockID, op,
+					brolnInternalLockID, op,
 				); err != nil {
 
 					log.Errorf("could not release the "+

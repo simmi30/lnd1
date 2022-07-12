@@ -1895,8 +1895,8 @@ func (d *AuthenticatedGossiper) processNetworkAnnouncement(
 			proof = &channeldb.ChannelAuthProof{
 				NodeSig1Bytes:    msg.NodeSig1.ToSignatureBytes(),
 				NodeSig2Bytes:    msg.NodeSig2.ToSignatureBytes(),
-				BitcoinSig1Bytes: msg.BitcoinSig1.ToSignatureBytes(),
-				BitcoinSig2Bytes: msg.BitcoinSig2.ToSignatureBytes(),
+				BrocoinSig1Bytes: msg.BrocoinSig1.ToSignatureBytes(),
+				BrocoinSig2Bytes: msg.BrocoinSig2.ToSignatureBytes(),
 			}
 		}
 
@@ -1914,8 +1914,8 @@ func (d *AuthenticatedGossiper) processNetworkAnnouncement(
 			ChainHash:        msg.ChainHash,
 			NodeKey1Bytes:    msg.NodeID1,
 			NodeKey2Bytes:    msg.NodeID2,
-			BitcoinKey1Bytes: msg.BitcoinKey1,
-			BitcoinKey2Bytes: msg.BitcoinKey2,
+			BrocoinKey1Bytes: msg.BrocoinKey1,
+			BrocoinKey2Bytes: msg.BrocoinKey2,
 			AuthProof:        proof,
 			Features:         featureBuf.Bytes(),
 			ExtraOpaqueData:  msg.ExtraOpaqueData,
@@ -2393,7 +2393,7 @@ func (d *AuthenticatedGossiper) processNetworkAnnouncement(
 
 		// By the specification, channel announcement proofs should be
 		// sent after some number of confirmations after channel was
-		// registered in bitcoin blockchain. Therefore, we check if the
+		// registered in brocoin blockchain. Therefore, we check if the
 		// proof is premature.
 		d.Lock()
 		premature := d.isPremature(
@@ -2577,13 +2577,13 @@ func (d *AuthenticatedGossiper) processNetworkAnnouncement(
 		if isFirstNode {
 			dbProof.NodeSig1Bytes = msg.NodeSignature.ToSignatureBytes()
 			dbProof.NodeSig2Bytes = oppositeProof.NodeSignature.ToSignatureBytes()
-			dbProof.BitcoinSig1Bytes = msg.BitcoinSignature.ToSignatureBytes()
-			dbProof.BitcoinSig2Bytes = oppositeProof.BitcoinSignature.ToSignatureBytes()
+			dbProof.BrocoinSig1Bytes = msg.BrocoinSignature.ToSignatureBytes()
+			dbProof.BrocoinSig2Bytes = oppositeProof.BrocoinSignature.ToSignatureBytes()
 		} else {
 			dbProof.NodeSig1Bytes = oppositeProof.NodeSignature.ToSignatureBytes()
 			dbProof.NodeSig2Bytes = msg.NodeSignature.ToSignatureBytes()
-			dbProof.BitcoinSig1Bytes = oppositeProof.BitcoinSignature.ToSignatureBytes()
-			dbProof.BitcoinSig2Bytes = msg.BitcoinSignature.ToSignatureBytes()
+			dbProof.BrocoinSig1Bytes = oppositeProof.BrocoinSignature.ToSignatureBytes()
+			dbProof.BrocoinSig2Bytes = msg.BrocoinSignature.ToSignatureBytes()
 		}
 		chanAnn, e1Ann, e2Ann, err := netann.CreateChanAnnouncement(
 			&dbProof, chanInfo, e1, e2,
@@ -2607,9 +2607,9 @@ func (d *AuthenticatedGossiper) processNetworkAnnouncement(
 		}
 
 		// If the channel was returned by the router it means that
-		// existence of funding point and inclusion of nodes bitcoin
+		// existence of funding point and inclusion of nodes brocoin
 		// keys in it already checked by the router. In this stage we
-		// should check that node keys are attest to the bitcoin keys
+		// should check that node keys are attest to the brocoin keys
 		// by validating the signatures of announcement.  If proof is
 		// valid then we'll populate the channel edge with it, so we
 		// can announce it on peer connect.
@@ -2881,9 +2881,9 @@ func (d *AuthenticatedGossiper) updateChannel(info *channeldb.ChannelEdgeInfo,
 			NodeID1:         info.NodeKey1Bytes,
 			NodeID2:         info.NodeKey2Bytes,
 			ChainHash:       info.ChainHash,
-			BitcoinKey1:     info.BitcoinKey1Bytes,
+			BrocoinKey1:     info.BrocoinKey1Bytes,
 			Features:        lnwire.NewRawFeatureVector(),
-			BitcoinKey2:     info.BitcoinKey2Bytes,
+			BrocoinKey2:     info.BrocoinKey2Bytes,
 			ExtraOpaqueData: edge.ExtraOpaqueData,
 		}
 		chanAnn.NodeSig1, err = lnwire.NewSigFromRawSignature(
@@ -2898,14 +2898,14 @@ func (d *AuthenticatedGossiper) updateChannel(info *channeldb.ChannelEdgeInfo,
 		if err != nil {
 			return nil, nil, err
 		}
-		chanAnn.BitcoinSig1, err = lnwire.NewSigFromRawSignature(
-			info.AuthProof.BitcoinSig1Bytes,
+		chanAnn.BrocoinSig1, err = lnwire.NewSigFromRawSignature(
+			info.AuthProof.BrocoinSig1Bytes,
 		)
 		if err != nil {
 			return nil, nil, err
 		}
-		chanAnn.BitcoinSig2, err = lnwire.NewSigFromRawSignature(
-			info.AuthProof.BitcoinSig2Bytes,
+		chanAnn.BrocoinSig2, err = lnwire.NewSigFromRawSignature(
+			info.AuthProof.BrocoinSig2Bytes,
 		)
 		if err != nil {
 			return nil, nil, err

@@ -110,7 +110,7 @@ func (b *BtcWallet) deriveKeyByBIP32Path(path []uint32) (*btcec.PrivateKey,
 	account := path[2] - hdkeychain.HardenedKeyStart
 	change, index := path[3], path[4]
 
-	// Is this a custom lnd internal purpose key?
+	// Is this a custom broln internal purpose key?
 	switch purpose {
 	case keychain.BIP0043Purpose:
 		// Make sure it's for the same coin type as our wallet's
@@ -135,7 +135,7 @@ func (b *BtcWallet) deriveKeyByBIP32Path(path []uint32) (*btcec.PrivateKey,
 		// unnecessary indentation for this default case.
 
 	// Currently, there is no way to import any other key scopes than the
-	// one custom purpose or three standard ones into lnd's wallet. So we
+	// one custom purpose or three standard ones into broln's wallet. So we
 	// shouldn't accept any other scopes to sign for.
 	default:
 		return nil, fmt.Errorf("invalid BIP32 derivation path, "+

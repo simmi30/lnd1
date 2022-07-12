@@ -23,7 +23,7 @@ const (
 )
 
 // DefaultRoutingFeeLimitForAmount returns the default off-chain routing fee
-// limit lnd uses if the user does not specify a limit manually. The fee is
+// limit broln uses if the user does not specify a limit manually. The fee is
 // amount dependent because of the base routing fee that is set on many
 // channels. For example the default base fee is 1 satoshi. So sending a payment
 // of one satoshi will cost 1 satoshi in fees over most channels, which comes to
@@ -41,7 +41,7 @@ func DefaultRoutingFeeLimitForAmount(a lnwire.MilliSatoshi) lnwire.MilliSatoshi 
 
 // DustLimitForSize retrieves the dust limit for a given pkscript size. Given
 // the size, it automatically determines whether the script is a witness script
-// or not. It calls btcd's GetDustThreshold method under the hood. It must be
+// or not. It calls brond's GetDustThreshold method under the hood. It must be
 // called with a proper size parameter or else a panic occurs.
 func DustLimitForSize(scriptSize int) btcutil.Amount {
 	var (

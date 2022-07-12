@@ -41,8 +41,8 @@ var (
 		{"tcp6:::1", "tcp", "[::1]:1234", true, false},
 		{"localhost:9782", "tcp", "127.0.0.1:9782", true, false},
 		{"localhost", "tcp", "127.0.0.1:1234", true, false},
-		{"unix:///tmp/lnd.sock", "unix", "/tmp/lnd.sock", false, true},
-		{"unix:/tmp/lnd.sock", "unix", "/tmp/lnd.sock", false, true},
+		{"unix:///tmp/broln.sock", "unix", "/tmp/broln.sock", false, true},
+		{"unix:/tmp/broln.sock", "unix", "/tmp/broln.sock", false, true},
 		{"123", "tcp", "127.0.0.1:123", true, false},
 		{
 			"4acth47i6kxnvkewtm6q7ib2s3ufpo5sqbsnzjpbi7utijcltosqemad.onion",

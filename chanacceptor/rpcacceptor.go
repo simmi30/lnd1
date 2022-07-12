@@ -81,7 +81,7 @@ type RPCAcceptor struct {
 	// done is closed when the rpc client terminates.
 	done chan struct{}
 
-	// quit is closed when lnd is shutting down.
+	// quit is closed when broln is shutting down.
 	quit chan struct{}
 
 	wg sync.WaitGroup
@@ -162,7 +162,7 @@ func NewRPCAcceptor(receive func() (*lnrpc.ChannelAcceptResponse, error),
 }
 
 // Run is the main loop for the RPC Acceptor. This function will block until
-// it receives the signal that lnd is shutting down, or the rpc stream is
+// it receives the signal that broln is shutting down, or the rpc stream is
 // cancelled by the client.
 func (r *RPCAcceptor) Run() error {
 	// Wait for our goroutines to exit before we return.

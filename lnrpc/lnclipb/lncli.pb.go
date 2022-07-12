@@ -28,8 +28,8 @@ type VersionResponse struct {
 
 	// The version information for lncli.
 	Lncli *verrpc.Version `protobuf:"bytes,1,opt,name=lncli,proto3" json:"lncli,omitempty"`
-	// The version information for lnd.
-	Lnd *verrpc.Version `protobuf:"bytes,2,opt,name=lnd,proto3" json:"lnd,omitempty"`
+	// The version information for broln.
+	broln *verrpc.Version `protobuf:"bytes,2,opt,name=broln,proto3" json:"broln,omitempty"`
 }
 
 func (x *VersionResponse) Reset() {
@@ -71,9 +71,9 @@ func (x *VersionResponse) GetLncli() *verrpc.Version {
 	return nil
 }
 
-func (x *VersionResponse) GetLnd() *verrpc.Version {
+func (x *VersionResponse) Getbroln() *verrpc.Version {
 	if x != nil {
-		return x.Lnd
+		return x.broln
 	}
 	return nil
 }
@@ -115,7 +115,7 @@ var file_lnclipb_lncli_proto_goTypes = []interface{}{
 }
 var file_lnclipb_lncli_proto_depIdxs = []int32{
 	1, // 0: lnclipb.VersionResponse.lncli:type_name -> verrpc.Version
-	1, // 1: lnclipb.VersionResponse.lnd:type_name -> verrpc.Version
+	1, // 1: lnclipb.VersionResponse.broln:type_name -> verrpc.Version
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

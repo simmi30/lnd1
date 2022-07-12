@@ -78,7 +78,7 @@ var (
 
 // BtcWallet is an implementation of the lnwallet.WalletController interface
 // backed by an active instance of btcwallet. At the time of the writing of
-// this documentation, this implementation requires a full btcd node to
+// this documentation, this implementation requires a full brond node to
 // operate.
 type BtcWallet struct {
 	// wallet is an active instance of btcwallet.
@@ -347,7 +347,7 @@ func (b *BtcWallet) Start() error {
 		addrmgrNs := tx.ReadWriteBucket(waddrmgrNamespaceKey)
 
 		// Generate all accounts that we could ever need. This includes
-		// all lnd key families as well as some key families used in
+		// all broln key families as well as some key families used in
 		// external liquidity tools.
 		for keyFam := uint32(1); keyFam <= 255; keyFam++ {
 			// Otherwise, we'll check if the account already exists,
@@ -718,7 +718,7 @@ func (b *BtcWallet) ImportPublicKey(pubKey *btcec.PublicKey,
 	return b.wallet.ImportPublicKey(pubKey, addrType)
 }
 
-// SendOutputs funds, signs, and broadcasts a Bitcoin transaction paying out to
+// SendOutputs funds, signs, and broadcasts a Brocoin transaction paying out to
 // the specified outputs. In the case the wallet has insufficient funds, or the
 // outputs are non-standard, a non-nil error will be returned.
 //
@@ -749,7 +749,7 @@ func (b *BtcWallet) SendOutputs(outputs []*wire.TxOut,
 	)
 }
 
-// CreateSimpleTx creates a Bitcoin transaction paying to the specified
+// CreateSimpleTx creates a Brocoin transaction paying to the specified
 // outputs. The transaction is not broadcasted to the network, but a new change
 // address might be created in the wallet database. In the case the wallet has
 // insufficient funds, or the outputs are non-standard, an error should be
@@ -935,7 +935,7 @@ func (b *BtcWallet) ListUnspentWitness(minConfs, maxConfs int32,
 }
 
 // PublishTransaction performs cursory validation (dust checks, etc), then
-// finally broadcasts the passed transaction to the Bitcoin network. If
+// finally broadcasts the passed transaction to the Brocoin network. If
 // publishing the transaction fails, an error describing the reason is returned
 // (currently ErrDoubleSpend). If the transaction is already published to the
 // network (either in the mempool or chain) no error will be returned.

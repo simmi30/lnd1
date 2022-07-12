@@ -20,7 +20,7 @@ import (
 // testCPFP ensures that the daemon can bump an unconfirmed  transaction's fee
 // rate by broadcasting a Child-Pays-For-Parent (CPFP) transaction.
 //
-// TODO(wilmer): Add RBF case once btcd supports it.
+// TODO(wilmer): Add RBF case once brond supports it.
 func testCPFP(net *lntest.NetworkHarness, t *harnessTest) {
 	runCPFP(net, t, net.Alice, net.Bob)
 }
@@ -39,7 +39,7 @@ func runCPFP(net *lntest.NetworkHarness, t *harnessTest,
 	// We'll start the test by sending Alice some coins, which she'll use to
 	// send to Bob.
 	ctxb := context.Background()
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, alice)
 
 	// Create an address for Bob to send the coins to.
 	addrReq := &lnrpc.NewAddressRequest{
@@ -55,7 +55,7 @@ func runCPFP(net *lntest.NetworkHarness, t *harnessTest,
 	// be broadcast and seen in the mempool.
 	sendReq := &lnrpc.SendCoinsRequest{
 		Addr:   resp.Address,
-		Amount: btcutil.SatoshiPerBitcoin,
+		Amount: btcutil.SatoshiPerBrocoin,
 	}
 	ctxt, _ = context.WithTimeout(ctxb, defaultTimeout)
 	if _, err = alice.SendCoins(ctxt, sendReq); err != nil {

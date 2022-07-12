@@ -13,7 +13,7 @@
 The [remote signing](../remote-signing.md) setup was simplified in that the
 signing node now [does not need to be hooked up to its own chain
 backend](https://github.com/brolightningnetwork/broln/pull/6006). A new mock chain
-backend can be specified with `--bitcoin.node=nochainbackend`. That way a wallet
+backend can be specified with `--brocoin.node=nochainbackend`. That way a wallet
 will be created and all signing RPCs work but the node will not look at any
 chain data. It can therefore be fully offline except for a single incoming gRPC
 connection from the watch-only node.
@@ -24,7 +24,7 @@ connection from the watch-only node.
   the internal wallet was empty even though the transaction contained a
   sufficiently large output belonging to the internal wallet
   [was fixed](https://github.com/brolightningnetwork/broln/pull/5539).
-  In other words, freshly-installed LND can now be initialized with multiple
+  In other words, freshly-installed broln can now be initialized with multiple
   channels from an external (e.g. hardware) wallet *in a single transaction*.
 
 * When the block height+delta specified by a network message is greater than
@@ -57,9 +57,9 @@ Postgres](https://github.com/brolightningnetwork/broln/pull/6111)
 * [Make etcd max message size
   configurable](https://github.com/brolightningnetwork/broln/pull/6049).
 
-* [Export bitcoind port and other values for itests, useful for
+* [Export brocoind port and other values for itests, useful for
   using itest harness outside of
-  lnd](https://github.com/brolightningnetwork/broln/pull/6050).
+  broln](https://github.com/brolightningnetwork/broln/pull/6050).
 
 * [Export `lntest` base node config so it can be re-used in LiT integration
   tests](https://github.com/brolightningnetwork/broln/pull/6139).

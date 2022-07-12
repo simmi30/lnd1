@@ -9,7 +9,7 @@ Install the dependencies for generating protobuf definitions as stated in
 Follow [gomobile](https://github.com/golang/go/wiki/Mobile) in order to install
 `gomobile` and dependencies.
 
-Remember to run `gomobile init` (otherwise the `lnd` build might just hang).
+Remember to run `gomobile init` (otherwise the `broln` build might just hang).
 
 Note that `gomobile` only supports building projects from `GOPATH` at this
 point.
@@ -20,12 +20,12 @@ Install [`falafel`](https://github.com/lightninglabs/falafel):
 ⛰  go get -u -v github.com/lightninglabs/falafel
 ```
 
-### Building `lnd` for iOS
+### Building `broln` for iOS
 ```shell
 ⛰  make ios
 ```
 
-### Building `lnd` for Android
+### Building `broln` for Android
 ```shell
 ⛰  make android
 ```
@@ -34,8 +34,8 @@ Install [`falafel`](https://github.com/lightninglabs/falafel):
 
 ### Libraries
 After the build has succeeded, the libraries will be found in
-`mobile/build/ios/Lndmobile.framework` and
-`mobile/build/android/Lndmobile.aar`. Reference your platforms' SDK
+`mobile/build/ios/brolnmobile.framework` and
+`mobile/build/android/brolnmobile.aar`. Reference your platforms' SDK
 documentation for how to add the library to your project.
 
 #### Generating proto definitions for your language.
@@ -86,7 +86,7 @@ to the first `protoc` invocation found in
 [`gen_protos.sh`](../lnrpc/gen_protos.sh). Then, run `make rpc`.
 
 ### Options
-Similar to lnd, subservers can be conditionally compiled with the build by
+Similar to broln, subservers can be conditionally compiled with the build by
 setting the tags argument:
 
 ```shell

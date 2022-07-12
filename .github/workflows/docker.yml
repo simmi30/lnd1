@@ -11,7 +11,7 @@ defaults:
 
 env:
   DOCKER_REPO: lightninglabs
-  DOCKER_IMAGE: lnd
+  DOCKER_IMAGE: broln
 
 jobs:
   main:

@@ -30,7 +30,7 @@ const (
 )
 
 // NeutrinoNotifier is a version of ChainNotifier that's backed by the neutrino
-// Bitcoin light client. Unlike other implementations, this implementation
+// Brocoin light client. Unlike other implementations, this implementation
 // speaks directly to the p2p network. As a result, this implementation of the
 // ChainNotifier interface is much more light weight that other implementation
 // which rely of receiving notification over an RPC interface backed by a
@@ -979,7 +979,7 @@ func (n *NeutrinoNotifier) RegisterConfirmationsNtfn(txid *chainhash.Hash,
 }
 
 // GetBlock is used to retrieve the block with the given hash. Since the block
-// cache used by neutrino will be the same as that used by LND (since it is
+// cache used by neutrino will be the same as that used by broln (since it is
 // passed to neutrino on initialisation), the neutrino GetBlock method can be
 // called directly since it already uses the block cache. However, neutrino
 // does not lock the block cache mutex for the given block hash and so that is

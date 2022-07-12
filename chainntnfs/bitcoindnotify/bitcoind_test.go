@@ -1,7 +1,7 @@
 //go:build dev
 // +build dev
 
-package bitcoindnotify
+package brocoindnotify
 
 import (
 	"bytes"
@@ -54,16 +54,16 @@ func initHintCache(t *testing.T) *chainntnfs.HeightHintCache {
 }
 
 // setUpNotifier is a helper function to start a new notifier backed by a
-// bitcoind driver.
-func setUpNotifier(t *testing.T, bitcoindConn *chain.BitcoindConn,
+// brocoind driver.
+func setUpNotifier(t *testing.T, brocoindConn *chain.BrocoindConn,
 	spendHintCache chainntnfs.SpendHintCache,
 	confirmHintCache chainntnfs.ConfirmHintCache,
-	blockCache *blockcache.BlockCache) *BitcoindNotifier {
+	blockCache *blockcache.BlockCache) *BrocoindNotifier {
 
 	t.Helper()
 
 	notifier := New(
-		bitcoindConn, chainntnfs.NetParams, spendHintCache,
+		brocoindConn, chainntnfs.NetParams, spendHintCache,
 		confirmHintCache, blockCache,
 	)
 	if err := notifier.Start(); err != nil {
@@ -75,7 +75,7 @@ func setUpNotifier(t *testing.T, bitcoindConn *chain.BitcoindConn,
 
 // syncNotifierWithMiner is a helper method that attempts to wait until the
 // notifier is synced (in terms of the chain) with the miner.
-func syncNotifierWithMiner(t *testing.T, notifier *BitcoindNotifier,
+func syncNotifierWithMiner(t *testing.T, notifier *BrocoindNotifier,
 	miner *rpctest.Harness) uint32 {
 
 	t.Helper()
@@ -87,14 +87,14 @@ func syncNotifierWithMiner(t *testing.T, notifier *BitcoindNotifier,
 
 	timeout := time.After(10 * time.Second)
 	for {
-		_, bitcoindHeight, err := notifier.chainConn.GetBestBlock()
+		_, brocoindHeight, err := notifier.chainConn.GetBestBlock()
 		if err != nil {
-			t.Fatalf("unable to retrieve bitcoind's current "+
+			t.Fatalf("unable to retrieve brocoind's current "+
 				"height: %v", err)
 		}
 
-		if bitcoindHeight == minerHeight {
-			return uint32(bitcoindHeight)
+		if brocoindHeight == minerHeight {
+			return uint32(brocoindHeight)
 		}
 
 		select {
@@ -113,7 +113,7 @@ func TestHistoricalConfDetailsTxIndex(t *testing.T) {
 	)
 	defer tearDown()
 
-	bitcoindConn, cleanUp := chainntnfs.NewBitcoindBackend(
+	brocoindConn, cleanUp := chainntnfs.NewBrocoindBackend(
 		t, miner.P2PAddress(), true,
 	)
 	defer cleanUp()
@@ -122,7 +122,7 @@ func TestHistoricalConfDetailsTxIndex(t *testing.T) {
 	blockCache := blockcache.NewBlockCache(10000)
 
 	notifier := setUpNotifier(
-		t, bitcoindConn, hintCache, hintCache, blockCache,
+		t, brocoindConn, hintCache, hintCache, blockCache,
 	)
 	defer notifier.Stop()
 
@@ -209,7 +209,7 @@ func TestHistoricalConfDetailsNoTxIndex(t *testing.T) {
 	miner, tearDown := chainntnfs.NewMiner(t, nil, true, 25)
 	defer tearDown()
 
-	bitcoindConn, cleanUp := chainntnfs.NewBitcoindBackend(
+	brocoindConn, cleanUp := chainntnfs.NewBrocoindBackend(
 		t, miner.P2PAddress(), false,
 	)
 	defer cleanUp()
@@ -218,7 +218,7 @@ func TestHistoricalConfDetailsNoTxIndex(t *testing.T) {
 	blockCache := blockcache.NewBlockCache(10000)
 
 	notifier := setUpNotifier(
-		t, bitcoindConn, hintCache, hintCache, blockCache,
+		t, brocoindConn, hintCache, hintCache, blockCache,
 	)
 	defer notifier.Stop()
 

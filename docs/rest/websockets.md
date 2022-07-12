@@ -1,13 +1,13 @@
-# WebSockets with `lnd`'s REST API
+# WebSockets with `broln`'s REST API
 
 This document describes how streaming response REST calls can be used correctly
 by making use of the WebSocket API.
 
 As an example, we are going to write a simple JavaScript program that subscribes
-to `lnd`'s
+to `broln`'s
 [block notification RPC](https://api.lightning.community/#v2-chainnotifier-register-blocks).
 
-The WebSocket will be kept open as long as `lnd` runs and JavaScript program
+The WebSocket will be kept open as long as `broln` runs and JavaScript program
 isn't stopped.
 
 ## Browser environment
@@ -17,11 +17,11 @@ what header fields are allowed to be sent. Therefore, the macaroon cannot just
 be added as a `Grpc-Metadata-Macaroon` header field as it would work with normal
 REST calls. The browser will just ignore that header field and not send it.
 
-Instead we have added a workaround in `lnd`'s WebSocket proxy that allows
+Instead we have added a workaround in `broln`'s WebSocket proxy that allows
 sending the macaroon as a WebSocket "protocol":
 
 ```javascript
-const host = 'localhost:8080'; // The default REST port of lnd, can be overwritten with --restlisten=ip:port
+const host = 'localhost:8080'; // The default REST port of broln, can be overwritten with --restlisten=ip:port
 const macaroon = '0201036c6e6402eb01030a10625e7e60fd00f5a6f9cd53f33fc82a...'; // The hex encoded macaroon to send
 const initialRequest = { // The initial request to send (see API docs for each RPC).
     hash: "xlkMdV382uNPskw6eEjDGFMQHxHNnZZgL47aVDSwiRQ=", // Just some example to show that all `byte` fields always have to be base64 encoded in the REST API.
@@ -38,7 +38,7 @@ const protocolString = 'Grpc-Metadata-Macaroon+' + macaroon;
 const wsUrl = 'wss://' + host + '/v2/chainnotifier/register/blocks?method=POST';
 let ws = new WebSocket(wsUrl, protocolString);
 ws.onopen = function (event) {
-    // After the WS connection is establishes, lnd expects the client to send the
+    // After the WS connection is establishes, broln expects the client to send the
     // initial message. If an RPC doesn't have any request parameters, an empty
     // JSON object has to be sent as a string, for example: ws.send('{}')
     ws.send(JSON.stringify(initialRequest));
@@ -70,7 +70,7 @@ docs:
 // --------------------------
 const WebSocket = require('ws');
 const fs = require('fs');
-const macaroon = fs.readFileSync('LND_DIR/data/chain/bitcoin/simnet/admin.macaroon').toString('hex');
+const macaroon = fs.readFileSync('broln_DIR/data/chain/brocoin/simnet/admin.macaroon').toString('hex');
 let ws = new WebSocket('wss://localhost:8080/v2/chainnotifier/register/blocks?method=POST', {
   // Work-around for self-signed certificates.
   rejectUnauthorized: false,
@@ -100,7 +100,7 @@ ws.on('message', function(body) {
 
 ## Request-streaming RPCs
 
-Starting with `lnd v0.13.0-beta` all RPCs can be used through REST, even those
+Starting with `broln v0.13.0-beta` all RPCs can be used through REST, even those
 that are fully bi-directional (e.g. the client can also send multiple request
 messages to the stream).
 
@@ -117,7 +117,7 @@ programmatically whether to accept or reject the channel.
 // --------------------------
 const WebSocket = require('ws');
 const fs = require('fs');
-const macaroon = fs.readFileSync('LND_DIR/data/chain/bitcoin/simnet/admin.macaroon').toString('hex');
+const macaroon = fs.readFileSync('broln_DIR/data/chain/brocoin/simnet/admin.macaroon').toString('hex');
 let ws = new WebSocket('wss://localhost:8080/v1/channels/acceptor?method=POST', {
   // Work-around for self-signed certificates.
   rejectUnauthorized: false,

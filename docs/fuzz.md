@@ -1,6 +1,6 @@
-# Fuzzing LND #
+# Fuzzing broln #
 
-The `fuzz` package is organized into subpackages which are named after the `lnd` package they test. Each subpackage has its own set of fuzz targets.
+The `fuzz` package is organized into subpackages which are named after the `broln` package they test. Each subpackage has its own set of fuzz targets.
 
 ## Setup and Installation ##
 This section will cover setup and installation of the fuzzing binaries.
@@ -33,11 +33,11 @@ Several parameters can be appended to the end of the make commands to tune the b
 - `run_time` specifies how long each fuzz harness runs for. The default is 30 seconds.
 - `timeout` specifies how long an individual testcase can run before raising an error. The default is 20 seconds.
 - `processes` specifies the number of parallel processes to use while running the harnesses.
-- `pkg` specifies the `lnd` packages to build or fuzz. The default is to build and run all available packages (`brontide lnwire wtwire zpay32`). This can be changed to build/run against individual packages.
+- `pkg` specifies the `broln` packages to build or fuzz. The default is to build and run all available packages (`brontide lnwire wtwire zpay32`). This can be changed to build/run against individual packages.
 - `base_workdir` specifies the workspace of the fuzzer. This folder will contain the corpus, crashers, and suppressions.
 
 ## Corpus ##
 Fuzzing generally works best with a corpus that is of minimal size while achieving the maximum coverage. `go-fuzz` automatically minimizes the corpus in-memory before fuzzing so a large corpus shouldn't make a difference.
 
 ## Disclosure ##
-If you find any crashers that affect LND security, please disclose with the information found [here](https://github.com/brolightningnetwork/broln/#security).
+If you find any crashers that affect broln security, please disclose with the information found [here](https://github.com/brolightningnetwork/broln/#security).

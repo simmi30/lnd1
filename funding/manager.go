@@ -76,7 +76,7 @@ const (
 	MinChanFundingSize = btcutil.Amount(20000)
 
 	// MaxBtcFundingAmount is a soft-limit of the maximum channel size
-	// currently accepted on the Bitcoin chain within the Lightning
+	// currently accepted on the Brocoin chain within the Lightning
 	// Protocol. This limit is defined in BOLT-0002, and serves as an
 	// initial precautionary limit while implementations are battle tested
 	// in the real world.
@@ -2489,7 +2489,7 @@ func (f *Manager) handleFundingConfirmation(
 		log.Errorf("unable to report short chan id: %v", err)
 	}
 
-	// If we opened the channel, and lnd's wallet published our funding tx
+	// If we opened the channel, and broln's wallet published our funding tx
 	// (which is not the case for some channels) then we update our
 	// transaction label with our short channel ID, which is known now that
 	// our funding transaction has confirmed. We do not label transactions
@@ -2549,7 +2549,7 @@ func (f *Manager) sendFundingLocked(
 	// of the previous messages in the funding flow just cancels the flow.
 	// But now the funding transaction is confirmed, the channel is open
 	// and we have to make sure the peer gets the fundingLocked message when
-	// it comes back online. This is also crucial during restart of lnd,
+	// it comes back online. This is also crucial during restart of broln,
 	// where we might try to resend the fundingLocked message before the
 	// server has had the time to connect to the peer. We keep trying to
 	// send fundingLocked until we succeed, or the fundingManager is shut
@@ -2949,8 +2949,8 @@ func (f *Manager) newChanAnnouncement(localPubKey,
 	if bytes.Compare(selfBytes, remoteBytes) == -1 {
 		copy(chanAnn.NodeID1[:], localPubKey.SerializeCompressed())
 		copy(chanAnn.NodeID2[:], remotePubKey.SerializeCompressed())
-		copy(chanAnn.BitcoinKey1[:], localFundingKey.PubKey.SerializeCompressed())
-		copy(chanAnn.BitcoinKey2[:], remoteFundingKey.SerializeCompressed())
+		copy(chanAnn.BrocoinKey1[:], localFundingKey.PubKey.SerializeCompressed())
+		copy(chanAnn.BrocoinKey2[:], remoteFundingKey.SerializeCompressed())
 
 		// If we're the first node then update the chanFlags to
 		// indicate the "direction" of the update.
@@ -2958,8 +2958,8 @@ func (f *Manager) newChanAnnouncement(localPubKey,
 	} else {
 		copy(chanAnn.NodeID1[:], remotePubKey.SerializeCompressed())
 		copy(chanAnn.NodeID2[:], localPubKey.SerializeCompressed())
-		copy(chanAnn.BitcoinKey1[:], remoteFundingKey.SerializeCompressed())
-		copy(chanAnn.BitcoinKey2[:], localFundingKey.PubKey.SerializeCompressed())
+		copy(chanAnn.BrocoinKey1[:], remoteFundingKey.SerializeCompressed())
+		copy(chanAnn.BrocoinKey2[:], localFundingKey.PubKey.SerializeCompressed())
 
 		// If we're the second node then update the chanFlags to
 		// indicate the "direction" of the update.
@@ -3025,11 +3025,11 @@ func (f *Manager) newChanAnnouncement(localPubKey,
 		return nil, errors.Errorf("unable to generate node "+
 			"signature for channel announcement: %v", err)
 	}
-	bitcoinSig, err := f.cfg.SignMessage(
+	brocoinSig, err := f.cfg.SignMessage(
 		localFundingKey.KeyLocator, chanAnnMsg, true,
 	)
 	if err != nil {
-		return nil, errors.Errorf("unable to generate bitcoin "+
+		return nil, errors.Errorf("unable to generate brocoin "+
 			"signature for node public key: %v", err)
 	}
 
@@ -3044,7 +3044,7 @@ func (f *Manager) newChanAnnouncement(localPubKey,
 	if err != nil {
 		return nil, err
 	}
-	proof.BitcoinSignature, err = lnwire.NewSigFromSignature(bitcoinSig)
+	proof.BrocoinSignature, err = lnwire.NewSigFromSignature(brocoinSig)
 	if err != nil {
 		return nil, err
 	}

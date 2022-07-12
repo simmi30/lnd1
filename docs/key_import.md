@@ -2,20 +2,20 @@
 
 This document serves as an introductory point for users interested in reducing
 their hot-wallet risks, allowing them to maintain on-chain funds outside of
-`lnd` but still be able to manage them within `lnd`. As of `v0.13.0-beta`, `lnd`
+`broln` but still be able to manage them within `broln`. As of `v0.13.0-beta`, `broln`
 is able to import BIP-0049 and BIP-0084 extended public keys either at the
 account path (`m/purpose'/coin_type'/account'`) or at the address index path
 (`m/purpose'/coin_type'/account'/change/address_index`) as watch-only through
 the `WalletKit` APIs.
 
 Note that in order to follow the rest of this document and/or use the
-`WalletKit` APIs, users will need to obtain a `lnd` build compiled with the
+`WalletKit` APIs, users will need to obtain a `broln` build compiled with the
 `walletrpc` tag. Our release builds already include this tag by default, so this
 would only be necessary when compiling from source.
 
-# `lnd`'s Default Wallet Accounts
+# `broln`'s Default Wallet Accounts
 
-Upon initializing `lnd`, a wallet is created with four default accounts:
+Upon initializing `broln`, a wallet is created with four default accounts:
 
 * A custom BIP-0049 account (more on this later) to generate NP2WKH external
   addresses.
@@ -50,7 +50,7 @@ OPTIONS:
 ## Account Details
 
 Before interacting with the new set of APIs, users will want to become familiar
-with how wallet accounts are represented within `lnd`. The
+with how wallet accounts are represented within `broln`. The
 `WalletKit.ListAccounts` RPC or `lncli wallet accounts list` command can be used
 to retrieve the details of accounts.
 
@@ -87,15 +87,15 @@ in detail. As mentioned above, four default accounts should exist, though only
 two are shown in the output. The catch-all imported accounts are hidden by
 default until a key has been imported into them.
 
-* `name`: Each account has a name it can be identified by. `lnd`'s default
+* `name`: Each account has a name it can be identified by. `broln`'s default
   spendable accounts have the name "default". The default catch-all imported
   accounts have the name "imported".
 * `extended_public_key`: The BIP-0044 extended public key for the account. Any
   addresses generated for the account are derived from this key. Each key has a
   version prefix that identifies the chain and derivation scheme being used. At
-  the time of writing, `lnd` supports the following versions:
+  the time of writing, `broln` supports the following versions:
   * `xpub/tpub`: The commonly used version prefix originally intended for
-    BIP-0032 mainnet/testnet extended keys. Since `lnd` does not support
+    BIP-0032 mainnet/testnet extended keys. Since `broln` does not support
     BIP-0032 extended keys, this version serves as a catch-all for the other
     versions.
   * `ypub/upub`: The version prefix for BIP-0049 mainnet/testnet extended keys.
@@ -107,7 +107,7 @@ default until a key has been imported into them.
   * `NESTED_WITNESS_PUBKEY_HASH`: The standard derivation scheme for BIP-0049
     with P2WKH for external and change addresses.
   * `HYBRID_NESTED_WITNESS_PUBKEY_HASH` A custom derivation scheme for BIP-0049
-    used by `lnd` where NP2WKH is used for external addresses and P2WKH for
+    used by `broln` where NP2WKH is used for external addresses and P2WKH for
     change addresses.
 * `master_key_fingerprint`: The 4 byte fingerprint of the master key
   corresponding to the account. This is usually required by hardware
@@ -117,13 +117,13 @@ default until a key has been imported into them.
 * `external_key_count`: The number of external addresses generated.
 * `internal_key_count`: The number of change addresses generated.
 * `watch_only`: Whether the wallet has private key information for the account.
-  This is always true for `lnd`'s default wallet accounts.
+  This is always true for `broln`'s default wallet accounts.
 
 # Key Import
 
 An existing limitation to the key import APIs is that events (deposits/spends)
 for imported keys, including those derived from an imported account, will only
-be detected by lnd if they happen after the import. Rescans to detect past
+be detected by broln if they happen after the import. Rescans to detect past
 events are currently not supported, but will come at a later time.
 
 ## Account Key Import
@@ -149,7 +149,7 @@ the following request parameters:
   branches of the account. If these addresses match as expected, then it should
   be safe to import the account as is.
 
-For the sake of simplicity, we'll present an example with two `lnd` nodes Alice
+For the sake of simplicity, we'll present an example with two `broln` nodes Alice
 and Bob, where Alice acts as a signer _only_, and Bob manages Alice's on-chain
 BIP-0084 account by crafting transactions and watching/spending addresses. Since
 Alice will only act as a signer, we'll want to import her BIP-0084 account into

@@ -2,9 +2,9 @@
 
 set -ev
 
-BITCOIND_VERSION=${BITCOIN_VERSION:-22.0}
+BROCOIND_VERSION=${BROCOIN_VERSION:-22.0}
 
-docker pull lightninglabs/bitcoin-core:$BITCOIND_VERSION
-CONTAINER_ID=$(docker create lightninglabs/bitcoin-core:$BITCOIND_VERSION)
-sudo docker cp $CONTAINER_ID:/opt/bitcoin-$BITCOIND_VERSION/bin/bitcoind /usr/local/bin/bitcoind
+docker pull lightninglabs/brocoin-core:$BROCOIND_VERSION
+CONTAINER_ID=$(docker create lightninglabs/brocoin-core:$BROCOIND_VERSION)
+sudo docker cp $CONTAINER_ID:/opt/brocoin-$BROCOIND_VERSION/bin/brocoind /usr/local/bin/brocoind
 docker rm $CONTAINER_ID

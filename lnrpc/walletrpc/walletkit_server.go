@@ -149,12 +149,12 @@ var (
 	// configuration file in this package.
 	DefaultWalletKitMacFilename = "walletkit.macaroon"
 
-	// LndInternalLockID is the binary representation of the SHA256 hash of
-	// the string "lnd-internal-lock-id" and is used for UTXO lock leases to
+	// brolnInternalLockID is the binary representation of the SHA256 hash of
+	// the string "broln-internal-lock-id" and is used for UTXO lock leases to
 	// identify that we ourselves are locking an UTXO, for example when
 	// giving out a funded PSBT. The ID corresponds to the hex value of
 	// ede19a92ed321a4705f8a1cccc1d4f6182545d4bb4fae08bd5937831b7e38f98.
-	LndInternalLockID = wtxmgr.LockID{
+	brolnInternalLockID = wtxmgr.LockID{
 		0xed, 0xe1, 0x9a, 0x92, 0xed, 0x32, 0x1a, 0x47,
 		0x05, 0xf8, 0xa1, 0xcc, 0xcc, 0x1d, 0x4f, 0x61,
 		0x82, 0x54, 0x5d, 0x4b, 0xb4, 0xfa, 0xe0, 0x8b,
@@ -390,7 +390,7 @@ func (w *WalletKit) LeaseOutput(ctx context.Context,
 
 	// Don't allow our internal ID to be used externally for locking. Only
 	// unlocking is allowed.
-	if lockID == LndInternalLockID {
+	if lockID == brolnInternalLockID {
 		return nil, errors.New("reserved id cannot be used")
 	}
 
@@ -572,7 +572,7 @@ func (w *WalletKit) PublishTransaction(ctx context.Context,
 	return &PublishResponse{}, nil
 }
 
-// SendOutputs is similar to the existing sendmany call in Bitcoind, and allows
+// SendOutputs is similar to the existing sendmany call in Brocoind, and allows
 // the caller to create a transaction that sends to several outputs at once.
 // This is ideal when wanting to batch create a set of transactions.
 func (w *WalletKit) SendOutputs(ctx context.Context,
@@ -654,7 +654,7 @@ func (w *WalletKit) EstimateFee(ctx context.Context,
 	}, nil
 }
 
-// PendingSweeps returns lists of on-chain outputs that lnd is currently
+// PendingSweeps returns lists of on-chain outputs that broln is currently
 // attempting to sweep within its central batching engine. Outputs with similar
 // fee rates are batched together in order to sweep them within a single
 // transaction. The fee rate of each sweeping transaction is determined by
@@ -1197,7 +1197,7 @@ func marshallLeases(locks []*wtxmgr.LockedOutput) []*UtxoLease {
 // (UTXO information, BIP32 derivation information, witness or sig scripts)
 // set.
 // If no error is returned, the PSBT is ready to be given to the next signer or
-// to be finalized if lnd was the last signer.
+// to be finalized if broln was the last signer.
 //
 // NOTE: This RPC only signs inputs (and only those it can sign), it does not
 // perform any other tasks (such as coin selection, UTXO locking or
@@ -1234,10 +1234,10 @@ func (w *WalletKit) SignPsbt(_ context.Context, req *SignPsbtRequest) (
 }
 
 // FinalizePsbt expects a partial transaction with all inputs and outputs fully
-// declared and tries to sign all inputs that belong to the wallet. Lnd must be
+// declared and tries to sign all inputs that belong to the wallet. broln must be
 // the last signer of the transaction. That means, if there are any unsigned
 // non-witness inputs or inputs without UTXO information attached or inputs
-// without witness data that do not belong to lnd's wallet, this method will
+// without witness data that do not belong to broln's wallet, this method will
 // fail. If no error is returned, the PSBT is ready to be extracted and the
 // final TX within to be broadcast.
 //

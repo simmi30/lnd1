@@ -202,7 +202,7 @@ var (
 		macaroons.PermissionEntityCustomURI,
 	}
 
-	// If the --no-macaroons flag is used to start lnd, the macaroon service
+	// If the --no-macaroons flag is used to start broln, the macaroon service
 	// is not initialized. errMacaroonDisabled is then returned when
 	// macaroon related services are used.
 	errMacaroonDisabled = fmt.Errorf("macaroon authentication disabled, " +
@@ -258,7 +258,7 @@ func calculateFeeRate(satPerByte, satPerVByte uint64, targetConf uint32,
 
 }
 
-// GetAllPermissions returns all the permissions required to interact with lnd.
+// GetAllPermissions returns all the permissions required to interact with broln.
 func GetAllPermissions() []bakery.Op {
 	allPerms := make([]bakery.Op, 0)
 
@@ -579,7 +579,7 @@ func MainRPCServerPermissions() map[string][]bakery.Op {
 	}
 }
 
-// rpcServer is a gRPC, RPC front end to the lnd daemon.
+// rpcServer is a gRPC, RPC front end to the broln daemon.
 // TODO(roasbeef): pagination support for the list-style calls
 type rpcServer struct {
 	started  int32 // To be used atomically.
@@ -711,7 +711,7 @@ func (r *rpcServer) addDeps(s *server, macService *macaroons.Service,
 		ActiveNetParams:        r.cfg.ActiveNetParams.Params,
 		Tower:                  s.controlTower,
 		MaxTotalTimelock:       r.cfg.MaxOutgoingCltvExpiry,
-		DefaultFinalCltvDelta:  uint16(r.cfg.Bitcoin.TimeLockDelta),
+		DefaultFinalCltvDelta:  uint16(r.cfg.Brocoin.TimeLockDelta),
 		SubscribeHtlcEvents:    s.htlcNotifier.SubscribeHtlcEvents,
 		InterceptableForwarder: s.interceptableSwitch,
 		SetChannelEnabled: func(outpoint wire.OutPoint) error {
@@ -2207,7 +2207,7 @@ func (r *rpcServer) BatchOpenChannel(ctx context.Context,
 
 	// We need the wallet kit server to do the heavy lifting on the PSBT
 	// part. If we didn't rely on re-using the wallet kit server's logic we
-	// would need to re-implement everything here. Since we deliver lnd with
+	// would need to re-implement everything here. Since we deliver broln with
 	// the wallet kit server enabled by default we can assume it's okay to
 	// make this functionality dependent on that server being active.
 	var walletKitServer walletrpc.WalletKitServer
@@ -2598,7 +2598,7 @@ func (r *rpcServer) abandonChan(chanPoint *wire.OutPoint,
 
 // AbandonChannel removes all channel state from the database except for a
 // close summary. This method can be used to get rid of permanently unusable
-// channels due to bugs fixed in newer versions of lnd.
+// channels due to bugs fixed in newer versions of broln.
 func (r *rpcServer) AbandonChannel(_ context.Context,
 	in *lnrpc.AbandonChannelRequest) (*lnrpc.AbandonChannelResponse, error) {
 
@@ -2748,7 +2748,7 @@ func (r *rpcServer) GetInfo(_ context.Context,
 		}
 	}
 
-	// Check if external IP addresses were provided to lnd and use them
+	// Check if external IP addresses were provided to broln and use them
 	// to set the URIs.
 	nodeAnn, err := r.server.genNodeAnnouncement(false)
 	if err != nil {
@@ -3319,7 +3319,7 @@ func (r *rpcServer) fetchPendingForceCloseChannels() (pendingForceClose,
 			}
 			channel.NumForwardingPackages = int64(len(fwdPkgs))
 
-		// If the error is non-nil, and not due to older versions of lnd
+		// If the error is non-nil, and not due to older versions of broln
 		// not persisting historical channels, return it.
 		default:
 			return nil, 0, err
@@ -3330,7 +3330,7 @@ func (r *rpcServer) fetchPendingForceCloseChannels() (pendingForceClose,
 		switch pendingClose.CloseType {
 
 		// A coop closed channel should never be in the "pending close"
-		// state. If a node upgraded from an older lnd version in the
+		// state. If a node upgraded from an older broln version in the
 		// middle of a their channel confirming, it will be in this
 		// state. We log a warning that the channel will not be included
 		// in the now deprecated pending close channels field.
@@ -4757,8 +4757,8 @@ func (r *rpcServer) extractPaymentIntent(rpcPayReq *rpcPaymentRequest) (rpcPayme
 		// If no final cltv delta is given, assume the default that we
 		// use when creating an invoice. We do not assume the default of
 		// 9 blocks that is defined in BOLT-11, because this is never
-		// enough for other lnd nodes.
-		payIntent.cltvDelta = uint16(r.cfg.Bitcoin.TimeLockDelta)
+		// enough for other broln nodes.
+		payIntent.cltvDelta = uint16(r.cfg.Brocoin.TimeLockDelta)
 	}
 
 	// Do bounds checking with the block padding so the router isn't left
@@ -5180,7 +5180,7 @@ func (r *rpcServer) sendPaymentSync(ctx context.Context,
 func (r *rpcServer) AddInvoice(ctx context.Context,
 	invoice *lnrpc.Invoice) (*lnrpc.AddInvoiceResponse, error) {
 
-	defaultDelta := r.cfg.Bitcoin.TimeLockDelta
+	defaultDelta := r.cfg.Brocoin.TimeLockDelta
 	if r.cfg.registeredChains.PrimaryChain() == chainreg.LitecoinChain {
 		defaultDelta = r.cfg.Litecoin.TimeLockDelta
 	}
@@ -6185,7 +6185,7 @@ func (r *rpcServer) DeleteAllPayments(ctx context.Context,
 }
 
 // DebugLevel allows a caller to programmatically set the logging verbosity of
-// lnd. The logging can be targeted according to a coarse daemon-wide logging
+// broln. The logging can be targeted according to a coarse daemon-wide logging
 // level, or in a granular fashion to specify the logging for a target
 // sub-system.
 func (r *rpcServer) DebugLevel(ctx context.Context,
@@ -6643,7 +6643,7 @@ func (r *rpcServer) ForwardingHistory(ctx context.Context,
 // for the target channel identified by it channel point. The backup is
 // encrypted with a key generated from the aezeed seed of the user. The
 // returned backup can either be restored using the RestoreChannelBackup method
-// once lnd is running, or via the InitWallet and UnlockWallet methods from the
+// once broln is running, or via the InitWallet and UnlockWallet methods from the
 // WalletUnlocker service.
 func (r *rpcServer) ExportChannelBackup(ctx context.Context,
 	in *lnrpc.ExportChannelBackupRequest) (*lnrpc.ChannelBackup, error) {
@@ -6823,7 +6823,7 @@ func (r *rpcServer) createBackupSnapshot(backups []chanbackup.Single) (
 }
 
 // ExportAllChannelBackups returns static channel backups for all existing
-// channels known to lnd. A set of regular singular static channel backups for
+// channels known to broln. A set of regular singular static channel backups for
 // each channel are returned. Additionally, a multi-channel backup is returned
 // as well, which contains a single encrypted blob containing the backups of
 // each channel.
@@ -6997,7 +6997,7 @@ func (r *rpcServer) SubscribeChannelBackups(req *lnrpc.ChannelBackupSubscription
 
 // ChannelAcceptor dispatches a bi-directional streaming RPC in which
 // OpenChannel requests are sent to the client and the client responds with
-// a boolean that tells LND whether or not to accept the channel. This allows
+// a boolean that tells broln whether or not to accept the channel. This allows
 // node operators to specify their own criteria for accepting inbound channels
 // through a single persistent connection.
 func (r *rpcServer) ChannelAcceptor(stream lnrpc.Lightning_ChannelAcceptorServer) error {
@@ -7025,13 +7025,13 @@ func (r *rpcServer) ChannelAcceptor(stream lnrpc.Lightning_ChannelAcceptorServer
 // BakeMacaroon allows the creation of a new macaroon with custom read and write
 // permissions. No first-party caveats are added since this can be done offline.
 // If the --allow-external-permissions flag is set, the RPC will allow
-// external permissions that LND is not aware of.
+// external permissions that broln is not aware of.
 func (r *rpcServer) BakeMacaroon(ctx context.Context,
 	req *lnrpc.BakeMacaroonRequest) (*lnrpc.BakeMacaroonResponse, error) {
 
 	rpcsLog.Debugf("[bakemacaroon]")
 
-	// If the --no-macaroons flag is used to start lnd, the macaroon service
+	// If the --no-macaroons flag is used to start broln, the macaroon service
 	// is not initialized. Therefore we can't bake new macaroons.
 	if r.macService == nil {
 		return nil, errMacaroonDisabled
@@ -7120,7 +7120,7 @@ func (r *rpcServer) ListMacaroonIDs(ctx context.Context,
 
 	rpcsLog.Debugf("[listmacaroonids]")
 
-	// If the --no-macaroons flag is used to start lnd, the macaroon service
+	// If the --no-macaroons flag is used to start broln, the macaroon service
 	// is not initialized. Therefore we can't show any IDs.
 	if r.macService == nil {
 		return nil, errMacaroonDisabled
@@ -7152,7 +7152,7 @@ func (r *rpcServer) DeleteMacaroonID(ctx context.Context,
 
 	rpcsLog.Debugf("[deletemacaroonid]")
 
-	// If the --no-macaroons flag is used to start lnd, the macaroon service
+	// If the --no-macaroons flag is used to start broln, the macaroon service
 	// is not initialized. Therefore we can't delete any IDs.
 	if r.macService == nil {
 		return nil, errMacaroonDisabled
@@ -7387,8 +7387,8 @@ func (r *rpcServer) FundingStateStep(ctx context.Context,
 }
 
 // RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A
-// gRPC middleware is software component external to lnd that aims to add
-// additional business logic to lnd by observing/intercepting/validating
+// gRPC middleware is software component external to broln that aims to add
+// additional business logic to broln by observing/intercepting/validating
 // incoming gRPC client requests and (if needed) replacing/overwriting outgoing
 // messages before they're sent to the client. When registering the middleware
 // must identify itself and indicate what custom macaroon caveats it wants to

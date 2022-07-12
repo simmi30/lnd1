@@ -110,7 +110,7 @@ func setupFwdPkgTest(net *lntest.NetworkHarness,
 	const (
 		chanAmt        = 10e6
 		paymentAmt     = 10e4
-		finalCTLVDelta = chainreg.DefaultBitcoinTimeLockDelta
+		finalCTLVDelta = chainreg.DefaultBrocoinTimeLockDelta
 		numInvoices    = 3
 	)
 

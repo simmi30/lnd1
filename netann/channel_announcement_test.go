@@ -30,10 +30,10 @@ func TestCreateChanAnnouncement(t *testing.T) {
 		NodeID2:         key,
 		NodeSig1:        sig,
 		NodeSig2:        sig,
-		BitcoinKey1:     key,
-		BitcoinKey2:     key,
-		BitcoinSig1:     sig,
-		BitcoinSig2:     sig,
+		BrocoinKey1:     key,
+		BrocoinKey2:     key,
+		BrocoinSig1:     sig,
+		BrocoinSig2:     sig,
 		Features:        features,
 		ExtraOpaqueData: []byte{0x1},
 	}
@@ -41,18 +41,18 @@ func TestCreateChanAnnouncement(t *testing.T) {
 	chanProof := &channeldb.ChannelAuthProof{
 		NodeSig1Bytes:    expChanAnn.NodeSig1.ToSignatureBytes(),
 		NodeSig2Bytes:    expChanAnn.NodeSig2.ToSignatureBytes(),
-		BitcoinSig1Bytes: expChanAnn.BitcoinSig1.ToSignatureBytes(),
-		BitcoinSig2Bytes: expChanAnn.BitcoinSig2.ToSignatureBytes(),
+		BrocoinSig1Bytes: expChanAnn.BrocoinSig1.ToSignatureBytes(),
+		BrocoinSig2Bytes: expChanAnn.BrocoinSig2.ToSignatureBytes(),
 	}
 	chanInfo := &channeldb.ChannelEdgeInfo{
 		ChainHash:        expChanAnn.ChainHash,
 		ChannelID:        expChanAnn.ShortChannelID.ToUint64(),
 		ChannelPoint:     wire.OutPoint{Index: 1},
-		Capacity:         btcutil.SatoshiPerBitcoin,
+		Capacity:         btcutil.SatoshiPerBrocoin,
 		NodeKey1Bytes:    key,
 		NodeKey2Bytes:    key,
-		BitcoinKey1Bytes: key,
-		BitcoinKey2Bytes: key,
+		BrocoinKey1Bytes: key,
+		BrocoinKey2Bytes: key,
 		Features:         featuresBuf.Bytes(),
 		ExtraOpaqueData:  expChanAnn.ExtraOpaqueData,
 	}

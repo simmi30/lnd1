@@ -168,10 +168,10 @@ func testRemoteSigner(net *lntest.NetworkHarness, t *harnessTest) {
 		require.Equal(t.t, signerNodePubKey, resp.IdentityPubkey)
 
 		if subTest.sendCoins {
-			net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, watchOnly)
+			net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, watchOnly)
 			assertAccountBalance(
 				t.t, watchOnly, "default",
-				btcutil.SatoshiPerBitcoin, 0,
+				btcutil.SatoshiPerBrocoin, 0,
 			)
 		}
 
@@ -193,7 +193,7 @@ func testRemoteSigner(net *lntest.NetworkHarness, t *harnessTest) {
 	}
 }
 
-// deriveCustomScopeAccounts derives the first 255 default accounts of the custom lnd
+// deriveCustomScopeAccounts derives the first 255 default accounts of the custom broln
 // internal key scope.
 func deriveCustomScopeAccounts(t *testing.T) []*lnrpc.WatchOnlyAccount {
 	allAccounts := make([]*lnrpc.WatchOnlyAccount, 0, 255+len(accounts))

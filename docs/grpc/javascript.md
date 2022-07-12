@@ -1,4 +1,4 @@
-# How to write a simple `lnd` client in Javascript using `node.js`
+# How to write a simple `broln` client in Javascript using `node.js`
 
 ## Setup and Installation
 
@@ -13,10 +13,10 @@ dependencies:
 npm install @grpc/grpc-js @grpc/proto-loader --save
 ```
 
-You also need to copy the `lnd` `lightning.proto` file in your project directory
+You also need to copy the `broln` `lightning.proto` file in your project directory
 (or at least somewhere reachable by your Javascript code).
 
-The `lightning.proto` file is [located in the `lnrpc` directory of the `lnd`
+The `lightning.proto` file is [located in the `lnrpc` directory of the `broln`
 sources](https://github.com/brolightningnetwork/broln/blob/master/lnrpc/lightning.proto).
 
 ### Imports and Client
@@ -24,7 +24,7 @@ sources](https://github.com/brolightningnetwork/broln/blob/master/lnrpc/lightnin
 Every time you work with Javascript gRPC, you will have to import `@grpc/grpc-js`, load
 `lightning.proto`, and create a connection to your client like so.
 
-Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `lnd` configuration and re-generate the certificate (delete tls.cert and tls.key and restart lnd).
+Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `broln` configuration and re-generate the certificate (delete tls.cert and tls.key and restart broln).
 
 ```js
 const grpc = require('@grpc/grpc-js');
@@ -33,11 +33,11 @@ const fs = require("fs");
 
 // Due to updated ECDSA generated tls.cert we need to let gprc know that
 // we need to use that cipher suite otherwise there will be a handhsake
-// error when we communicate with the lnd rpc server.
+// error when we communicate with the broln rpc server.
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA'
 
 // We need to give the proto loader some extra options, otherwise the code won't
-// fully work with lnd.
+// fully work with broln.
 const loaderOptions = {
   keepCase: true,
   longs: String,
@@ -47,10 +47,10 @@ const loaderOptions = {
 };
 const packageDefinition = protoLoader.loadSync('lightning.proto', loaderOptions);
 
-//  Lnd cert is at ~/.lnd/tls.cert on Linux and
-//  ~/Library/Application Support/Lnd/tls.cert on Mac
-let lndCert = fs.readFileSync("~/.lnd/tls.cert");
-let credentials = grpc.credentials.createSsl(lndCert);
+//  broln cert is at ~/.broln/tls.cert on Linux and
+//  ~/Library/Application Support/broln/tls.cert on Mac
+let brolnCert = fs.readFileSync("~/.broln/tls.cert");
+let credentials = grpc.credentials.createSsl(brolnCert);
 let lnrpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 let lnrpc = lnrpcDescriptor.lnrpc;
 let lightning = new lnrpc.Lightning('localhost:10019', credentials);
@@ -59,7 +59,7 @@ let lightning = new lnrpc.Lightning('localhost:10019', credentials);
 ## Examples
 
 Let's walk through some examples of Javascript gRPC clients. These examples
-assume that you have at least two `lnd` nodes running, the RPC location of one
+assume that you have at least two `broln` nodes running, the RPC location of one
 of which is at the default `localhost:10019`, with an open channel between the
 two nodes.
 
@@ -87,7 +87,7 @@ GetInfo: { identity_pubkey: '03c892e3f3f077ea1e381c081abb36491a2502bc43ed37ffb82
   block_hash: '198ba1dc43b4190e507fa5c7aea07a74ec0009a9ab308e1736dbdab5c767ff8e',
   synced_to_chain: false,
   testnet: false,
-  chains: [ 'bitcoin' ] }
+  chains: [ 'brocoin' ] }
 ```
 
 ### Response-streaming RPC
@@ -198,9 +198,9 @@ const packageDefinition = protoLoader.loadSync('lightning.proto', loaderOptions)
 
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA'
 
-// Lnd admin macaroon is at ~/.lnd/data/chain/bitcoin/simnet/admin.macaroon on Linux and
-// ~/Library/Application Support/Lnd/data/chain/bitcoin/simnet/admin.macaroon on Mac
-let m = fs.readFileSync('~/.lnd/data/chain/bitcoin/simnet/admin.macaroon');
+// broln admin macaroon is at ~/.broln/data/chain/brocoin/simnet/admin.macaroon on Linux and
+// ~/Library/Application Support/broln/data/chain/brocoin/simnet/admin.macaroon on Mac
+let m = fs.readFileSync('~/.broln/data/chain/brocoin/simnet/admin.macaroon');
 let macaroon = m.toString('hex');
 
 // build meta data credentials
@@ -211,8 +211,8 @@ let macaroonCreds = grpc.credentials.createFromMetadataGenerator((_args, callbac
 });
 
 // build ssl credentials using the cert the same as before
-let lndCert = fs.readFileSync("~/.lnd/tls.cert");
-let sslCreds = grpc.credentials.createSsl(lndCert);
+let brolnCert = fs.readFileSync("~/.broln/tls.cert");
+let sslCreds = grpc.credentials.createSsl(brolnCert);
 
 // combine the cert credentials and the macaroon auth credentials
 // such that every call is properly encrypted and authenticated
@@ -233,7 +233,7 @@ client.getInfo({}, (err, response) => {
 
 ## Conclusion
 
-With the above, you should have all the `lnd` related `gRPC` dependencies
+With the above, you should have all the `broln` related `gRPC` dependencies
 installed locally in your project. In order to get up to speed with `protofbuf`
 usage from Javascript, see [this official `protobuf` reference for
 Javascript](https://developers.google.com/protocol-buffers/docs/reference/javascript-generated).

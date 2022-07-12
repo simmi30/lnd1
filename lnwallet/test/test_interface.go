@@ -34,7 +34,7 @@ import (
 	"github.com/lightninglabs/neutrino"
 	"github.com/brolightningnetwork/broln/blockcache"
 	"github.com/brolightningnetwork/broln/chainntnfs"
-	"github.com/brolightningnetwork/broln/chainntnfs/btcdnotify"
+	"github.com/brolightningnetwork/broln/chainntnfs/brondnotify"
 	"github.com/brolightningnetwork/broln/channeldb"
 	"github.com/brolightningnetwork/broln/input"
 	"github.com/brolightningnetwork/broln/keychain"
@@ -342,7 +342,7 @@ func createTestWallet(tempTestDir string, miningNode *rpctest.Harness,
 		FeeEstimator:     chainfee.NewStaticEstimator(2500, 0),
 		DefaultConstraints: channeldb.ChannelConstraints{
 			DustLimit:        500,
-			MaxPendingAmount: lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBitcoin) * 100,
+			MaxPendingAmount: lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBrocoin) * 100,
 			ChanReserve:      100,
 			MinHTLC:          400,
 			MaxAcceptedHtlcs: 900,
@@ -789,7 +789,7 @@ func testReservationInitiatorBalanceBelowDustCancel(miner *rpctest.Harness,
 	}
 
 	feePerKw := chainfee.SatPerKWeight(
-		numBTC * numBTC * btcutil.SatoshiPerBitcoin,
+		numBTC * numBTC * btcutil.SatoshiPerBrocoin,
 	)
 	req := &lnwallet.InitFundingReserveMsg{
 		ChainHash:        chainHash,
@@ -871,7 +871,7 @@ func testSingleFunderReservationWorkflow(miner *rpctest.Harness,
 	if err != nil {
 		t.Fatalf("unable to create amt: %v", err)
 	}
-	pushAmt := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBitcoin)
+	pushAmt := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBrocoin)
 	feePerKw, err := alice.Cfg.FeeEstimator.EstimateFeePerKW(1)
 	if err != nil {
 		t.Fatalf("unable to query fee estimator: %v", err)
@@ -1139,7 +1139,7 @@ func testListTransactionDetails(miner *rpctest.Harness,
 
 	// Create 5 new outputs spendable by the wallet.
 	const numTxns = 5
-	const outputAmt = btcutil.SatoshiPerBitcoin
+	const outputAmt = btcutil.SatoshiPerBrocoin
 	txids := make(map[chainhash.Hash]struct{})
 	for i := 0; i < numTxns; i++ {
 		addr, err := alice.NewAddress(
@@ -1431,7 +1431,7 @@ func testTransactionSubscriptions(miner *rpctest.Harness,
 	defer txClient.Cancel()
 
 	const (
-		outputAmt = btcutil.SatoshiPerBitcoin
+		outputAmt = btcutil.SatoshiPerBrocoin
 		numTxns   = 3
 	)
 	errCh1 := make(chan error, 1)
@@ -1745,7 +1745,7 @@ func newTx(t *testing.T, r *rpctest.Harness, pubKey *btcec.PublicKey,
 	// Instruct the wallet to fund the output with a newly created
 	// transaction.
 	newOutput := &wire.TxOut{
-		Value:    btcutil.SatoshiPerBitcoin,
+		Value:    btcutil.SatoshiPerBrocoin,
 		PkScript: keyScript,
 	}
 	tx, err := alice.SendOutputs(
@@ -1762,7 +1762,7 @@ func newTx(t *testing.T, r *rpctest.Harness, pubKey *btcec.PublicKey,
 	}
 
 	// Create a new unconfirmed tx that spends this output.
-	txFee := btcutil.Amount(0.001 * btcutil.SatoshiPerBitcoin)
+	txFee := btcutil.Amount(0.001 * btcutil.SatoshiPerBrocoin)
 	tx1, err := txFromOutput(
 		tx, alice.Cfg.Signer, pubKey, pubKey, txFee, rbf,
 	)
@@ -1843,7 +1843,7 @@ func testPublishTransaction(r *rpctest.Harness,
 	// We'll do the next mempool check on both RBF and non-RBF enabled
 	// transactions.
 	var (
-		txFee         = btcutil.Amount(0.005 * btcutil.SatoshiPerBitcoin)
+		txFee         = btcutil.Amount(0.005 * btcutil.SatoshiPerBrocoin)
 		tx3, tx3Spend *wire.MsgTx
 	)
 
@@ -1950,9 +1950,9 @@ func testPublishTransaction(r *rpctest.Harness,
 	// At last we try to spend an output already spent by a confirmed
 	// transaction.
 	// TODO(halseth): we currently skip this test for neutrino, as the
-	// backing btcd node will consider the tx being an orphan, and will
+	// backing brond node will consider the tx being an orphan, and will
 	// accept it. Should look into if this is the behavior also for
-	// bitcoind, and update test accordingly.
+	// brocoind, and update test accordingly.
 	if alice.BackEnd() != "neutrino" {
 		// Create another tx spending tx3.
 		pubKey4, err := alice.DeriveNextKey(
@@ -2036,7 +2036,7 @@ func testSignOutputUsingTweaks(r *rpctest.Harness,
 		// With the script fully assembled, instruct the wallet to fund
 		// the output with a newly created transaction.
 		newOutput := &wire.TxOut{
-			Value:    btcutil.SatoshiPerBitcoin,
+			Value:    btcutil.SatoshiPerBrocoin,
 			PkScript: keyScript,
 		}
 		tx, err := alice.SendOutputs(
@@ -2114,7 +2114,7 @@ func testSignOutputUsingTweaks(r *rpctest.Harness,
 		// the proper private key.
 		vm, err := txscript.NewEngine(keyScript,
 			sweepTx, 0, txscript.StandardVerifyFlags, nil,
-			nil, int64(btcutil.SatoshiPerBitcoin))
+			nil, int64(btcutil.SatoshiPerBrocoin))
 		if err != nil {
 			t.Fatalf("unable to create engine: %v", err)
 		}
@@ -2354,7 +2354,7 @@ func testChangeOutputSpendConfirmation(r *rpctest.Harness,
 	// Now, we'll send an output back to Alice from Bob of 1 BTC.
 	alicePkScript := newPkScript(t, alice, lnwallet.WitnessPubKey)
 	output = &wire.TxOut{
-		Value:    btcutil.SatoshiPerBitcoin,
+		Value:    btcutil.SatoshiPerBrocoin,
 		PkScript: alicePkScript,
 	}
 	tx = sendCoins(t, r, bob, alice, output, txFeeRate, true, 1)
@@ -2414,7 +2414,7 @@ func testSpendUnconfirmed(miner *rpctest.Harness,
 
 	// Verify that bob doesn't have enough balance to send coins.
 	output = &wire.TxOut{
-		Value:    btcutil.SatoshiPerBitcoin * 0.5,
+		Value:    btcutil.SatoshiPerBrocoin * 0.5,
 		PkScript: alicePkScript,
 	}
 	_, err = bob.SendOutputs(
@@ -2427,7 +2427,7 @@ func testSpendUnconfirmed(miner *rpctest.Harness,
 	// Next we will send a transaction to bob but leave it in an
 	// unconfirmed state.
 	output = &wire.TxOut{
-		Value:    btcutil.SatoshiPerBitcoin,
+		Value:    btcutil.SatoshiPerBrocoin,
 		PkScript: bobPkScript,
 	}
 	tx = sendCoins(t, miner, alice, bob, output, txFeeRate, false, 1)
@@ -2437,7 +2437,7 @@ func testSpendUnconfirmed(miner *rpctest.Harness,
 
 	// Now, try to spend some of the unconfirmed funds from bob's wallet.
 	output = &wire.TxOut{
-		Value:    btcutil.SatoshiPerBitcoin * 0.5,
+		Value:    btcutil.SatoshiPerBrocoin * 0.5,
 		PkScript: alicePkScript,
 	}
 
@@ -2474,7 +2474,7 @@ func testSpendUnconfirmed(miner *rpctest.Harness,
 	// Finally, send the remainder of bob's wallet balance back to him so
 	// that these money movements dont mess up later tests.
 	output = &wire.TxOut{
-		Value:    int64(bobBalance) - (btcutil.SatoshiPerBitcoin * 0.4),
+		Value:    int64(bobBalance) - (btcutil.SatoshiPerBrocoin * 0.4),
 		PkScript: bobPkScript,
 	}
 	tx = sendCoins(t, miner, alice, bob, output, txFeeRate, true, 1)
@@ -3047,7 +3047,7 @@ func testSingleFunderExternalFundingTx(miner *rpctest.Harness,
 
 	// We'll now set up for them to open a 4 BTC channel, with 1 BTC pushed
 	// to Bob's side.
-	chanAmt := 4 * btcutil.SatoshiPerBitcoin
+	chanAmt := 4 * btcutil.SatoshiPerBrocoin
 
 	// Simulating external funding negotiation, we'll now create the
 	// funding transaction for both parties. Utilizing existing tools,
@@ -3166,7 +3166,7 @@ func testSingleFunderExternalFundingTx(miner *rpctest.Harness,
 func TestLightningWallet(t *testing.T, targetBackEnd string) {
 	t.Parallel()
 
-	// Initialize the harness around a btcd node which will serve as our
+	// Initialize the harness around a brond node which will serve as our
 	// dedicated miner to generate blocks, cause re-orgs, etc. We'll set
 	// up this node with a chain length of 125, so we have plenty of BTC
 	// to play around with.
@@ -3206,7 +3206,7 @@ func TestLightningWallet(t *testing.T, targetBackEnd string) {
 		t.Fatalf("unable to create height hint cache: %v", err)
 	}
 	blockCache := blockcache.NewBlockCache(10000)
-	chainNotifier, err := btcdnotify.New(
+	chainNotifier, err := brondnotify.New(
 		&rpcConfig, netParams, hintCache, hintCache, blockCache,
 	)
 	if err != nil {
@@ -3271,7 +3271,7 @@ func runTests(t *testing.T, walletDriver *lnwallet.WalletDriver,
 	case "btcwallet":
 		var aliceClient, bobClient chain.Interface
 		switch backEnd {
-		case "btcd":
+		case "brond":
 			aliceClient, err = chain.NewRPCClient(netParams,
 				rpcConfig.Host, rpcConfig.User, rpcConfig.Pass,
 				rpcConfig.Certificates, false, 20)
@@ -3350,19 +3350,19 @@ func runTests(t *testing.T, walletDriver *lnwallet.WalletDriver,
 				netParams, bobChain,
 			)
 
-		case "bitcoind":
-			// Start a bitcoind instance.
-			tempBitcoindDir, err := ioutil.TempDir("", "bitcoind")
+		case "brocoind":
+			// Start a brocoind instance.
+			tempBrocoindDir, err := ioutil.TempDir("", "brocoind")
 			if err != nil {
 				t.Fatalf("unable to create temp directory: %v", err)
 			}
-			zmqBlockHost := "ipc:///" + tempBitcoindDir + "/blocks.socket"
-			zmqTxHost := "ipc:///" + tempBitcoindDir + "/tx.socket"
-			defer os.RemoveAll(tempBitcoindDir)
+			zmqBlockHost := "ipc:///" + tempBrocoindDir + "/blocks.socket"
+			zmqTxHost := "ipc:///" + tempBrocoindDir + "/tx.socket"
+			defer os.RemoveAll(tempBrocoindDir)
 			rpcPort := rand.Int()%(65536-1024) + 1024
-			bitcoind := exec.Command(
-				"bitcoind",
-				"-datadir="+tempBitcoindDir,
+			brocoind := exec.Command(
+				"brocoind",
+				"-datadir="+tempBrocoindDir,
 				"-regtest",
 				"-connect="+miningNode.P2PAddress(),
 				"-txindex",
@@ -3374,19 +3374,19 @@ func runTests(t *testing.T, walletDriver *lnwallet.WalletDriver,
 				"-zmqpubrawblock="+zmqBlockHost,
 				"-zmqpubrawtx="+zmqTxHost,
 			)
-			err = bitcoind.Start()
+			err = brocoind.Start()
 			if err != nil {
-				t.Fatalf("couldn't start bitcoind: %v", err)
+				t.Fatalf("couldn't start brocoind: %v", err)
 			}
-			defer bitcoind.Wait()
-			defer bitcoind.Process.Kill()
+			defer brocoind.Wait()
+			defer brocoind.Process.Kill()
 
-			// Wait for the bitcoind instance to start up.
+			// Wait for the brocoind instance to start up.
 
 			host := fmt.Sprintf("127.0.0.1:%d", rpcPort)
-			var chainConn *chain.BitcoindConn
+			var chainConn *chain.BrocoindConn
 			err = wait.NoError(func() error {
-				chainConn, err = chain.NewBitcoindConn(&chain.BitcoindConfig{
+				chainConn, err = chain.NewBrocoindConn(&chain.BrocoindConfig{
 					ChainParams:     netParams,
 					Host:            host,
 					User:            "weks",
@@ -3407,14 +3407,14 @@ func runTests(t *testing.T, walletDriver *lnwallet.WalletDriver,
 			}, 10*time.Second)
 			if err != nil {
 				t.Fatalf("unable to establish connection to "+
-					"bitcoind: %v", err)
+					"brocoind: %v", err)
 			}
 			defer chainConn.Stop()
 
-			// Create a btcwallet bitcoind client for both Alice and
+			// Create a btcwallet brocoind client for both Alice and
 			// Bob.
-			aliceClient = chainConn.NewBitcoindClient()
-			bobClient = chainConn.NewBitcoindClient()
+			aliceClient = chainConn.NewBrocoindClient()
+			bobClient = chainConn.NewBrocoindClient()
 		default:
 			t.Fatalf("unknown chain driver: %v", backEnd)
 		}

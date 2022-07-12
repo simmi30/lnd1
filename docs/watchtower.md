@@ -1,7 +1,7 @@
 # Private Altruist Watchtowers
 
-As of v0.7.0, `lnd` supports the ability to run a private, altruist watchtower
-as a fully-integrated subsystem of `lnd`. Watchtowers act as a second line of
+As of v0.7.0, `broln` supports the ability to run a private, altruist watchtower
+as a fully-integrated subsystem of `broln`. Watchtowers act as a second line of
 defense in responding to malicious or accidental breach scenarios in the event
 that the client’s node is offline or unable to respond at the time of a breach,
 offering greater degree of safety to channel funds.
@@ -12,7 +12,7 @@ victim’s funds (minus on-chain fees) without taking a cut. Reward watchtowers
 will be enabled in a subsequent release, though are still undergoing further
 testing and refinement.
 
-In addition, `lnd` can now be configured to operate as a _watchtower client_,
+In addition, `broln` can now be configured to operate as a _watchtower client_,
 backing up encrypted breach-remedy transactions (aka. justice transactions) to
 other altruist watchtowers. The watchtower stores fixed-size, encrypted blobs
 and is only able to decrypt and publish the justice transaction after the
@@ -22,7 +22,7 @@ mitigating the amount of tracking the watchtower can perform on its clients
 using long-term identifiers.
 
 Note that we have chosen to deploy a restricted set of features in this release
-that can begin to provide meaningful security to `lnd` users. Many more
+that can begin to provide meaningful security to `broln` users. Many more
 watchtower-related features are nearly complete or have meaningful progress, and
 we will continue to ship them as they receive further testing and become safe to
 release.
@@ -56,14 +56,14 @@ Retrieving information about your tower’s configurations can be done using
 ```
 
 The entire set of watchtower configuration options can be found using 
-`lnd -h`:
+`broln -h`:
 
 ```shell
 ⛰  lncli -h
 ...
 watchtower:
       --watchtower.active                                     If the watchtower should be active or not
-      --watchtower.towerdir=                                  Directory of the watchtower.db (default: $HOME/.lnd/data/watchtower)
+      --watchtower.towerdir=                                  Directory of the watchtower.db (default: $HOME/.broln/data/watchtower)
       --watchtower.listen=                                    Add interfaces/ports to listen for peer connections
       --watchtower.externalip=                                Add interfaces/ports where the watchtower can accept peer connections
       --watchtower.readtimeout=                               Duration the watchtower server will wait for messages to be received before hanging up on client connections
@@ -112,7 +112,7 @@ Watchtowers have tor hidden service support and can automatically generate a
 hidden service on startup with the following flags:
 
 ```shell
-⛰  lnd --tor.active --tor.v3 --watchtower.active
+⛰  broln --tor.active --tor.v3 --watchtower.active
 ```
 
 The onion address is then shown in the "uris" field when queried with `lncli tower info`:
@@ -125,7 +125,7 @@ The onion address is then shown in the "uris" field when queried with `lncli tow
 ]
 ```
 
-Note: *The watchtower’s public key is distinct from `lnd`’s node public key. For
+Note: *The watchtower’s public key is distinct from `broln`’s node public key. For
 now this acts as a soft whitelist as it requires clients to know the tower’s
 public key in order to use it for backups before more advanced whitelisting
 features are implemented. We recommend NOT disclosing this public key openly,
@@ -134,13 +134,13 @@ unless you are prepared to open your tower up to the entire Internet.*
 ### Watchtower Database Directory
 
 The watchtower's database can be moved using the `watchtower.towerdir=`
-configuration option. Note that a trailing `/bitcoin/mainnet/watchtower.db`
+configuration option. Note that a trailing `/brocoin/mainnet/watchtower.db`
 will be appended to the chosen directory to isolate databases for different
 chains, so setting `watchtower.towerdir=/path/to/towerdir` will yield a
-watchtower database at `/path/to/towerdir/bitcoin/mainnet/watchtower.db`.
+watchtower database at `/path/to/towerdir/brocoin/mainnet/watchtower.db`.
 
 On Linux, for example, the default watchtower database will be located at:
-`/home/$USER/.lnd/data/watchtower/bitcoin/mainnet/watchtower.db`
+`/home/$USER/.broln/data/watchtower/brocoin/mainnet/watchtower.db`
 
 ## Configuring a Watchtower Client
 
@@ -149,7 +149,7 @@ In order to set up a watchtower client, you’ll need two things:
 1. The watchtower client must be enabled with the `--wtclient.active` flag.
 
 ```shell
-⛰  lnd --wtclient.active
+⛰  broln --wtclient.active
 ```
 
 2. The watchtower URI of an active watchtower.

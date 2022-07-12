@@ -566,7 +566,7 @@ func testFilterBlockDisconnected(node *rpctest.Harness,
 	}()
 
 	if err = reorgView.Start(); err != nil {
-		t.Fatalf("unable to start btcd chain view: %v", err)
+		t.Fatalf("unable to start brond chain view: %v", err)
 	}
 	defer reorgView.Stop()
 
@@ -775,22 +775,22 @@ var interfaceImpls = []struct {
 	chainViewInit chainViewInitFunc
 }{
 	{
-		name: "bitcoind_zmq",
+		name: "brocoind_zmq",
 		chainViewInit: func(_ rpcclient.ConnConfig, p2pAddr string) (func(), FilteredChainView, error) {
-			// Start a bitcoind instance.
-			tempBitcoindDir, err := ioutil.TempDir("", "bitcoind")
+			// Start a brocoind instance.
+			tempBrocoindDir, err := ioutil.TempDir("", "brocoind")
 			if err != nil {
 				return nil, nil, err
 			}
-			zmqBlockHost := "ipc:///" + tempBitcoindDir + "/blocks.socket"
-			zmqTxHost := "ipc:///" + tempBitcoindDir + "/tx.socket"
+			zmqBlockHost := "ipc:///" + tempBrocoindDir + "/blocks.socket"
+			zmqTxHost := "ipc:///" + tempBrocoindDir + "/tx.socket"
 			cleanUp1 := func() {
-				os.RemoveAll(tempBitcoindDir)
+				os.RemoveAll(tempBrocoindDir)
 			}
 			rpcPort := rand.Int()%(65536-1024) + 1024
-			bitcoind := exec.Command(
-				"bitcoind",
-				"-datadir="+tempBitcoindDir,
+			brocoind := exec.Command(
+				"brocoind",
+				"-datadir="+tempBrocoindDir,
 				"-regtest",
 				"-connect="+p2pAddr,
 				"-txindex",
@@ -802,22 +802,22 @@ var interfaceImpls = []struct {
 				"-zmqpubrawblock="+zmqBlockHost,
 				"-zmqpubrawtx="+zmqTxHost,
 			)
-			err = bitcoind.Start()
+			err = brocoind.Start()
 			if err != nil {
 				cleanUp1()
 				return nil, nil, err
 			}
 			cleanUp2 := func() {
-				bitcoind.Process.Kill()
-				bitcoind.Wait()
+				brocoind.Process.Kill()
+				brocoind.Wait()
 				cleanUp1()
 			}
 
-			// Wait for the bitcoind instance to start up.
+			// Wait for the brocoind instance to start up.
 			time.Sleep(time.Second)
 
 			host := fmt.Sprintf("127.0.0.1:%d", rpcPort)
-			chainConn, err := chain.NewBitcoindConn(&chain.BitcoindConfig{
+			chainConn, err := chain.NewBrocoindConn(&chain.BrocoindConfig{
 				ChainParams:     &chaincfg.RegressionNetParams,
 				Host:            host,
 				User:            "weks",
@@ -832,12 +832,12 @@ var interfaceImpls = []struct {
 			})
 			if err != nil {
 				return cleanUp2, nil, fmt.Errorf("unable to "+
-					"establish connection to bitcoind: %v",
+					"establish connection to brocoind: %v",
 					err)
 			}
 			if err := chainConn.Start(); err != nil {
 				return cleanUp2, nil, fmt.Errorf("unable to "+
-					"establish connection to bitcoind: %v",
+					"establish connection to brocoind: %v",
 					err)
 			}
 			cleanUp3 := func() {
@@ -847,7 +847,7 @@ var interfaceImpls = []struct {
 
 			blockCache := blockcache.NewBlockCache(10000)
 
-			chainView := NewBitcoindFilteredChainView(
+			chainView := NewBrocoindFilteredChainView(
 				chainConn, blockCache,
 			)
 
@@ -884,7 +884,7 @@ var interfaceImpls = []struct {
 			spvNode.Start()
 
 			// Wait until the node has fully synced up to the local
-			// btcd node.
+			// brond node.
 			for !spvNode.IsCurrent() {
 				time.Sleep(time.Millisecond * 100)
 			}
@@ -908,10 +908,10 @@ var interfaceImpls = []struct {
 		},
 	},
 	{
-		name: "btcd_websockets",
+		name: "brond_websockets",
 		chainViewInit: func(config rpcclient.ConnConfig, _ string) (func(), FilteredChainView, error) {
 			blockCache := blockcache.NewBlockCache(10000)
-			chainView, err := NewBtcdFilteredChainView(
+			chainView, err := NewBrondFilteredChainView(
 				config, blockCache,
 			)
 			if err != nil {
@@ -924,7 +924,7 @@ var interfaceImpls = []struct {
 }
 
 func TestFilteredChainView(t *testing.T) {
-	// Initialize the harness around a btcd node which will serve as our
+	// Initialize the harness around a brond node which will serve as our
 	// dedicated miner to generate blocks, cause re-orgs, etc. We'll set up
 	// this node with a chain length of 125, so we have plenty of BTC to
 	// play around with.

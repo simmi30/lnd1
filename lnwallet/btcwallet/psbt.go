@@ -88,7 +88,7 @@ func (b *BtcWallet) FundPsbt(packet *psbt.Packet, minConfs int32,
 // declared and tries to sign all unsigned inputs that have all required fields
 // (UTXO information, BIP32 derivation information, witness or sig scripts) set.
 // If no error is returned, the PSBT is ready to be given to the next signer or
-// to be finalized if lnd was the last signer.
+// to be finalized if broln was the last signer.
 //
 // NOTE: This method only signs inputs (and only those it can sign), it does not
 // perform any other tasks (such as coin selection, UTXO locking or
@@ -257,9 +257,9 @@ func maybeTweakPrivKeyPsbt(unknowns []*psbt.Unknown,
 
 // FinalizePsbt expects a partial transaction with all inputs and outputs fully
 // declared and tries to sign all inputs that belong to the specified account.
-// Lnd must be the last signer of the transaction. That means, if there are any
+// broln must be the last signer of the transaction. That means, if there are any
 // unsigned non-witness inputs or inputs without UTXO information attached or
-// inputs without witness data that do not belong to lnd's wallet, this method
+// inputs without witness data that do not belong to broln's wallet, this method
 // will fail. If no error is returned, the PSBT is ready to be extracted and the
 // final TX within to be broadcast.
 //

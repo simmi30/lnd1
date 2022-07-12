@@ -1,7 +1,7 @@
 # macaroons
 
 This is a more detailed, technical description of how macaroons work and how
-authentication and authorization is implemented in `lnd`.
+authentication and authorization is implemented in `broln`.
 
 For a more high-level overview see
 [macaroons.md in the docs](../docs/macaroons.md).
@@ -31,7 +31,7 @@ In this DB the following two key/value pairs are stored:
 
 ## Generated macaroons
 
-With the root key set up, `lnd` continues with creating three macaroon files:
+With the root key set up, `broln` continues with creating three macaroon files:
 
 * `invoice.macaroon`: Grants read and write access to all invoice related gRPC
   commands (like generating an address or adding an invoice). Can be used for a
@@ -43,7 +43,7 @@ With the root key set up, `lnd` continues with creating three macaroon files:
 * `admin.macaroon`: Grants full read and write access to all gRPC commands.
   This is used by the `lncli` client.
 
-These three macaroons all have the location field set to `lnd` and have no
+These three macaroons all have the location field set to `broln` and have no
 conditions/first party caveats or third party caveats set.
 
 The access restrictions are implemented with a list of entity/action pairs that
@@ -90,7 +90,7 @@ be found in `constraints.go`:
 
 ## Bakery
 
-As of lnd `v0.9.0-beta` there is a macaroon bakery available through gRPC and
+As of broln `v0.9.0-beta` there is a macaroon bakery available through gRPC and
 command line.
 Users can create their own macaroons with custom permissions if the provided
 default macaroons (`admin`, `invoice` and `readonly`) are not sufficient.
@@ -126,8 +126,8 @@ access.
 Users can obtain a new `admin.macaroon` that contains this permission by
 removing all three default macaroons (`admin.macaroon`, `invoice.macaroon` and
 `readonly.macaroon`, **NOT** the `macaroons.db`!) from their
-`data/chain/<chain>/<network>/` directory inside the lnd data directory and
-restarting lnd.
+`data/chain/<chain>/<network>/` directory inside the broln data directory and
+restarting broln.
 
 
 ## Root key rotation

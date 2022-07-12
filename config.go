@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2017 The btcsuite developers
+// Copyright (c) 2013-2017 The brsuite developers
 // Copyright (c) 2015-2016 The Decred developers
 // Copyright (C) 2015-2020 The Lightning Network Developers
 
@@ -55,7 +55,7 @@ const (
 	defaultInvoiceMacFilename = "invoice.macaroon"
 	defaultLogLevel           = "info"
 	defaultLogDirname         = "logs"
-	defaultLogFilename        = "lnd.log"
+	defaultLogFilename        = "broln.log"
 	defaultRPCPort            = 10019
 	defaultRESTPort           = 8080
 	defaultPeerPort           = 9782
@@ -183,62 +183,62 @@ const (
 )
 
 var (
-	// DefaultLndDir is the default directory where lnd tries to find its
+	// DefaultbrolnDir is the default directory where broln tries to find its
 	// configuration file and store its data. This is a directory in the
 	// user's application data, for example:
-	//   C:\Users\<username>\AppData\Local\Lnd on Windows
-	//   ~/.lnd on Linux
-	//   ~/Library/Application Support/Lnd on MacOS
-	DefaultLndDir = btcutil.AppDataDir("lnd", false)
+	//   C:\Users\<username>\AppData\Local\broln on Windows
+	//   ~/.broln on Linux
+	//   ~/Library/Application Support/broln on MacOS
+	DefaultbrolnDir = btcutil.AppDataDir("broln", false)
 
-	// DefaultConfigFile is the default full path of lnd's configuration
+	// DefaultConfigFile is the default full path of broln's configuration
 	// file.
-	DefaultConfigFile = filepath.Join(DefaultLndDir, lncfg.DefaultConfigFilename)
+	DefaultConfigFile = filepath.Join(DefaultbrolnDir, lncfg.DefaultConfigFilename)
 
-	defaultDataDir = filepath.Join(DefaultLndDir, defaultDataDirname)
-	defaultLogDir  = filepath.Join(DefaultLndDir, defaultLogDirname)
+	defaultDataDir = filepath.Join(DefaultbrolnDir, defaultDataDirname)
+	defaultLogDir  = filepath.Join(DefaultbrolnDir, defaultLogDirname)
 
 	defaultTowerDir = filepath.Join(defaultDataDir, defaultTowerSubDirname)
 
-	defaultTLSCertPath    = filepath.Join(DefaultLndDir, defaultTLSCertFilename)
-	defaultTLSKeyPath     = filepath.Join(DefaultLndDir, defaultTLSKeyFilename)
-	defaultLetsEncryptDir = filepath.Join(DefaultLndDir, defaultLetsEncryptDirname)
+	defaultTLSCertPath    = filepath.Join(DefaultbrolnDir, defaultTLSCertFilename)
+	defaultTLSKeyPath     = filepath.Join(DefaultbrolnDir, defaultTLSKeyFilename)
+	defaultLetsEncryptDir = filepath.Join(DefaultbrolnDir, defaultLetsEncryptDirname)
 
-	defaultBtcdDir         = btcutil.AppDataDir("btcd", false)
-	defaultBtcdRPCCertFile = filepath.Join(defaultBtcdDir, "rpc.cert")
+	defaultBrondDir         = btcutil.AppDataDir("brond", false)
+	defaultBrondRPCCertFile = filepath.Join(defaultBrondDir, "rpc.cert")
 
 	defaultLtcdDir         = btcutil.AppDataDir("ltcd", false)
 	defaultLtcdRPCCertFile = filepath.Join(defaultLtcdDir, "rpc.cert")
 
-	defaultBitcoindDir  = btcutil.AppDataDir("bitcoin", false)
+	defaultBrocoindDir  = btcutil.AppDataDir("brocoin", false)
 	defaultLitecoindDir = btcutil.AppDataDir("litecoin", false)
 
 	defaultTorSOCKS   = net.JoinHostPort("localhost", strconv.Itoa(defaultTorSOCKSPort))
 	defaultTorDNS     = net.JoinHostPort(defaultTorDNSHost, strconv.Itoa(defaultTorDNSPort))
 	defaultTorControl = net.JoinHostPort("localhost", strconv.Itoa(defaultTorControlPort))
 
-	// bitcoindEsimateModes defines all the legal values for bitcoind's
+	// brocoindEsimateModes defines all the legal values for brocoind's
 	// estimatesmartfee RPC call.
-	defaultBitcoindEstimateMode = "CONSERVATIVE"
-	bitcoindEstimateModes       = [2]string{"ECONOMICAL", defaultBitcoindEstimateMode}
+	defaultBrocoindEstimateMode = "CONSERVATIVE"
+	brocoindEstimateModes       = [2]string{"ECONOMICAL", defaultBrocoindEstimateMode}
 
 	defaultPrunedNodeMaxPeers = 4
 )
 
-// Config defines the configuration options for lnd.
+// Config defines the configuration options for broln.
 //
 // See LoadConfig for further details regarding the configuration
 // loading+parsing process.
 type Config struct {
 	ShowVersion bool `short:"V" long:"version" description:"Display version information and exit"`
 
-	LndDir       string `long:"lnddir" description:"The base directory that contains lnd's data, logs, configuration file, etc."`
+	brolnDir       string `long:"brolndir" description:"The base directory that contains broln's data, logs, configuration file, etc."`
 	ConfigFile   string `short:"C" long:"configfile" description:"Path to configuration file"`
-	DataDir      string `short:"b" long:"datadir" description:"The directory to store lnd's data within"`
-	SyncFreelist bool   `long:"sync-freelist" description:"Whether the databases used within lnd should sync their freelist to disk. This is disabled by default resulting in improved memory performance during operation, but with an increase in startup time."`
+	DataDir      string `short:"b" long:"datadir" description:"The directory to store broln's data within"`
+	SyncFreelist bool   `long:"sync-freelist" description:"Whether the databases used within broln should sync their freelist to disk. This is disabled by default resulting in improved memory performance during operation, but with an increase in startup time."`
 
-	TLSCertPath        string        `long:"tlscertpath" description:"Path to write the TLS certificate for lnd's RPC and REST services"`
-	TLSKeyPath         string        `long:"tlskeypath" description:"Path to write the TLS private key for lnd's RPC and REST services"`
+	TLSCertPath        string        `long:"tlscertpath" description:"Path to write the TLS certificate for broln's RPC and REST services"`
+	TLSKeyPath         string        `long:"tlskeypath" description:"Path to write the TLS private key for broln's RPC and REST services"`
 	TLSExtraIPs        []string      `long:"tlsextraip" description:"Adds an extra ip to the generated certificate"`
 	TLSExtraDomains    []string      `long:"tlsextradomain" description:"Adds an extra domain to the generated certificate"`
 	TLSAutoRefresh     bool          `long:"tlsautorefresh" description:"Re-generate TLS certificate and key if the IPs or domains are changed"`
@@ -246,16 +246,16 @@ type Config struct {
 	TLSCertDuration    time.Duration `long:"tlscertduration" description:"The duration for which the auto-generated TLS certificate will be valid for"`
 
 	NoMacaroons     bool          `long:"no-macaroons" description:"Disable macaroon authentication, can only be used if server is not listening on a public interface."`
-	AdminMacPath    string        `long:"adminmacaroonpath" description:"Path to write the admin macaroon for lnd's RPC and REST services if it doesn't exist"`
-	ReadMacPath     string        `long:"readonlymacaroonpath" description:"Path to write the read-only macaroon for lnd's RPC and REST services if it doesn't exist"`
-	InvoiceMacPath  string        `long:"invoicemacaroonpath" description:"Path to the invoice-only macaroon for lnd's RPC and REST services if it doesn't exist"`
+	AdminMacPath    string        `long:"adminmacaroonpath" description:"Path to write the admin macaroon for broln's RPC and REST services if it doesn't exist"`
+	ReadMacPath     string        `long:"readonlymacaroonpath" description:"Path to write the read-only macaroon for broln's RPC and REST services if it doesn't exist"`
+	InvoiceMacPath  string        `long:"invoicemacaroonpath" description:"Path to the invoice-only macaroon for broln's RPC and REST services if it doesn't exist"`
 	LogDir          string        `long:"logdir" description:"Directory to log output."`
 	MaxLogFiles     int           `long:"maxlogfiles" description:"Maximum logfiles to keep (0 for no rotation)"`
 	MaxLogFileSize  int           `long:"maxlogfilesize" description:"Maximum logfile size in MB"`
 	AcceptorTimeout time.Duration `long:"acceptortimeout" description:"Time after which an RPCAcceptor will time out and return false if it hasn't yet received a response"`
 
 	LetsEncryptDir    string `long:"letsencryptdir" description:"The directory to store Let's Encrypt certificates within"`
-	LetsEncryptListen string `long:"letsencryptlisten" description:"The IP:port on which lnd will listen for Let's Encrypt challenges. Let's Encrypt will always try to contact on port 80. Often non-root processes are not allowed to bind to ports lower than 1024. This configuration option allows a different port to be used, but must be used in combination with port forwarding from port 80. This configuration can also be used to specify another IP address to listen on, for example an IPv6 address."`
+	LetsEncryptListen string `long:"letsencryptlisten" description:"The IP:port on which broln will listen for Let's Encrypt challenges. Let's Encrypt will always try to contact on port 80. Often non-root processes are not allowed to bind to ports lower than 1024. This configuration option allows a different port to be used, but must be used in combination with port forwarding from port 80. This configuration can also be used to specify another IP address to listen on, for example an IPv6 address."`
 	LetsEncryptDomain string `long:"letsencryptdomain" description:"Request a Let's Encrypt certificate for this domain. Note that the certicate is only requested and stored when the first rpc connection comes in."`
 
 	// We'll parse these 'raw' string arguments into real net.Addrs in the
@@ -295,14 +295,14 @@ type Config struct {
 
 	FeeURL string `long:"feeurl" description:"Optional URL for external fee estimation. If no URL is specified, the method for fee estimation will depend on the chosen backend and network. Must be set for neutrino on mainnet."`
 
-	Bitcoin      *lncfg.Chain    `group:"Bitcoin" namespace:"bitcoin"`
-	BtcdMode     *lncfg.Btcd     `group:"btcd" namespace:"btcd"`
-	BitcoindMode *lncfg.Bitcoind `group:"bitcoind" namespace:"bitcoind"`
+	Brocoin      *lncfg.Chain    `group:"Brocoin" namespace:"brocoin"`
+	BrondMode     *lncfg.Brond     `group:"brond" namespace:"brond"`
+	BrocoindMode *lncfg.Brocoind `group:"brocoind" namespace:"brocoind"`
 	NeutrinoMode *lncfg.Neutrino `group:"neutrino" namespace:"neutrino"`
 
 	Litecoin      *lncfg.Chain    `group:"Litecoin" namespace:"litecoin"`
-	LtcdMode      *lncfg.Btcd     `group:"ltcd" namespace:"ltcd"`
-	LitecoindMode *lncfg.Bitcoind `group:"litecoind" namespace:"litecoind"`
+	LtcdMode      *lncfg.Brond     `group:"ltcd" namespace:"ltcd"`
+	LitecoindMode *lncfg.Brocoind `group:"litecoind" namespace:"litecoind"`
 
 	BlockCacheSize uint64 `long:"blockcachesize" description:"The maximum capacity of the block cache"`
 
@@ -317,10 +317,10 @@ type Config struct {
 	NoNetBootstrap bool `long:"nobootstrap" description:"If true, then automatic network bootstrapping will not be attempted."`
 
 	NoSeedBackup             bool   `long:"noseedbackup" description:"If true, NO SEED WILL BE EXPOSED -- EVER, AND THE WALLET WILL BE ENCRYPTED USING THE DEFAULT PASSPHRASE. THIS FLAG IS ONLY FOR TESTING AND SHOULD NEVER BE USED ON MAINNET."`
-	WalletUnlockPasswordFile string `long:"wallet-unlock-password-file" description:"The full path to a file (or pipe/device) that contains the password for unlocking the wallet; if set, no unlocking through RPC is possible and lnd will exit if no wallet exists or the password is incorrect; if wallet-unlock-allow-create is also set then lnd will ignore this flag if no wallet exists and allow a wallet to be created through RPC."`
+	WalletUnlockPasswordFile string `long:"wallet-unlock-password-file" description:"The full path to a file (or pipe/device) that contains the password for unlocking the wallet; if set, no unlocking through RPC is possible and broln will exit if no wallet exists or the password is incorrect; if wallet-unlock-allow-create is also set then broln will ignore this flag if no wallet exists and allow a wallet to be created through RPC."`
 	WalletUnlockAllowCreate  bool   `long:"wallet-unlock-allow-create" description:"Don't fail with an error if wallet-unlock-password-file is set but no wallet exists yet."`
 
-	ResetWalletTransactions bool `long:"reset-wallet-transactions" description:"Removes all transaction history from the on-chain wallet on startup, forcing a full chain rescan starting at the wallet's birthday. Implements the same functionality as btcwallet's dropwtxmgr command. Should be set to false after successful execution to avoid rescanning on every restart of lnd."`
+	ResetWalletTransactions bool `long:"reset-wallet-transactions" description:"Removes all transaction history from the on-chain wallet on startup, forcing a full chain rescan starting at the wallet's birthday. Implements the same functionality as btcwallet's dropwtxmgr command. Should be set to false after successful execution to avoid rescanning on every restart of broln."`
 
 	CoinSelectionStrategy string `long:"coin-selection-strategy" description:"The strategy to use for selecting coins for wallet transactions." choice:"largest" choice:"random"`
 
@@ -346,9 +346,9 @@ type Config struct {
 
 	IgnoreHistoricalGossipFilters bool `long:"ignore-historical-gossip-filters" description:"If true, will not reply with historical data that matches the range specified by a remote peer's gossip_timestamp_filter. Doing so will result in lower memory and bandwidth requirements."`
 
-	RejectPush bool `long:"rejectpush" description:"If true, lnd will not accept channel opening requests with non-zero push amounts. This should prevent accidental pushes to merchant nodes."`
+	RejectPush bool `long:"rejectpush" description:"If true, broln will not accept channel opening requests with non-zero push amounts. This should prevent accidental pushes to merchant nodes."`
 
-	RejectHTLC bool `long:"rejecthtlc" description:"If true, lnd will not forward any HTLCs that are meant as onward payments. This option will still allow lnd to send HTLCs and receive HTLCs but lnd won't be used as a hop."`
+	RejectHTLC bool `long:"rejecthtlc" description:"If true, broln will not forward any HTLCs that are meant as onward payments. This option will still allow broln to send HTLCs and receive HTLCs but broln won't be used as a hop."`
 
 	StaggerInitialReconnect bool `long:"stagger-initial-reconnect" description:"If true, will apply a randomized staggering between 0s and 30s when reconnecting to persistent peers on startup. The first 10 reconnections will be attempted instantly, regardless of the flag's value"`
 
@@ -358,7 +358,7 @@ type Config struct {
 
 	MaxCommitFeeRateAnchors uint64 `long:"max-commit-fee-rate-anchors" description:"The maximum fee rate in sat/vbyte that will be used for commitments of channels of the anchors type. Must be large enough to ensure transaction propagation"`
 
-	DryRunMigration bool `long:"dry-run-migration" description:"If true, lnd will abort committing a migration if it would otherwise have been successful. This leaves the database unmodified, and still compatible with the previously active version of lnd."`
+	DryRunMigration bool `long:"dry-run-migration" description:"If true, broln will abort committing a migration if it would otherwise have been successful. This leaves the database unmodified, and still compatible with the previously active version of broln."`
 
 	net tor.Net
 
@@ -420,13 +420,13 @@ type Config struct {
 	networkDir string
 
 	// ActiveNetParams contains parameters of the target chain.
-	ActiveNetParams chainreg.BitcoinNetParams
+	ActiveNetParams chainreg.BrocoinNetParams
 }
 
 // DefaultConfig returns all default values for the Config struct.
 func DefaultConfig() Config {
 	return Config{
-		LndDir:            DefaultLndDir,
+		brolnDir:            DefaultbrolnDir,
 		ConfigFile:        DefaultConfigFile,
 		DataDir:           defaultDataDir,
 		DebugLevel:        defaultLogLevel,
@@ -441,24 +441,24 @@ func DefaultConfig() Config {
 		AcceptorTimeout:   defaultAcceptorTimeout,
 		WSPingInterval:    lnrpc.DefaultPingInterval,
 		WSPongWait:        lnrpc.DefaultPongWait,
-		Bitcoin: &lncfg.Chain{
-			MinHTLCIn:     chainreg.DefaultBitcoinMinHTLCInMSat,
-			MinHTLCOut:    chainreg.DefaultBitcoinMinHTLCOutMSat,
-			BaseFee:       chainreg.DefaultBitcoinBaseFeeMSat,
-			FeeRate:       chainreg.DefaultBitcoinFeeRate,
-			TimeLockDelta: chainreg.DefaultBitcoinTimeLockDelta,
+		Brocoin: &lncfg.Chain{
+			MinHTLCIn:     chainreg.DefaultBrocoinMinHTLCInMSat,
+			MinHTLCOut:    chainreg.DefaultBrocoinMinHTLCOutMSat,
+			BaseFee:       chainreg.DefaultBrocoinBaseFeeMSat,
+			FeeRate:       chainreg.DefaultBrocoinFeeRate,
+			TimeLockDelta: chainreg.DefaultBrocoinTimeLockDelta,
 			MaxLocalDelay: defaultMaxLocalCSVDelay,
-			Node:          "btcd",
+			Node:          "brond",
 		},
-		BtcdMode: &lncfg.Btcd{
-			Dir:     defaultBtcdDir,
+		BrondMode: &lncfg.Brond{
+			Dir:     defaultBrondDir,
 			RPCHost: defaultRPCHost,
-			RPCCert: defaultBtcdRPCCertFile,
+			RPCCert: defaultBrondRPCCertFile,
 		},
-		BitcoindMode: &lncfg.Bitcoind{
-			Dir:                defaultBitcoindDir,
+		BrocoindMode: &lncfg.Brocoind{
+			Dir:                defaultBrocoindDir,
 			RPCHost:            defaultRPCHost,
-			EstimateMode:       defaultBitcoindEstimateMode,
+			EstimateMode:       defaultBrocoindEstimateMode,
 			PrunedNodeMaxPeers: defaultPrunedNodeMaxPeers,
 		},
 		Litecoin: &lncfg.Chain{
@@ -470,15 +470,15 @@ func DefaultConfig() Config {
 			MaxLocalDelay: defaultMaxLocalCSVDelay,
 			Node:          "ltcd",
 		},
-		LtcdMode: &lncfg.Btcd{
+		LtcdMode: &lncfg.Brond{
 			Dir:     defaultLtcdDir,
 			RPCHost: defaultRPCHost,
 			RPCCert: defaultLtcdRPCCertFile,
 		},
-		LitecoindMode: &lncfg.Bitcoind{
+		LitecoindMode: &lncfg.Brocoind{
 			Dir:                defaultLitecoindDir,
 			RPCHost:            defaultRPCHost,
-			EstimateMode:       defaultBitcoindEstimateMode,
+			EstimateMode:       defaultBrocoindEstimateMode,
 			PrunedNodeMaxPeers: defaultPrunedNodeMaxPeers,
 		},
 		NeutrinoMode: &lncfg.Neutrino{
@@ -591,7 +591,7 @@ func DefaultConfig() Config {
 		Cluster:                 lncfg.DefaultCluster(),
 		RPCMiddleware:           lncfg.DefaultRPCMiddleware(),
 		registeredChains:        chainreg.NewChainRegistry(),
-		ActiveNetParams:         chainreg.BitcoinTestNetParams,
+		ActiveNetParams:         chainreg.BrocoinTestNetParams,
 		ChannelCommitInterval:   defaultChannelCommitInterval,
 		ChannelCommitBatchSize:  defaultChannelCommitBatchSize,
 		CoinSelectionStrategy:   defaultCoinSelectionStrategy,
@@ -629,11 +629,11 @@ func LoadConfig(interceptor signal.Interceptor) (*Config, error) {
 
 	// If the config file path has not been modified by the user, then we'll
 	// use the default config file path. However, if the user has modified
-	// their lnddir, then we should assume they intend to use the config
+	// their brolndir, then we should assume they intend to use the config
 	// file within it.
-	configFileDir := CleanAndExpandPath(preCfg.LndDir)
+	configFileDir := CleanAndExpandPath(preCfg.brolnDir)
 	configFilePath := CleanAndExpandPath(preCfg.ConfigFile)
-	if configFileDir != DefaultLndDir {
+	if configFileDir != DefaultbrolnDir {
 		if configFilePath == DefaultConfigFile {
 			configFilePath = filepath.Join(
 				configFileDir, lncfg.DefaultConfigFilename,
@@ -718,21 +718,21 @@ func (u *usageError) Error() string {
 func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 	flagParser *flags.Parser) (*Config, error) {
 
-	// If the provided lnd directory is not the default, we'll modify the
+	// If the provided broln directory is not the default, we'll modify the
 	// path to all of the files and directories that will live within it.
-	lndDir := CleanAndExpandPath(cfg.LndDir)
-	if lndDir != DefaultLndDir {
-		cfg.DataDir = filepath.Join(lndDir, defaultDataDirname)
+	brolnDir := CleanAndExpandPath(cfg.brolnDir)
+	if brolnDir != DefaultbrolnDir {
+		cfg.DataDir = filepath.Join(brolnDir, defaultDataDirname)
 		cfg.LetsEncryptDir = filepath.Join(
-			lndDir, defaultLetsEncryptDirname,
+			brolnDir, defaultLetsEncryptDirname,
 		)
-		cfg.TLSCertPath = filepath.Join(lndDir, defaultTLSCertFilename)
-		cfg.TLSKeyPath = filepath.Join(lndDir, defaultTLSKeyFilename)
-		cfg.LogDir = filepath.Join(lndDir, defaultLogDirname)
+		cfg.TLSCertPath = filepath.Join(brolnDir, defaultTLSCertFilename)
+		cfg.TLSKeyPath = filepath.Join(brolnDir, defaultTLSKeyFilename)
+		cfg.LogDir = filepath.Join(brolnDir, defaultLogDirname)
 
 		// If the watchtower's directory is set to the default, i.e. the
 		// user has not requested a different location, we'll move the
-		// location to be relative to the specified lnd directory.
+		// location to be relative to the specified broln directory.
 		if cfg.Watchtower.TowerDir == defaultTowerDir {
 			cfg.Watchtower.TowerDir = filepath.Join(
 				cfg.DataDir, defaultTowerSubDirname,
@@ -758,7 +758,7 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 				}
 			}
 
-			str := "Failed to create lnd directory '%s': %v"
+			str := "Failed to create broln directory '%s': %v"
 			return mkErr(str, dir, err)
 		}
 
@@ -790,11 +790,11 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		// lightning-terminal).
 		fileOption := fileParser.FindOptionByLongName(long)
 		fileOptionNested := fileParser.FindOptionByLongName(
-			"lnd." + long,
+			"broln." + long,
 		)
 		flagOption := flagParser.FindOptionByLongName(long)
 		flagOptionNested := flagParser.FindOptionByLongName(
-			"lnd." + long,
+			"broln." + long,
 		)
 
 		return (fileOption != nil && fileOption.IsSet()) ||
@@ -815,9 +815,9 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 	cfg.ReadMacPath = CleanAndExpandPath(cfg.ReadMacPath)
 	cfg.InvoiceMacPath = CleanAndExpandPath(cfg.InvoiceMacPath)
 	cfg.LogDir = CleanAndExpandPath(cfg.LogDir)
-	cfg.BtcdMode.Dir = CleanAndExpandPath(cfg.BtcdMode.Dir)
+	cfg.BrondMode.Dir = CleanAndExpandPath(cfg.BrondMode.Dir)
 	cfg.LtcdMode.Dir = CleanAndExpandPath(cfg.LtcdMode.Dir)
-	cfg.BitcoindMode.Dir = CleanAndExpandPath(cfg.BitcoindMode.Dir)
+	cfg.BrocoindMode.Dir = CleanAndExpandPath(cfg.BrocoindMode.Dir)
 	cfg.LitecoindMode.Dir = CleanAndExpandPath(cfg.LitecoindMode.Dir)
 	cfg.Tor.PrivateKeyPath = CleanAndExpandPath(cfg.Tor.PrivateKeyPath)
 	cfg.Tor.WatchtowerKeyPath = CleanAndExpandPath(cfg.Tor.WatchtowerKeyPath)
@@ -946,7 +946,7 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 	cfg.Tor.Control = control.String()
 
 	// Ensure that tor socks host:port is not equal to tor control
-	// host:port. This would lead to lnd not starting up properly.
+	// host:port. This would lead to broln not starting up properly.
 	if cfg.Tor.SOCKS == cfg.Tor.Control {
 		str := "tor.socks and tor.control can not us the same host:port"
 		return nil, mkErr(str)
@@ -965,11 +965,11 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		switch {
 		case cfg.Tor.V2:
 			cfg.Tor.PrivateKeyPath = filepath.Join(
-				lndDir, defaultTorV2PrivateKeyFilename,
+				brolnDir, defaultTorV2PrivateKeyFilename,
 			)
 		case cfg.Tor.V3:
 			cfg.Tor.PrivateKeyPath = filepath.Join(
-				lndDir, defaultTorV3PrivateKeyFilename,
+				brolnDir, defaultTorV3PrivateKeyFilename,
 			)
 		}
 	}
@@ -1015,15 +1015,15 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 	// Determine the active chain configuration and its parameters.
 	switch {
 	// At this moment, multiple active chains are not supported.
-	case cfg.Litecoin.Active && cfg.Bitcoin.Active:
-		str := "Currently both Bitcoin and Litecoin cannot be " +
+	case cfg.Litecoin.Active && cfg.Brocoin.Active:
+		str := "Currently both Brocoin and Litecoin cannot be " +
 			"active together"
 		return nil, mkErr(str)
 
-	// Either Bitcoin must be active, or Litecoin must be active.
+	// Either Brocoin must be active, or Litecoin must be active.
 	// Otherwise, we don't know which chain we're on.
-	case !cfg.Bitcoin.Active && !cfg.Litecoin.Active:
-		return nil, mkErr("either bitcoin.active or " +
+	case !cfg.Brocoin.Active && !cfg.Litecoin.Active:
+		return nil, mkErr("either brocoin.active or " +
 			"litecoin.active must be set to 1 (true)")
 
 	case cfg.Litecoin.Active:
@@ -1077,7 +1077,7 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		// The litecoin chain is the current active chain. However
 		// throughout the codebase we required chaincfg.Params. So as a
 		// temporary hack, we'll mutate the default net params for
-		// bitcoin with the litecoin specific information.
+		// brocoin with the litecoin specific information.
 		chainreg.ApplyLitecoinParams(&cfg.ActiveNetParams, &ltcParams)
 
 		switch cfg.Litecoin.Node {
@@ -1119,30 +1119,30 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		cfg.registeredChains.RegisterPrimaryChain(chainreg.LitecoinChain)
 		MaxFundingAmount = funding.MaxLtcFundingAmount
 
-	case cfg.Bitcoin.Active:
+	case cfg.Brocoin.Active:
 		// Multiple networks can't be selected simultaneously.  Count
 		// number of network flags passed; assign active network params
 		// while we're at it.
 		numNets := 0
-		if cfg.Bitcoin.MainNet {
+		if cfg.Brocoin.MainNet {
 			numNets++
-			cfg.ActiveNetParams = chainreg.BitcoinMainNetParams
+			cfg.ActiveNetParams = chainreg.BrocoinMainNetParams
 		}
-		if cfg.Bitcoin.TestNet3 {
+		if cfg.Brocoin.TestNet3 {
 			numNets++
-			cfg.ActiveNetParams = chainreg.BitcoinTestNetParams
+			cfg.ActiveNetParams = chainreg.BrocoinTestNetParams
 		}
-		if cfg.Bitcoin.RegTest {
+		if cfg.Brocoin.RegTest {
 			numNets++
-			cfg.ActiveNetParams = chainreg.BitcoinRegTestNetParams
+			cfg.ActiveNetParams = chainreg.BrocoinRegTestNetParams
 		}
-		if cfg.Bitcoin.SimNet {
+		if cfg.Brocoin.SimNet {
 			numNets++
-			cfg.ActiveNetParams = chainreg.BitcoinSimNetParams
+			cfg.ActiveNetParams = chainreg.BrocoinSimNetParams
 		}
-		if cfg.Bitcoin.SigNet {
+		if cfg.Brocoin.SigNet {
 			numNets++
-			cfg.ActiveNetParams = chainreg.BitcoinSigNetParams
+			cfg.ActiveNetParams = chainreg.BrocoinSigNetParams
 
 			// Let the user overwrite the default signet parameters.
 			// The challenge defines the actual signet network to
@@ -1150,9 +1150,9 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 			// discovery.
 			sigNetChallenge := chaincfg.DefaultSignetChallenge
 			sigNetSeeds := chaincfg.DefaultSignetDNSSeeds
-			if cfg.Bitcoin.SigNetChallenge != "" {
+			if cfg.Brocoin.SigNetChallenge != "" {
 				challenge, err := hex.DecodeString(
-					cfg.Bitcoin.SigNetChallenge,
+					cfg.Brocoin.SigNetChallenge,
 				)
 				if err != nil {
 					return nil, mkErr("Invalid "+
@@ -1162,11 +1162,11 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 				sigNetChallenge = challenge
 			}
 
-			if len(cfg.Bitcoin.SigNetSeedNode) > 0 {
+			if len(cfg.Brocoin.SigNetSeedNode) > 0 {
 				sigNetSeeds = make([]chaincfg.DNSSeed, len(
-					cfg.Bitcoin.SigNetSeedNode,
+					cfg.Brocoin.SigNetSeedNode,
 				))
-				for idx, seed := range cfg.Bitcoin.SigNetSeedNode {
+				for idx, seed := range cfg.Brocoin.SigNetSeedNode {
 					sigNetSeeds[idx] = chaincfg.DNSSeed{
 						Host:         seed,
 						HasFiltering: false,
@@ -1189,43 +1189,43 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		// The target network must be provided, otherwise, we won't
 		// know how to initialize the daemon.
 		if numNets == 0 {
-			str := "either --bitcoin.mainnet, or bitcoin.testnet," +
-				"bitcoin.simnet, or bitcoin.regtest " +
+			str := "either --brocoin.mainnet, or brocoin.testnet," +
+				"brocoin.simnet, or brocoin.regtest " +
 				"must be specified"
 			return nil, mkErr(str)
 		}
 
-		err := cfg.Bitcoin.Validate(
+		err := cfg.Brocoin.Validate(
 			minTimeLockDelta, funding.MinBtcRemoteDelay,
 		)
 		if err != nil {
-			return nil, mkErr("error validating bitcoin params: %v",
+			return nil, mkErr("error validating brocoin params: %v",
 				err)
 		}
 
-		switch cfg.Bitcoin.Node {
-		case "btcd":
+		switch cfg.Brocoin.Node {
+		case "brond":
 			err := parseRPCParams(
-				cfg.Bitcoin, cfg.BtcdMode,
-				chainreg.BitcoinChain, cfg.ActiveNetParams,
+				cfg.Brocoin, cfg.BrondMode,
+				chainreg.BrocoinChain, cfg.ActiveNetParams,
 			)
 			if err != nil {
 				return nil, mkErr("unable to load RPC "+
-					"credentials for btcd: %v", err)
+					"credentials for brond: %v", err)
 			}
-		case "bitcoind":
-			if cfg.Bitcoin.SimNet {
-				return nil, mkErr("bitcoind does not " +
+		case "brocoind":
+			if cfg.Brocoin.SimNet {
+				return nil, mkErr("brocoind does not " +
 					"support simnet")
 			}
 
 			err := parseRPCParams(
-				cfg.Bitcoin, cfg.BitcoindMode,
-				chainreg.BitcoinChain, cfg.ActiveNetParams,
+				cfg.Brocoin, cfg.BrocoindMode,
+				chainreg.BrocoinChain, cfg.ActiveNetParams,
 			)
 			if err != nil {
 				return nil, mkErr("unable to load RPC "+
-					"credentials for bitcoind: %v", err)
+					"credentials for brocoind: %v", err)
 			}
 		case "neutrino":
 			// No need to get RPC parameters.
@@ -1235,19 +1235,19 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 			// backend whatsoever (pure signing mode).
 
 		default:
-			str := "only btcd, bitcoind, and neutrino mode " +
-				"supported for bitcoin at this time"
+			str := "only brond, brocoind, and neutrino mode " +
+				"supported for brocoin at this time"
 			return nil, mkErr(str)
 		}
 
-		cfg.Bitcoin.ChainDir = filepath.Join(
+		cfg.Brocoin.ChainDir = filepath.Join(
 			cfg.DataDir, defaultChainSubDirname,
-			chainreg.BitcoinChain.String(),
+			chainreg.BrocoinChain.String(),
 		)
 
-		// Finally we'll register the bitcoin chain as our current
+		// Finally we'll register the brocoin chain as our current
 		// primary chain.
-		cfg.registeredChains.RegisterPrimaryChain(chainreg.BitcoinChain)
+		cfg.registeredChains.RegisterPrimaryChain(chainreg.BrocoinChain)
 	}
 
 	// Ensure that the user didn't attempt to specify negative values for
@@ -1330,11 +1330,11 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		)
 	}
 
-	// Create the lnd directory and all other sub-directories if they don't
+	// Create the broln directory and all other sub-directories if they don't
 	// already exist. This makes sure that directory trees are also created
-	// for files that point to outside the lnddir.
+	// for files that point to outside the brolndir.
 	dirs := []string{
-		lndDir, cfg.DataDir, cfg.networkDir,
+		brolnDir, cfg.DataDir, cfg.networkDir,
 		cfg.LetsEncryptDir, cfg.Watchtower.TowerDir,
 		filepath.Dir(cfg.TLSCertPath), filepath.Dir(cfg.TLSKeyPath),
 		filepath.Dir(cfg.AdminMacPath), filepath.Dir(cfg.ReadMacPath),
@@ -1530,7 +1530,7 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 		return nil, mkErr("maxbackoff must be greater than minbackoff")
 	}
 
-	// Newer versions of lnd added a new sub-config for bolt-specific
+	// Newer versions of broln added a new sub-config for bolt-specific
 	// parameters. However, we want to also allow existing users to use the
 	// value on the top-level config. If the outer config value is set,
 	// then we'll use that directly.
@@ -1557,7 +1557,7 @@ func ValidateConfig(cfg Config, interceptor signal.Interceptor, fileParser,
 
 	// Log a warning if our expiry delta is not greater than our incoming
 	// broadcast delta. We do not fail here because this value may be set
-	// to zero to intentionally keep lnd's behavior unchanged from when we
+	// to zero to intentionally keep broln's behavior unchanged from when we
 	// didn't auto-cancel these invoices.
 	if cfg.Invoices.HoldExpiryDelta <= lncfg.DefaultIncomingBroadcastDelta {
 		ltndLog.Warnf("Invoice hold expiry delta: %v <= incoming "+
@@ -1604,7 +1604,7 @@ func (c *Config) graphDatabaseDir() string {
 }
 
 // ImplementationConfig returns the configuration of what actual implementations
-// should be used when creating the main lnd instance.
+// should be used when creating the main broln instance.
 func (c *Config) ImplementationConfig(
 	interceptor signal.Interceptor) *ImplementationCfg {
 
@@ -1666,14 +1666,14 @@ func CleanAndExpandPath(path string) string {
 }
 
 func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
-	net chainreg.ChainCode, netParams chainreg.BitcoinNetParams) error {
+	net chainreg.ChainCode, netParams chainreg.BrocoinNetParams) error {
 
 	// First, we'll check our node config to make sure the RPC parameters
 	// were set correctly. We'll also determine the path to the conf file
 	// depending on the backend node.
 	var daemonName, confDir, confFile string
 	switch conf := nodeConfig.(type) {
-	case *lncfg.Btcd:
+	case *lncfg.Brond:
 		// If both RPCUser and RPCPass are set, we assume those
 		// credentials are good to use.
 		if conf.RPCUser != "" && conf.RPCPass != "" {
@@ -1682,10 +1682,10 @@ func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
 
 		// Get the daemon name for displaying proper errors.
 		switch net {
-		case chainreg.BitcoinChain:
-			daemonName = "btcd"
+		case chainreg.BrocoinChain:
+			daemonName = "brond"
 			confDir = conf.Dir
-			confFile = "btcd"
+			confFile = "brond"
 		case chainreg.LitecoinChain:
 			daemonName = "ltcd"
 			confDir = conf.Dir
@@ -1699,7 +1699,7 @@ func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
 				"%[1]v.rpcuser, %[1]v.rpcpass", daemonName)
 		}
 
-	case *lncfg.Bitcoind:
+	case *lncfg.Brocoind:
 		// Ensure that if the ZMQ options are set, that they are not
 		// equal.
 		if conf.ZMQPubRawBlock != "" && conf.ZMQPubRawTx != "" {
@@ -1729,10 +1729,10 @@ func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
 
 		// Get the daemon name for displaying proper errors.
 		switch net {
-		case chainreg.BitcoinChain:
-			daemonName = "bitcoind"
+		case chainreg.BrocoinChain:
+			daemonName = "brocoind"
 			confDir = conf.Dir
-			confFile = "bitcoin"
+			confFile = "brocoin"
 		case chainreg.LitecoinChain:
 			daemonName = "litecoind"
 			confDir = conf.Dir
@@ -1751,31 +1751,31 @@ func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
 		}
 	}
 
-	// If we're in simnet mode, then the running btcd instance won't read
-	// the RPC credentials from the configuration. So if lnd wasn't
+	// If we're in simnet mode, then the running brond instance won't read
+	// the RPC credentials from the configuration. So if broln wasn't
 	// specified the parameters, then we won't be able to start.
 	if cConfig.SimNet {
 		return fmt.Errorf("rpcuser and rpcpass must be set to your " +
-			"btcd node's RPC parameters for simnet mode")
+			"brond node's RPC parameters for simnet mode")
 	}
 
 	fmt.Println("Attempting automatic RPC configuration to " + daemonName)
 
 	confFile = filepath.Join(confDir, fmt.Sprintf("%v.conf", confFile))
 	switch cConfig.Node {
-	case "btcd", "ltcd":
-		nConf := nodeConfig.(*lncfg.Btcd)
-		rpcUser, rpcPass, err := extractBtcdRPCParams(confFile)
+	case "brond", "ltcd":
+		nConf := nodeConfig.(*lncfg.Brond)
+		rpcUser, rpcPass, err := extractBrondRPCParams(confFile)
 		if err != nil {
 			return fmt.Errorf("unable to extract RPC credentials: "+
 				"%v, cannot start w/o RPC connection", err)
 		}
 		nConf.RPCUser, nConf.RPCPass = rpcUser, rpcPass
 
-	case "bitcoind", "litecoind":
-		nConf := nodeConfig.(*lncfg.Bitcoind)
+	case "brocoind", "litecoind":
+		nConf := nodeConfig.(*lncfg.Brocoind)
 		rpcUser, rpcPass, zmqBlockHost, zmqTxHost, err :=
-			extractBitcoindRPCParams(netParams.Params.Name, confFile)
+			extractBrocoindRPCParams(netParams.Params.Name, confFile)
 		if err != nil {
 			return fmt.Errorf("unable to extract RPC credentials: "+
 				"%v, cannot start w/o RPC connection", err)
@@ -1788,21 +1788,21 @@ func parseRPCParams(cConfig *lncfg.Chain, nodeConfig interface{},
 	return nil
 }
 
-// extractBtcdRPCParams attempts to extract the RPC credentials for an existing
-// btcd instance. The passed path is expected to be the location of btcd's
+// extractBrondRPCParams attempts to extract the RPC credentials for an existing
+// brond instance. The passed path is expected to be the location of brond's
 // application data directory on the target system.
-func extractBtcdRPCParams(btcdConfigPath string) (string, string, error) {
-	// First, we'll open up the btcd configuration file found at the target
+func extractBrondRPCParams(brondConfigPath string) (string, string, error) {
+	// First, we'll open up the brond configuration file found at the target
 	// destination.
-	btcdConfigFile, err := os.Open(btcdConfigPath)
+	brondConfigFile, err := os.Open(brondConfigPath)
 	if err != nil {
 		return "", "", err
 	}
-	defer func() { _ = btcdConfigFile.Close() }()
+	defer func() { _ = brondConfigFile.Close() }()
 
 	// With the file open extract the contents of the configuration file so
 	// we can attempt to locate the RPC credentials.
-	configContents, err := ioutil.ReadAll(btcdConfigFile)
+	configContents, err := ioutil.ReadAll(brondConfigFile)
 	if err != nil {
 		return "", "", err
 	}
@@ -1834,25 +1834,25 @@ func extractBtcdRPCParams(btcdConfigPath string) (string, string, error) {
 	return string(userSubmatches[1]), string(passSubmatches[1]), nil
 }
 
-// extractBitcoindRPCParams attempts to extract the RPC credentials for an
-// existing bitcoind node instance. The passed path is expected to be the
-// location of bitcoind's bitcoin.conf on the target system. The routine looks
+// extractBrocoindRPCParams attempts to extract the RPC credentials for an
+// existing brocoind node instance. The passed path is expected to be the
+// location of brocoind's brocoin.conf on the target system. The routine looks
 // for a cookie first, optionally following the datadir configuration option in
-// the bitcoin.conf. If it doesn't find one, it looks for rpcuser/rpcpassword.
-func extractBitcoindRPCParams(networkName string,
-	bitcoindConfigPath string) (string, string, string, string, error) {
+// the brocoin.conf. If it doesn't find one, it looks for rpcuser/rpcpassword.
+func extractBrocoindRPCParams(networkName string,
+	brocoindConfigPath string) (string, string, string, string, error) {
 
-	// First, we'll open up the bitcoind configuration file found at the
+	// First, we'll open up the brocoind configuration file found at the
 	// target destination.
-	bitcoindConfigFile, err := os.Open(bitcoindConfigPath)
+	brocoindConfigFile, err := os.Open(brocoindConfigPath)
 	if err != nil {
 		return "", "", "", "", err
 	}
-	defer func() { _ = bitcoindConfigFile.Close() }()
+	defer func() { _ = brocoindConfigFile.Close() }()
 
 	// With the file open extract the contents of the configuration file so
 	// we can attempt to locate the RPC credentials.
-	configContents, err := ioutil.ReadAll(bitcoindConfigFile)
+	configContents, err := ioutil.ReadAll(brocoindConfigFile)
 	if err != nil {
 		return "", "", "", "", err
 	}
@@ -1887,7 +1887,7 @@ func extractBitcoindRPCParams(networkName string,
 
 	// Next, we'll try to find an auth cookie. We need to detect the chain
 	// by seeing if one is specified in the configuration file.
-	dataDir := filepath.Dir(bitcoindConfigPath)
+	dataDir := filepath.Dir(brocoindConfigPath)
 	dataDirRE, err := regexp.Compile(`(?m)^\s*datadir\s*=\s*([^\s]+)`)
 	if err != nil {
 		return "", "", "", "", err
@@ -1959,12 +1959,12 @@ func checkZMQOptions(zmqBlockHost, zmqTxHost string) error {
 
 // checkEstimateMode ensures that the provided estimate mode is legal.
 func checkEstimateMode(estimateMode string) error {
-	for _, mode := range bitcoindEstimateModes {
+	for _, mode := range brocoindEstimateModes {
 		if estimateMode == mode {
 			return nil
 		}
 	}
 
 	return fmt.Errorf("estimatemode must be one of the following: %v",
-		bitcoindEstimateModes[:])
+		brocoindEstimateModes[:])
 }

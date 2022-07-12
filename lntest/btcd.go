@@ -1,5 +1,5 @@
-//go:build !bitcoind && !neutrino
-// +build !bitcoind,!neutrino
+//go:build !brocoind && !neutrino
+// +build !brocoind,!neutrino
 
 package lntest
 
@@ -21,62 +21,62 @@ import (
 const logDirPattern = "%s/.backendlogs"
 
 // temp is used to signal we want to establish a temporary connection using the
-// btcd Node API.
+// brond Node API.
 //
 // NOTE: Cannot be const, since the node API expects a reference.
 var temp = "temp"
 
-// BtcdBackendConfig is an implementation of the BackendConfig interface
-// backed by a btcd node.
-type BtcdBackendConfig struct {
-	// rpcConfig houses the connection config to the backing btcd instance.
+// BrondBackendConfig is an implementation of the BackendConfig interface
+// backed by a brond node.
+type BrondBackendConfig struct {
+	// rpcConfig houses the connection config to the backing brond instance.
 	rpcConfig rpcclient.ConnConfig
 
-	// harness is the backing btcd instance.
+	// harness is the backing brond instance.
 	harness *rpctest.Harness
 
 	// minerAddr is the p2p address of the miner to connect to.
 	minerAddr string
 }
 
-// A compile time assertion to ensure BtcdBackendConfig meets the BackendConfig
+// A compile time assertion to ensure BrondBackendConfig meets the BackendConfig
 // interface.
-var _ BackendConfig = (*BtcdBackendConfig)(nil)
+var _ BackendConfig = (*BrondBackendConfig)(nil)
 
-// GenArgs returns the arguments needed to be passed to LND at startup for
+// GenArgs returns the arguments needed to be passed to broln at startup for
 // using this node as a chain backend.
-func (b BtcdBackendConfig) GenArgs() []string {
+func (b BrondBackendConfig) GenArgs() []string {
 	var args []string
 	encodedCert := hex.EncodeToString(b.rpcConfig.Certificates)
-	args = append(args, "--bitcoin.node=btcd")
-	args = append(args, fmt.Sprintf("--btcd.rpchost=%v", b.rpcConfig.Host))
-	args = append(args, fmt.Sprintf("--btcd.rpcuser=%v", b.rpcConfig.User))
-	args = append(args, fmt.Sprintf("--btcd.rpcpass=%v", b.rpcConfig.Pass))
-	args = append(args, fmt.Sprintf("--btcd.rawrpccert=%v", encodedCert))
+	args = append(args, "--brocoin.node=brond")
+	args = append(args, fmt.Sprintf("--brond.rpchost=%v", b.rpcConfig.Host))
+	args = append(args, fmt.Sprintf("--brond.rpcuser=%v", b.rpcConfig.User))
+	args = append(args, fmt.Sprintf("--brond.rpcpass=%v", b.rpcConfig.Pass))
+	args = append(args, fmt.Sprintf("--brond.rawrpccert=%v", encodedCert))
 
 	return args
 }
 
 // ConnectMiner is called to establish a connection to the test miner.
-func (b BtcdBackendConfig) ConnectMiner() error {
+func (b BrondBackendConfig) ConnectMiner() error {
 	return b.harness.Client.Node(btcjson.NConnect, b.minerAddr, &temp)
 }
 
 // DisconnectMiner is called to disconnect the miner.
-func (b BtcdBackendConfig) DisconnectMiner() error {
+func (b BrondBackendConfig) DisconnectMiner() error {
 	return b.harness.Client.Node(btcjson.NDisconnect, b.minerAddr, &temp)
 }
 
 // Name returns the name of the backend type.
-func (b BtcdBackendConfig) Name() string {
-	return "btcd"
+func (b BrondBackendConfig) Name() string {
+	return "brond"
 }
 
-// NewBackend starts a new rpctest.Harness and returns a BtcdBackendConfig for
+// NewBackend starts a new rpctest.Harness and returns a BrondBackendConfig for
 // that node. miner should be set to the P2P address of the miner to connect
 // to.
 func NewBackend(miner string, netParams *chaincfg.Params) (
-	*BtcdBackendConfig, func() error, error) {
+	*BrondBackendConfig, func() error, error) {
 
 	baseLogDir := fmt.Sprintf(logDirPattern, GetLogDir())
 	args := []string{
@@ -93,9 +93,9 @@ func NewBackend(miner string, netParams *chaincfg.Params) (
 		// Don't disconnect if a reply takes too long.
 		"--nostalldetect",
 	}
-	chainBackend, err := rpctest.New(netParams, nil, args, GetBtcdBinary())
+	chainBackend, err := rpctest.New(netParams, nil, args, GetBrondBinary())
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to create btcd node: %v", err)
+		return nil, nil, fmt.Errorf("unable to create brond node: %v", err)
 	}
 
 	// We want to overwrite some of the connection settings to make the
@@ -107,10 +107,10 @@ func NewBackend(miner string, netParams *chaincfg.Params) (
 	chainBackend.ConnectionRetryTimeout = rpctest.DefaultConnectionRetryTimeout * 2
 
 	if err := chainBackend.SetUp(false, 0); err != nil {
-		return nil, nil, fmt.Errorf("unable to set up btcd backend: %v", err)
+		return nil, nil, fmt.Errorf("unable to set up brond backend: %v", err)
 	}
 
-	bd := &BtcdBackendConfig{
+	bd := &BrondBackendConfig{
 		rpcConfig: chainBackend.RPCConfig(),
 		harness:   chainBackend,
 		minerAddr: miner,
@@ -136,7 +136,7 @@ func NewBackend(miner string, netParams *chaincfg.Params) (
 		for _, file := range files {
 			logFile := fmt.Sprintf("%s/%s", logDir, file.Name())
 			newFilename := strings.Replace(
-				file.Name(), "btcd.log", "output_btcd_chainbackend.log", 1,
+				file.Name(), "brond.log", "output_brond_chainbackend.log", 1,
 			)
 			logDestination := fmt.Sprintf(
 				"%s/%s", GetLogDir(), newFilename,

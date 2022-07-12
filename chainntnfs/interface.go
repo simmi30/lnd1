@@ -68,10 +68,10 @@ func (t TxConfStatus) String() string {
 }
 
 // ChainNotifier represents a trusted source to receive notifications concerning
-// targeted events on the Bitcoin blockchain. The interface specification is
+// targeted events on the Brocoin blockchain. The interface specification is
 // intentionally general in order to support a wide array of chain notification
-// implementations such as: btcd's websockets notifications, Bitcoin Core's
-// ZeroMQ notifications, various Bitcoin API services, Electrum servers, etc.
+// implementations such as: brond's websockets notifications, Brocoin Core's
+// ZeroMQ notifications, various Brocoin API services, Electrum servers, etc.
 //
 // Concrete implementations of ChainNotifier should be able to support multiple
 // concurrent client requests, as well as multiple concurrent notification events.

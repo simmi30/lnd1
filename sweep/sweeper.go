@@ -346,10 +346,10 @@ func (s *UtxoSweeper) Start() error {
 		return fmt.Errorf("get last published tx: %v", err)
 	}
 
-	// Republish in case the previous call crashed lnd. We don't care about
+	// Republish in case the previous call crashed broln. We don't care about
 	// the return value, because inputs will be re-offered and retried
 	// anyway. The only reason we republish here is to prevent the corner
-	// case where lnd goes into a restart loop because of a crashing publish
+	// case where broln goes into a restart loop because of a crashing publish
 	// tx where we keep deriving new output script. By publishing and
 	// possibly crashing already now, we haven't derived a new output script
 	// yet.
@@ -1492,7 +1492,7 @@ func (s *UtxoSweeper) handleUpdateReq(req *updateReq, bestHeight int32) (
 //
 // - Make handling re-orgs easier.
 // - Thwart future possible fee sniping attempts.
-// - Make us blend in with the bitcoind wallet.
+// - Make us blend in with the brocoind wallet.
 func (s *UtxoSweeper) CreateSweepTx(inputs []input.Input, feePref FeePreference,
 	currentBlockHeight uint32) (*wire.MsgTx, error) {
 
@@ -1516,7 +1516,7 @@ func (s *UtxoSweeper) CreateSweepTx(inputs []input.Input, feePref FeePreference,
 // DefaultNextAttemptDeltaFunc is the default calculation for next sweep attempt
 // scheduling. It implements exponential back-off with some randomness. This is
 // to prevent a stuck tx (for example because fee is too low and can't be bumped
-// in btcd) from blocking all other retried inputs in the same tx.
+// in brond) from blocking all other retried inputs in the same tx.
 func DefaultNextAttemptDeltaFunc(attempts int) int32 {
 	return 1 + rand.Int31n(1<<uint(attempts-1))
 }

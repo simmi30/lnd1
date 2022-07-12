@@ -290,7 +290,7 @@ func newMppTestContext(t *harnessTest,
 func (c *mppTestContext) openChannel(from, to *lntest.HarnessNode,
 	chanSize btcutil.Amount) {
 
-	c.net.SendCoins(c.t.t, btcutil.SatoshiPerBitcoin, from)
+	c.net.SendCoins(c.t.t, btcutil.SatoshiPerBrocoin, from)
 
 	chanPoint := openChannelAndAssert(
 		c.t, c.net, from, to,
@@ -359,7 +359,7 @@ func (c *mppTestContext) buildRoute(ctxb context.Context, amt btcutil.Amount,
 
 	req := &routerrpc.BuildRouteRequest{
 		AmtMsat:        int64(amt * 1000),
-		FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+		FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 		HopPubkeys:     rpcHops,
 	}
 

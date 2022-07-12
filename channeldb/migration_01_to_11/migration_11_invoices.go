@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	bitcoinCfg "github.com/brsuite/brond/chaincfg"
+	brocoinCfg "github.com/brsuite/brond/chaincfg"
 	"github.com/brsuite/brond/wire"
 	lnwire "github.com/brolightningnetwork/broln/channeldb/migration/lnwire21"
 	"github.com/brolightningnetwork/broln/channeldb/migration_01_to_11/zpay32"
@@ -42,9 +42,9 @@ func MigrateInvoices(tx kvdb.RwTx) error {
 		return err
 	}
 
-	nets := []*bitcoinCfg.Params{
-		&bitcoinCfg.MainNetParams, &bitcoinCfg.SimNetParams,
-		&bitcoinCfg.RegressionNetParams, &bitcoinCfg.TestNet3Params,
+	nets := []*brocoinCfg.Params{
+		&brocoinCfg.MainNetParams, &brocoinCfg.SimNetParams,
+		&brocoinCfg.RegressionNetParams, &brocoinCfg.TestNet3Params,
 	}
 
 	ltcNets := []*litecoinCfg.Params{
@@ -52,7 +52,7 @@ func MigrateInvoices(tx kvdb.RwTx) error {
 		&litecoinCfg.RegressionNetParams, &litecoinCfg.TestNet4Params,
 	}
 	for _, net := range ltcNets {
-		var convertedNet bitcoinCfg.Params
+		var convertedNet brocoinCfg.Params
 		convertedNet.Bech32HRPSegwit = net.Bech32HRPSegwit
 		nets = append(nets, &convertedNet)
 	}

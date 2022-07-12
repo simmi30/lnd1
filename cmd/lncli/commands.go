@@ -102,9 +102,9 @@ func actionDecorator(f func(*cli.Context) error) func(*cli.Context) error {
 				return fmt.Errorf("Wallet is already unlocked")
 			}
 
-			// lnd might be active, but not possible to contact
+			// broln might be active, but not possible to contact
 			// using RPC if the wallet is encrypted. If we get
-			// error code Unimplemented, it means that lnd is
+			// error code Unimplemented, it means that broln is
 			// running, but the RPC server is not active yet (only
 			// WalletUnlocker server active) and most likely this
 			// is because of an encrypted wallet.
@@ -113,7 +113,7 @@ func actionDecorator(f func(*cli.Context) error) func(*cli.Context) error {
 					"Please unlock using 'lncli unlock', " +
 					"or set password using 'lncli create'" +
 					" if this is the first time starting " +
-					"lnd.")
+					"broln.")
 			}
 			return err
 		}
@@ -181,7 +181,7 @@ func newAddress(ctx *cli.Context) error {
 var estimateFeeCommand = cli.Command{
 	Name:      "estimatefee",
 	Category:  "On-chain",
-	Usage:     "Get fee estimates for sending bitcoin on-chain to multiple addresses.",
+	Usage:     "Get fee estimates for sending brocoin on-chain to multiple addresses.",
 	ArgsUsage: "send-json-string [--conf_target=N]",
 	Description: `
 	Get fee estimates for sending a transaction paying the specified amount(s) to the passed address(es).
@@ -232,10 +232,10 @@ var txLabelFlag = cli.StringFlag{
 var sendCoinsCommand = cli.Command{
 	Name:      "sendcoins",
 	Category:  "On-chain",
-	Usage:     "Send bitcoin on-chain to an address.",
+	Usage:     "Send brocoin on-chain to an address.",
 	ArgsUsage: "addr amt",
 	Description: `
-	Send amt coins in satoshis to the base58 or bech32 encoded bitcoin address addr.
+	Send amt coins in satoshis to the base58 or bech32 encoded brocoin address addr.
 
 	Fees used when sending the transaction can be specified via the --conf_target, or
 	--sat_per_vbyte optional flags.
@@ -245,7 +245,7 @@ var sendCoinsCommand = cli.Command{
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name: "addr",
-			Usage: "the base58 or bech32 encoded bitcoin address to send coins " +
+			Usage: "the base58 or bech32 encoded brocoin address to send coins " +
 				"to on-chain",
 		},
 		cli.BoolFlag{
@@ -257,7 +257,7 @@ var sendCoinsCommand = cli.Command{
 		},
 		cli.Int64Flag{
 			Name:  "amt",
-			Usage: "the number of bitcoin denominated in satoshis to send",
+			Usage: "the number of brocoin denominated in satoshis to send",
 		},
 		cli.Int64Flag{
 			Name: "conf_target",
@@ -492,7 +492,7 @@ func listUnspent(ctx *cli.Context) error {
 var sendManyCommand = cli.Command{
 	Name:      "sendmany",
 	Category:  "On-chain",
-	Usage:     "Send bitcoin on-chain to multiple addresses.",
+	Usage:     "Send brocoin on-chain to multiple addresses.",
 	ArgsUsage: "send-json-string [--conf_target=N] [--sat_per_vbyte=P]",
 	Description: `
 	Create and broadcast a transaction paying the specified amount(s) to the passed address(es).
@@ -579,7 +579,7 @@ func sendMany(ctx *cli.Context) error {
 var connectCommand = cli.Command{
 	Name:      "connect",
 	Category:  "Peers",
-	Usage:     "Connect to a remote lnd peer.",
+	Usage:     "Connect to a remote broln peer.",
 	ArgsUsage: "<pubkey>@host",
 	Description: `
 	Connect to a peer using its <pubkey> and host.
@@ -641,7 +641,7 @@ func connectPeer(ctx *cli.Context) error {
 var disconnectCommand = cli.Command{
 	Name:      "disconnect",
 	Category:  "Peers",
-	Usage:     "Disconnect a remote lnd peer identified by public key.",
+	Usage:     "Disconnect a remote broln peer identified by public key.",
 	ArgsUsage: "<pubkey>",
 	Flags: []cli.Flag{
 		cli.StringFlag{
@@ -733,7 +733,7 @@ var closeChannelCommand = cli.Command{
 				"transaction *should* confirm in, will be " +
 				"used for fee estimation. If not set, " +
 				"then the conf-target value set in the main " +
-				"lnd config will be used.",
+				"broln config will be used.",
 		},
 		cli.Int64Flag{
 			Name:   "sat_per_byte",
@@ -1115,9 +1115,9 @@ var abandonChannelCommand = cli.Command{
 	Description: `
 	Removes all channel state from the database except for a close
 	summary. This method can be used to get rid of permanently unusable
-	channels due to bugs fixed in newer versions of lnd.
+	channels due to bugs fixed in newer versions of broln.
 
-	Only available when lnd is built in debug mode. The flag
+	Only available when broln is built in debug mode. The flag
 	--i_know_what_im_doing can be set to override the debug/dev mode
 	requirement.
 
@@ -1137,7 +1137,7 @@ var abandonChannelCommand = cli.Command{
 		},
 		cli.BoolFlag{
 			Name: "i_know_what_i_am_doing",
-			Usage: "override the requirement for lnd needing to " +
+			Usage: "override the requirement for broln needing to " +
 				"be in dev/debug mode to use this command; " +
 				"when setting this the user attests that " +
 				"they know the danger of using this command " +
@@ -2192,7 +2192,7 @@ var exportChanBackupCommand = cli.Command{
 			if specified, then rather than printing a JSON output
 			of the static channel backup, a serialized version of
 			the backup (either Single or Multi) will be written to
-			the target file, this is the same format used by lnd in
+			the target file, this is the same format used by broln in
 			its channel.backup file `,
 		},
 	},
@@ -2322,7 +2322,7 @@ var verifyChanBackupCommand = cli.Command{
 	 static channel backups in single blob.
 
        * A file path which points to a packed multi-channel backup within a
-	 file, using the same format that lnd does in its channel.backup
+	 file, using the same format that broln does in its channel.backup
 	 file.
     `,
 	Flags: []cli.Flag{
@@ -2388,7 +2388,7 @@ var restoreChanBackupCommand = cli.Command{
 	ArgsUsage: "[--single_backup] [--multi_backup] [--multi_file=",
 	Description: `
 	Allows a user to restore a Static Channel Backup (SCB) that was
-	obtained either via the exportchanbackup command, or from lnd's
+	obtained either via the exportchanbackup command, or from broln's
 	automatically managed channel.backup file. This command should be used
 	if a user is attempting to restore a channel due to data loss on a
 	running node restored with the same seed as the node that created the
@@ -2404,7 +2404,7 @@ var restoreChanBackupCommand = cli.Command{
 	     static channel backups in single blob.
 
 	   * A file path which points to a packed multi-channel backup within a
-	     file, using the same format that lnd does in its channel.backup
+	     file, using the same format that broln does in its channel.backup
 	     file.
 	`,
 	Flags: []cli.Flag{

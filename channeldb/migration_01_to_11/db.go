@@ -27,7 +27,7 @@ var (
 	byteOrder = binary.BigEndian
 )
 
-// DB is the primary datastore for the lnd daemon. The database stores
+// DB is the primary datastore for the broln daemon. The database stores
 // information related to nodes, routing data, open/closed channels, fee
 // schedules, and reputation data.
 type DB struct {

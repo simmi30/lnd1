@@ -1,7 +1,7 @@
 //go:build dev
 // +build dev
 
-package btcdnotify
+package brondnotify
 
 import (
 	"fmt"
@@ -14,13 +14,13 @@ import (
 // UnsafeStart starts the notifier with a specified best height and optional
 // best hash. Its bestBlock and txNotifier are initialized with bestHeight and
 // optionally bestHash. The parameter generateBlocks is necessary for the
-// bitcoind notifier to ensure we drain all notifications up to syncHeight,
+// brocoind notifier to ensure we drain all notifications up to syncHeight,
 // since if they are generated ahead of UnsafeStart the chainConn may start up
 // with an outdated best block and miss sending ntfns. Used for testing.
-func (b *BtcdNotifier) UnsafeStart(bestHeight int32, bestHash *chainhash.Hash,
+func (b *BrondNotifier) UnsafeStart(bestHeight int32, bestHash *chainhash.Hash,
 	syncHeight int32, generateBlocks func() error) error {
 
-	// Connect to btcd, and register for notifications on connected, and
+	// Connect to brond, and register for notifications on connected, and
 	// disconnected blocks.
 	if err := b.chainConn.Connect(20); err != nil {
 		return err

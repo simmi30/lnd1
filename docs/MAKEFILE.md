@@ -1,7 +1,7 @@
 Makefile
 ========
 
-To build, verify, and install `lnd` from source, use the following
+To build, verify, and install `broln` from source, use the following
 commands:
 ```shell
 ⛰  make
@@ -9,18 +9,18 @@ commands:
 ⛰  make install
 ```
 
-The command `make check` requires `bitcoind` (almost any version should do) to
+The command `make check` requires `brocoind` (almost any version should do) to
 be available in the system's `$PATH` variable. Otherwise some of the tests will
 fail.
 
 Developers
 ==========
 
-This document specifies all commands available from `lnd`'s `Makefile`.
+This document specifies all commands available from `broln`'s `Makefile`.
 The commands included handle:
 - Installation of all go-related dependencies.
-- Compilation and installation of `lnd` and `lncli`.
-- Compilation and installation of `btcd` and `btcctl`.
+- Compilation and installation of `broln` and `lncli`.
+- Compilation and installation of `brond` and `bronctl`.
 - Running unit and integration suites.
 - Testing, debugging, and flake hunting.
 - Formatting and linting.
@@ -29,7 +29,7 @@ Commands
 ========
 
 - [`all`](#scratch)
-- [`btcd`](#btcd)
+- [`brond`](#brond)
 - [`build`](#build)
 - [`check`](#check)
 - [`clean`](#clean)
@@ -51,23 +51,23 @@ Commands
 
 `all`
 -----
-Compiles, tests, and installs `lnd` and `lncli`. Equivalent to 
+Compiles, tests, and installs `broln` and `lncli`. Equivalent to 
 [`scratch`](#scratch) [`check`](#check) [`install`](#install).
 
-`btcd`
+`brond`
 ------
-Ensures that the [`github.com/brsuite/brond`][btcd] repository is checked out
+Ensures that the [`github.com/brsuite/brond`][brond] repository is checked out
 locally. Lastly, installs the version of 
-[`github.com/brsuite/brond`][btcd] specified in `Gopkg.toml`
+[`github.com/brsuite/brond`][brond] specified in `Gopkg.toml`
 
 `build`
 -------
-Compiles the current source and vendor trees, creating `./lnd` and
+Compiles the current source and vendor trees, creating `./broln` and
 `./lncli`.
 
 `check`
 -------
-Installs the version of [`github.com/brsuite/brond`][btcd] specified
+Installs the version of [`github.com/brsuite/brond`][brond] specified
 in `Gopkg.toml`, then runs the unit tests followed by the integration
 tests.
 
@@ -75,7 +75,7 @@ Related: [`unit`](#unit) [`itest`](#itest)
 
 `clean`
 -------
-Removes compiled versions of both `./lnd` and `./lncli`, and removes the
+Removes compiled versions of both `./broln` and `./lncli`, and removes the
 `vendor` tree.
 
 `default`
@@ -109,12 +109,12 @@ Runs `go fmt` on the entire project.
 
 `install`
 ---------
-Copies the compiled `lnd` and `lncli` binaries into `$GOPATH/bin`.
+Copies the compiled `broln` and `lncli` binaries into `$GOPATH/bin`.
 
 `itest`
 -------
-Installs the version of [`github.com/brsuite/brond`][btcd] specified in
-`Gopkg.toml`, builds the `./lnd` and `./lncli` binaries, then runs the
+Installs the version of [`github.com/brsuite/brond`][brond] specified in
+`Gopkg.toml`, builds the `./broln` and `./lncli` binaries, then runs the
 integration test suite.
 
 Arguments:
@@ -162,8 +162,8 @@ Compiles the `lnrpc` proto files.
 
 `scratch`
 ---------
-Compiles all dependencies and builds the `./lnd` and `./lncli` binaries.
-Equivalent to [`lint`](#lint) [`btcd`](#btcd)
+Compiles all dependencies and builds the `./broln` and `./lncli` binaries.
+Equivalent to [`lint`](#lint) [`brond`](#brond)
 [`unit-race`](#unit-race).
 
 `unit`
@@ -204,5 +204,5 @@ Arguments:
 
 Related: [`unit`](#unit)
 
-[btcd]: https://github.com/brsuite/brond (github.com/brsuite/brond")
+[brond]: https://github.com/brsuite/brond (github.com/brsuite/brond")
 [gometalinter]: https://gopkg.in/alecthomas/gometalinter.v1 (gopkg.in/alecthomas/gometalinter.v1)

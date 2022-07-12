@@ -11,14 +11,14 @@ flag.
 
 ### Onion service
 
-The Onion service created upon lnd startup is [now deleted during lnd shutdown
+The Onion service created upon broln startup is [now deleted during broln shutdown
 using `DEL_ONION`](https://github.com/brolightningnetwork/broln/pull/5794). 
 
 ### Tor connection
 
-A new health check, tor connection, [is added to lnd's liveness monitor upon
+A new health check, tor connection, [is added to broln's liveness monitor upon
 startup](https://github.com/brolightningnetwork/broln/pull/5794). This check will
-ensure the liveness of the connection between the Tor daemon and lnd's tor
+ensure the liveness of the connection between the Tor daemon and broln's tor
 controller. To enable it, please use the following flags,
 ```
 healthcheck.torconnection.attempts=xxx
@@ -26,19 +26,19 @@ healthcheck.torconnection.timeout=xxx
 healthcheck.torconnection.backoff=xxx
 healthcheck.torconnection.internal=xxx
 ```
-Read more about the usage of the flags in the `sample-lnd.conf`.
+Read more about the usage of the flags in the `sample-broln.conf`.
 
 ## LN Peer-to-Peer Netowrk
 
-### Bitcoin Blockheaders in Ping Messages
+### Brocoin Blockheaders in Ping Messages
 
 [In this release, we implement a long discussed mechanism to use the Lightning
 Network as a redundant block header
 source](https://github.com/brolightningnetwork/broln/pull/5621). By sending our
 latest block header with each ping message, we give peers another source
-(outside of the Bitcoin P2P network) they can use to spot check their chain
+(outside of the Brocoin P2P network) they can use to spot check their chain
 state. Peers can also use this information to detect if they've been eclipsed
-from the traditional Bitcoin P2P network itself.
+from the traditional Brocoin P2P network itself.
 
 As is, we only send this data in Ping messages (which are periodically sent),
 in the future we could also move to send them as the partial payload for our
@@ -51,9 +51,9 @@ last ping message the peer has sent to us.
 
 ### Full remote database support
 
-`lnd` now stores [all its data in the same remote/external
+`broln` now stores [all its data in the same remote/external
 database](https://github.com/brolightningnetwork/broln/pull/5484) such as `etcd`
-instead of only the channel state and wallet data. This makes `lnd` fully
+instead of only the channel state and wallet data. This makes `broln` fully
 stateless and therefore makes switching over to a new leader instance almost
 instantaneous. Read the [guide on leader
 election](https://github.com/brolightningnetwork/broln/blob/master/docs/leader_election.md)
@@ -62,20 +62,20 @@ for more information.
 ### Postgres database support
 
 This release adds [support for Postgres as a database
-backend](https://github.com/brolightningnetwork/broln/pull/5366) to lnd. Postgres
+backend](https://github.com/brolightningnetwork/broln/pull/5366) to broln. Postgres
 has several advantages over the default bbolt backend:
 * Better handling of large data sets.
 * On-the-fly database compaction (auto vacuum).
 * Database replication.
-* Inspect data while lnd is running (bbolt opens the database exclusively).
+* Inspect data while broln is running (bbolt opens the database exclusively).
 * Usage of industry-standard tools to manage the stored data, get performance
   metrics, etc.
 
-Furthermore, the SQL platform opens up possibilities to improve lnd's
+Furthermore, the SQL platform opens up possibilities to improve broln's
 performance in the future. Bbolt's single-writer model is a severe performance
 bottleneck, whereas Postgres offers a variety of locking models. Additionally,
 structured tables reduce the need for custom serialization/deserialization code
-in `lnd`, saving developer time and limiting the potential for bugs.
+in `broln`, saving developer time and limiting the potential for bugs.
 
 Instructions for enabling Postgres can be found in
 [docs/postgres.md](../postgres.md).
@@ -87,7 +87,7 @@ any database queries anymore. The [channel graph is now kept fully
 in-memory](https://github.com/brolightningnetwork/broln/pull/5642) for up a massive
 performance boost when calling `QueryRoutes` or any of the `SendPayment`
 variants. Keeping the full graph in memory naturally comes with increased RAM
-usage. Users running `lnd` on low-memory systems are advised to run with the
+usage. Users running `broln` on low-memory systems are advised to run with the
 `routing.strictgraphpruning=true` configuration option that more aggressively
 removes zombie channels from the graph, reducing the number of channels that
 need to be kept in memory.
@@ -127,7 +127,7 @@ details.
 
 ### Re-Usable Static AMP Invoices
 
-[AMP invoices are now fully re-usable, meaning it's possible for an `lnd` node
+[AMP invoices are now fully re-usable, meaning it's possible for an `broln` node
 to use a static AMP invoice multiple times](https://github.com/brolightningnetwork/broln/pull/5803). 
 An AMP invoice can be created by adding the `--amp` flag to `lncli addinvoice`.
 From there repeated payments can be made to the invoice using `lncli
@@ -163,7 +163,7 @@ the custom records (or other details) of the prior payment attempts.
 * The updatechanpolicy call now [detects invalid and pending channels, and 
   returns a policy update failure report](https://github.com/brolightningnetwork/broln/pull/5405).
 
-* LND now [reports to systemd](https://github.com/brolightningnetwork/broln/pull/5536)
+* broln now [reports to systemd](https://github.com/brolightningnetwork/broln/pull/5536)
   that RPC is ready (port bound, certificate generated, macaroons created,
   in case of `wallet-unlock-password-file` wallet unlocked). This can be used to
   avoid misleading error messages from dependent services if they use `After`
@@ -172,14 +172,14 @@ the custom records (or other details) of the prior payment attempts.
 * [Delete a specific payment, or its failed HTLCs](https://github.com/brolightningnetwork/broln/pull/5660).
 
 * A new state, [`WalletState_SERVER_ACTIVE`](https://github.com/brolightningnetwork/broln/pull/5637),
-  is added to the state server. This state indicates whether the `lnd` server
+  is added to the state server. This state indicates whether the `broln` server
   and all its subservers have been fully started or not.
 
-* [Adds an option to the BakeMacaroon rpc "allow-external-permissions,"](https://github.com/brolightningnetwork/broln/pull/5304) which makes it possible to bake a macaroon with external permissions. That way, the baked macaroons can be used for services beyond LND. Also adds a new CheckMacaroonPermissions rpc that checks that the macaroon permissions and other restrictions are being followed. It can also check permissions not native to LND.
+* [Adds an option to the BakeMacaroon rpc "allow-external-permissions,"](https://github.com/brolightningnetwork/broln/pull/5304) which makes it possible to bake a macaroon with external permissions. That way, the baked macaroons can be used for services beyond broln. Also adds a new CheckMacaroonPermissions rpc that checks that the macaroon permissions and other restrictions are being followed. It can also check permissions not native to broln.
 
 * [A new RPC middleware
   interceptor](https://github.com/brolightningnetwork/broln/pull/5101) was added that
-  allows external tools to hook into `lnd`'s RPC server and intercept any
+  allows external tools to hook into `broln`'s RPC server and intercept any
   requests made with custom macaroons (and also the responses to those
   requests).
   
@@ -189,7 +189,7 @@ the custom records (or other details) of the prior payment attempts.
   signed funding transaction has the same TXID as was registered during
   the funding flow and was used for the commitment transactions.
   This step is cumbersome to use if the whole funding process is completed
-  external to lnd. [We allow the finalize step to be
+  external to broln. [We allow the finalize step to be
   skipped](https://github.com/brolightningnetwork/broln/pull/5363) for such cases.
   The API user/script will need to make sure things are verified (and possibly
   cleaned up) properly. An example script was added to the [PSBT
@@ -214,19 +214,19 @@ documentation](../psbt.md#use-the-batchopenchannel-rpc-for-safe-batch-channel-fu
   `aezeed`](https://github.com/brolightningnetwork/broln/pull/4717) only. This allows
   wallet integrators to use existing seed mechanism that might already be in
   place. **It is still not supported to use the same seed/root key on multiple
-  `lnd` instances simultaneously** though.
+  `broln` instances simultaneously** though.
 
 * [Publish transaction is now reachable through 
   lncli](https://github.com/brolightningnetwork/broln/pull/5460).
 
-* Prior to this release, when running on `simnet` or `regtest`, `lnd` would
+* Prior to this release, when running on `simnet` or `regtest`, `broln` would
   skip the check on wallet synchronization during its startup. In doing so, the
-  integration test can bypass the rule set by `bitcoind`, which considers the
+  integration test can bypass the rule set by `brocoind`, which considers the
   node is out of sync when the last block is older than 2 hours([more
   discussion](https://github.com/brolightningnetwork/broln/pull/4685#discussion_r503080709)).
   This synchronization check is put back now as we want to make the integration
   test more robust in catching real world situations. This also means it might
-  take longer to start a `lnd` node when running in `simnet` or `regtest`,
+  take longer to start a `broln` node when running in `simnet` or `regtest`,
   something developers need to watch out from this release.
 
 ### Remote signing
@@ -242,17 +242,17 @@ found [in the new remote signing document](../remote-signing.md).
   attack vectors and user
   errors](https://github.com/brolightningnetwork/broln/pull/5053). The public keys
   used to verify the signatures against are no longer downloaded form Keybase
-  but instead are kept in the `lnd` git repository. This allows for a more
+  but instead are kept in the `broln` git repository. This allows for a more
   transparent way of keeping track of changes to the signing keys.
 
 ### Admin macaroon permissions
 
 The default file permissions of admin.macaroon were [changed from 0600 to
 0640](https://github.com/brolightningnetwork/broln/pull/5534). This makes it easier
-to allow other users to manage LND. This is safe on common Unix systems
+to allow other users to manage broln. This is safe on common Unix systems
 because they always create a new group for each user.
 
-If you use a strange system or changed group membership of the group running LND
+If you use a strange system or changed group membership of the group running broln
 you may want to check your system to see if it introduces additional risk for
 you.
 
@@ -317,7 +317,7 @@ messages directly. There is no routing/path finding involved.
 * [All integration tests (except the ARM itests) were moved from Travis CI to
   GitHub Actions](https://github.com/brolightningnetwork/broln/pull/5811).
 
-* [The LndMobile iOS build has been updated to work
+* [The brolnMobile iOS build has been updated to work
   with newer gomobile versions](https://github.com/brolightningnetwork/broln/pull/5842)
   that output in the `xcframework` packaging format.
   Applications that use the iOS build will have to be updated to include
@@ -325,14 +325,14 @@ messages directly. There is no routing/path finding involved.
 
 * [Upgrade the sub packages to 1.16](https://github.com/brolightningnetwork/broln/pull/5813)
 
-* [CI has been upgraded to build against bitcoind 22.0](https://github.com/brolightningnetwork/broln/pull/5928)
+* [CI has been upgraded to build against brocoind 22.0](https://github.com/brolightningnetwork/broln/pull/5928)
 
 * [Update to the latest neutrino version](https://github.com/brolightningnetwork/broln/pull/5933)
 
 
 ## Documentation
 
-* [Outdated warning about unsupported pruning was replaced with clarification that LND **does**
+* [Outdated warning about unsupported pruning was replaced with clarification that broln **does**
   support pruning](https://github.com/brolightningnetwork/broln/pull/5553).
 
 * [Clarified 'ErrReservedValueInvalidated' error string](https://github.com/brolightningnetwork/broln/pull/5577)
@@ -348,8 +348,8 @@ messages directly. There is no routing/path finding involved.
 
 ## Misc
 
-* The direct use of certain syscalls in packages such as `bbolt` or `lnd`'s own
-  `healthcheck` package made it impossible to import `lnd` code as a library
+* The direct use of certain syscalls in packages such as `bbolt` or `broln`'s own
+  `healthcheck` package made it impossible to import `broln` code as a library
   into projects that are compiled to WASM binaries. [That problem was fixed by
   guarding those syscalls with build tags](https://github.com/brolightningnetwork/broln/pull/5526).
 
@@ -363,12 +363,12 @@ messages directly. There is no routing/path finding involved.
   command.
 
 * [Add more verbose error printed to
-  console](https://github.com/brolightningnetwork/broln/pull/5802) when `lnd` fails
+  console](https://github.com/brolightningnetwork/broln/pull/5802) when `broln` fails
   loading the user specified config.
 
-* [Make it possible to add more than one RPC Listener when calling lnd.Main](https://github.com/brolightningnetwork/broln/pull/5777). And
-  add MacChan field for passing back lnd's admin macaroon back to the program 
-  calling lnd, when needed.
+* [Make it possible to add more than one RPC Listener when calling broln.Main](https://github.com/brolightningnetwork/broln/pull/5777). And
+  add MacChan field for passing back broln's admin macaroon back to the program 
+  calling broln, when needed.
 
 * [The `--amp-reuse` CLI flag has been removed as the latest flavor of AMP now natively supports static invoices](https://github.com/brolightningnetwork/broln/pull/5991)
 
@@ -437,7 +437,7 @@ messages directly. There is no routing/path finding involved.
 
 * [Replace reference to mongo library with CVE](https://github.com/brolightningnetwork/broln/pull/5761)
 
-* [Fixed restore backup file test flake with bitcoind](https://github.com/brolightningnetwork/broln/pull/5637).
+* [Fixed restore backup file test flake with brocoind](https://github.com/brolightningnetwork/broln/pull/5637).
 
 * [Timing fix in AMP itest](https://github.com/brolightningnetwork/broln/pull/5725).
 
@@ -484,13 +484,13 @@ messages directly. There is no routing/path finding involved.
 * [Ensure single writer for legacy
   code](https://github.com/brolightningnetwork/broln/pull/5547) when using etcd
   backend.
-* When starting/restarting, `lnd` will [clean forwarding packages, payment
+* When starting/restarting, `broln` will [clean forwarding packages, payment
   circuits and keystones](https://github.com/brolightningnetwork/broln/pull/4364)
   for closed channels, which will potentially free up disk space for long
   running nodes that have lots of closed channels.
 
 * [Optimized payment sequence generation](https://github.com/brolightningnetwork/broln/pull/5514/)
-  to make LNDs payment throughput (and latency) with better when using etcd.
+  to make brolns payment throughput (and latency) with better when using etcd.
 
 * [More robust commit queue design](https://github.com/brolightningnetwork/broln/pull/5513)
   to make it less likely that we retry etcd transactions and make the commit
@@ -513,9 +513,9 @@ messages directly. There is no routing/path finding involved.
 
 * [The `lnwire` package now uses a write buffer pool](https://github.com/brolightningnetwork/broln/pull/4884)
   when encoding/decoding messages. Such that most of the heap escapes are fixed,
-  resulting in less memory being used when running `lnd`.
+  resulting in less memory being used when running `broln`.
 
-* [`lnd` will now no longer (in a steady state) need to open a new database
+* [`broln` will now no longer (in a steady state) need to open a new database
   transaction each time a private key needs to be derived for signing or ECDH
   operations](https://github.com/brolightningnetwork/broln/pull/5629). This results
   in a massive performance improvement across several routine operations at the
@@ -545,7 +545,7 @@ messages directly. There is no routing/path finding involved.
 
 ## Bug Fixes
 
-* A bug has been fixed that would cause `lnd` to [try to bootstrap using the
+* A bug has been fixed that would cause `broln` to [try to bootstrap using the
   current DNS seeds when in SigNet
   mode](https://github.com/brolightningnetwork/broln/pull/5564).
 
@@ -583,7 +583,7 @@ messages directly. There is no routing/path finding involved.
 * [A bug has been fixed in 
   Neutrino](https://github.com/lightninglabs/neutrino/pull/226) that would 
   result in transactions being rebroadcast even after they had been confirmed. 
-  [Lnd is updated to use the version of Neutrino containing this 
+  [broln is updated to use the version of Neutrino containing this 
   fix](https://github.com/brolightningnetwork/broln/pull/5807).
  
 * A bug has been fixed that would result in nodes not [reconnecting to their

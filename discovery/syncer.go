@@ -746,7 +746,7 @@ func (g *GossipSyncer) synchronizeChanIDs() (bool, error) {
 }
 
 // isLegacyReplyChannelRange determines where a ReplyChannelRange message is
-// considered legacy. There was a point where lnd used to include the same query
+// considered legacy. There was a point where broln used to include the same query
 // over multiple replies, rather than including the portion of the query the
 // reply is handling. We'll use this as a way of detecting whether we are
 // communicating with a legacy node so we can properly sync with them.

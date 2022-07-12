@@ -17,12 +17,12 @@ import (
 )
 
 const (
-	// mainnetSCBLaunchBlock is the approximate block height of the bitcoin
+	// mainnetSCBLaunchBlock is the approximate block height of the brocoin
 	// mainnet chain of the date when SCBs first were released in broln
 	// (v0.6.0-beta). The block date is 4/15/2019, 10:54 PM UTC.
 	mainnetSCBLaunchBlock = 571800
 
-	// testnetSCBLaunchBlock is the approximate block height of the bitcoin
+	// testnetSCBLaunchBlock is the approximate block height of the brocoin
 	// testnet3 chain of the date when SCBs first were released in broln
 	// (v0.6.0-beta). The block date is 4/16/2019, 08:04 AM UTC.
 	testnetSCBLaunchBlock = 1489300

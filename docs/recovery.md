@@ -1,6 +1,6 @@
 # Table of Contents
 
-* [Recovering Funds From `lnd` (funds are safu!)](#recovering-funds-from-lnd-funds-are-safu)
+* [Recovering Funds From `broln` (funds are safu!)](#recovering-funds-from-broln-funds-are-safu)
   * [On-Chain Recovery](#on-chain-recovery)
     * [24-word Cipher Seeds](#24-word-cipher-seeds)
     * [Wallet and Seed Passphrases](#wallet-and-seed-passphrases)
@@ -13,18 +13,18 @@
       * [Streaming Updates via `SubscribeChannelBackups`.](#streaming-updates-via-subscribechannelbackups)
     * [Recovering Using SCBs](#recovering-using-scbs)
 
-# Recovering Funds From `lnd` (funds are safu!)
+# Recovering Funds From `broln` (funds are safu!)
 
 In this document, we'll go over the various built-in mechanisms for recovering
-funds from `lnd` due to any sort of data loss, or malfunction. Coins in `lnd`
+funds from `broln` due to any sort of data loss, or malfunction. Coins in `broln`
 can exist in one of two pools: on-chain or off-chain. On-chain funds are
-outputs under the control of `lnd` that can be spent immediately, and without
+outputs under the control of `broln` that can be spent immediately, and without
 any auxiliary data. Off-chain funds on the other hand exist within a 2-of-2
 multi-sig output typically referred to as a payment channel. Depending on the
-exact nature of operation of a given `lnd` node, one of these pools of funds
+exact nature of operation of a given `broln` node, one of these pools of funds
 may be empty.
 
-Fund recovery for `lnd` will require two pieces of data: 
+Fund recovery for `broln` will require two pieces of data: 
   1. Your 24-word cipher seed
   2. Your encrypted Static Channel Backup file (or the raw data)
 
@@ -38,7 +38,7 @@ result, it cannot be used in isolation.
 
 ### 24-word Cipher Seeds
 
-When a new `lnd` node is created, it's given a 24-word seed phrase, called an
+When a new `broln` node is created, it's given a 24-word seed phrase, called an
 [`cipher seed`](https://github.com/brolightningnetwork/broln/tree/master/aezeed).
 The two seed formats look similar, but the only commonality they share are
 using the same default English dictionary. A valid seed phrase obtained over
@@ -46,14 +46,14 @@ the CLI `lncli create` command looks something like:
 ```text
 !!!YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO RESTORE THE WALLET!!!
 
----------------BEGIN LND CIPHER SEED---------------
+---------------BEGIN broln CIPHER SEED---------------
  1. ability   2. noise   3. lift     4. document
  5. certain   6. month   7. shoot    8. perfect
  9. matrix   10. mango  11. excess  12. turkey
 13. river    14. pitch  15. fluid   16. rack
 17. drill    18. text   19. buddy   20. pool
 21. soul     22. fatal  23. ship    24. jelly
----------------END LND CIPHER SEED-----------------
+---------------END broln CIPHER SEED-----------------
 
 !!!YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO RESTORE THE WALLET!!!
 ```
@@ -119,8 +119,8 @@ Input an optional address look-ahead used to scan for used keys (default 2500):
 
 The recovery window is a metric that the on-chain rescanner will use to
 determine when all the "used" addresses have been found. If the recovery window
-is two, lnd will fail to find funds in any addresses generated after the point
-in which two consecutive addresses were generated but never used. If an `lnd`
+is two, broln will fail to find funds in any addresses generated after the point
+in which two consecutive addresses were generated but never used. If an `broln`
 on-chain wallet was extensively used, then users may want to _increase_ the
 default value.  
 
@@ -130,27 +130,27 @@ seed again:
 
 !!!YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO RESTORE THE WALLET!!!
 
----------------BEGIN LND CIPHER SEED---------------
+---------------BEGIN broln CIPHER SEED---------------
  1. ability   2. noise   3. lift     4. document
  5. certain   6. month   7. shoot    8. perfect
  9. matrix   10. mango  11. excess  12. turkey
 13. river    14. pitch  15. fluid   16. rack
 17. drill    18. text   19. buddy   20. pool
 21. soul     22. fatal  23. ship    24. jelly
----------------END LND CIPHER SEED-----------------
+---------------END broln CIPHER SEED-----------------
 
 !!!YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO RESTORE THE WALLET!!!
 
-lnd successfully initialized!
+broln successfully initialized!
 ```
 
-In `lnd`'s logs, you should see something along the lines of (irrelevant lines skipped):
+In `broln`'s logs, you should see something along the lines of (irrelevant lines skipped):
 ```text
 [INF] LNWL: Opened wallet
 [INF] LTND: Wallet recovery mode enabled with address lookahead of 2500 addresses
 [INF] LNWL: RECOVERY MODE ENABLED -- rescanning for used addresses with recovery_window=2500
-[INF] CHBU: Updating backup file at test_lnd3/data/chain/bitcoin/simnet/channel.backup
-[INF] CHBU: Swapping old multi backup file from test_lnd3/data/chain/bitcoin/simnet/temp-dont-use.backup to test_lnd3/data/chain/bitcoin/simnet/channel.backup
+[INF] CHBU: Updating backup file at test_broln3/data/chain/brocoin/simnet/channel.backup
+[INF] CHBU: Swapping old multi backup file from test_broln3/data/chain/brocoin/simnet/temp-dont-use.backup to test_broln3/data/chain/brocoin/simnet/channel.backup
 [INF] LNWL: Seed birthday surpassed, starting recovery of wallet from height=748 hash=3032830c812a4a6ea305d8ead13b52e9e69d6400ff3c997970b6f76fbc770920 with recovery-window=2500
 [INF] LNWL: Scanning 1 blocks for recoverable addresses
 [INF] LNWL: Recovered addresses from blocks 748-748
@@ -175,7 +175,7 @@ command `lncli getrecoveryinfo`. When finished, the following is returned,
 }
 ```
 
-If the rescan wasn't able to complete fully (`lnd` was shutdown for example),
+If the rescan wasn't able to complete fully (`broln` was shutdown for example),
 then from `lncli unlock`, it's possible to _restart_ the rescan from where it
 left off with the `--recovery-window` argument:
 ```shell
@@ -191,16 +191,16 @@ rescan.
 The recovery methods described above assume a clean slate for a node, so
 there's no existing UTXO or key data in the node's database. However, there're
 times when an _existing_ node may want to _manually_ rescan the chain. We have
-a command line flag for that! Just start `lnd` and add the following flag:
+a command line flag for that! Just start `broln` and add the following flag:
 ```shell
-⛰  lnd --reset-wallet-transactions
+⛰  broln --reset-wallet-transactions
 ```
 
 The `--reset-wallet-transactions` flag will _reset_ the best synced height of
 the wallet back to its birthday, or genesis if the birthday isn't known (for
 some older wallets).
 
-Just run `lnd` with the flag, unlock it, then the wallet should begin
+Just run `broln` with the flag, unlock it, then the wallet should begin
 rescanning. An entry resembling the following will show up in the logs once it's
 complete:
 ```text
@@ -208,11 +208,11 @@ complete:
 ```
 
 **Remember to remove the flag once the rescan was completed successfully to
-avoid rescanning again for every restart of lnd**.
+avoid rescanning again for every restart of broln**.
 
 ## Off-Chain Recovery
 
-After version `v0.6-beta` of `lnd`, the daemon now ships with a new feature
+After version `v0.6-beta` of `broln`, the daemon now ships with a new feature
 called Static Channel Backups (SCBs). We call these _static_ as they only need
 to be obtained _once_: when the channel is created. From there on, a backup is
 good until the channel is closed. The backup contains all the information we
@@ -241,14 +241,14 @@ process.
 
 #### On-Disk `channel.backup`
 
-There are multiple ways of obtaining SCBs from `lnd`. The most commonly used
+There are multiple ways of obtaining SCBs from `broln`. The most commonly used
 method will likely be via the `channel.backup` file that's stored on-disk
 alongside the rest of the chain data. This is a special file that contains SCB
 entries for _all_ currently open channels. Each time a channel is opened or
 closed, this file is updated on disk in a safe manner (atomic file rename). As
 a result, unlike the `channel.db` file, it's _always_ safe to copy this file
 for backup at ones desired location. The default location on Linux is: 
-`~/.lnd/data/chain/bitcoin/mainnet/channel.backup`
+`~/.broln/data/chain/brocoin/mainnet/channel.backup`
 
 An example of using file system level notification to [copy the backup to a
 distinct volume/partition/drive can be found
@@ -296,7 +296,7 @@ existing SCB using the `lncli create` or `lncli unlock` commands:
 ⛰  lncli create -multi_file=channel.backup
 ```
 
-Alternatively, the `restorechanbackup` command can be used if `lnd` has already
+Alternatively, the `restorechanbackup` command can be used if `broln` has already
 been created at the time of SCB restoration:
 ```shell
 ⛰  lncli restorechanbackup -h
@@ -312,7 +312,7 @@ CATEGORY:
 DESCRIPTION:
 
   Allows a user to restore a Static Channel Backup (SCB) that was
-  obtained either via the exportchanbackup command, or from lnd's
+  obtained either via the exportchanbackup command, or from broln's
   automatically managed channel.backup file. This command should be used
   if a user is attempting to restore a channel due to data loss on a
   running node restored with the same seed as the node that created the
@@ -328,7 +328,7 @@ DESCRIPTION:
        static channel backups in single blob.
 
      * A file path which points to a packed multi-channel backup within a
-       file, using the same format that lnd does in its channel.backup
+       file, using the same format that broln does in its channel.backup
        file.
 
 
@@ -338,7 +338,7 @@ OPTIONS:
    --multi_file value     the path to a multi-channel back up file
 ```
 
-Once the process has been initiated, `lnd` will proceed to:
+Once the process has been initiated, `broln` will proceed to:
 
   1. Given the set of channels to recover, the server will then will insert a
      series of "channel shells" into the database. These contain only the
@@ -351,8 +351,8 @@ Once the process has been initiated, `lnd` will proceed to:
      addresses that we were able to reach the peer at. During the process,
      we'll also insert the edge for that channel (only in the outgoing
      direction) into the database as well.
-  3. lnd will then start up, and as usual attempt to establish connections to
-     all peers that we have channels open with. If `lnd` is already running,
+  3. broln will then start up, and as usual attempt to establish connections to
+     all peers that we have channels open with. If `broln` is already running,
      then a new persistent connection attempt will be initiated.
   4. Once we connect with a peer, we'll then initiate the DLP protocol. The
      remote peer will discover that we've lost data, and then immediately force

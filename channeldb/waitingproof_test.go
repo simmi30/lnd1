@@ -23,7 +23,7 @@ func TestWaitingProofStore(t *testing.T) {
 
 	proof1 := NewWaitingProof(true, &lnwire.AnnounceSignatures{
 		NodeSignature:    wireSig,
-		BitcoinSignature: wireSig,
+		BrocoinSignature: wireSig,
 		ExtraOpaqueData:  make([]byte, 0),
 	})
 

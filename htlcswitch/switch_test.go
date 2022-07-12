@@ -2218,8 +2218,8 @@ func TestLocalPaymentNoForwardingEvents(t *testing.T) {
 	// interacting with and asserting the state of the first end point for
 	// this test.
 	channels, cleanUp, _, err := createClusterChannels(
-		btcutil.SatoshiPerBitcoin*3,
-		btcutil.SatoshiPerBitcoin*5)
+		btcutil.SatoshiPerBrocoin*3,
+		btcutil.SatoshiPerBrocoin*5)
 	if err != nil {
 		t.Fatalf("unable to create channel: %v", err)
 	}
@@ -2232,7 +2232,7 @@ func TestLocalPaymentNoForwardingEvents(t *testing.T) {
 	}
 
 	// We'll now craft and send a payment from Alice to Bob.
-	amount := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBitcoin)
+	amount := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBrocoin)
 	htlcAmt, totalTimelock, hops := generateHops(
 		amount, testStartingHeight, n.firstBobChannelLink,
 	)
@@ -2280,8 +2280,8 @@ func TestMultiHopPaymentForwardingEvents(t *testing.T) {
 
 	// First, we'll create our traditional three hop network.
 	channels, cleanUp, _, err := createClusterChannels(
-		btcutil.SatoshiPerBitcoin*3,
-		btcutil.SatoshiPerBitcoin*5)
+		btcutil.SatoshiPerBrocoin*3,
+		btcutil.SatoshiPerBrocoin*5)
 	if err != nil {
 		t.Fatalf("unable to create channel: %v", err)
 	}
@@ -2437,7 +2437,7 @@ func TestUpdateFailMalformedHTLCErrorConversion(t *testing.T) {
 
 	// First, we'll create our traditional three hop network.
 	channels, cleanUp, _, err := createClusterChannels(
-		btcutil.SatoshiPerBitcoin*3, btcutil.SatoshiPerBitcoin*5,
+		btcutil.SatoshiPerBrocoin*3, btcutil.SatoshiPerBrocoin*5,
 	)
 	if err != nil {
 		t.Fatalf("unable to create channel: %v", err)
@@ -2854,8 +2854,8 @@ func testHtcNotifier(t *testing.T, testOpts []serverOption, iterations int,
 	// First, we'll create our traditional three hop
 	// network.
 	channels, cleanUp, _, err := createClusterChannels(
-		btcutil.SatoshiPerBitcoin*3,
-		btcutil.SatoshiPerBitcoin*5)
+		btcutil.SatoshiPerBrocoin*3,
+		btcutil.SatoshiPerBrocoin*5)
 	if err != nil {
 		t.Fatalf("unable to create channel: %v", err)
 	}
@@ -2990,7 +2990,7 @@ func checkHtlcEvents(t *testing.T, events <-chan interface{},
 func (n *threeHopNetwork) sendThreeHopPayment(t *testing.T) (*lnwire.UpdateAddHTLC,
 	[]*hop.Payload, *lntypes.Preimage) {
 
-	amount := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBitcoin)
+	amount := lnwire.NewMSatFromSatoshis(btcutil.SatoshiPerBrocoin)
 
 	htlcAmt, totalTimelock, hops := generateHops(amount, testStartingHeight,
 		n.firstBobChannelLink, n.carolChannelLink)
@@ -3332,7 +3332,7 @@ func TestSwitchDustForwarding(t *testing.T) {
 	// - Bob has a dust limit of 200sats with Carol
 	// - Carol has a dust limit of 800sats with Bob
 	channels, cleanUp, _, err := createClusterChannels(
-		btcutil.SatoshiPerBitcoin, btcutil.SatoshiPerBitcoin,
+		btcutil.SatoshiPerBrocoin, btcutil.SatoshiPerBrocoin,
 	)
 	require.NoError(t, err)
 	defer cleanUp()

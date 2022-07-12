@@ -728,7 +728,7 @@ func TestVerifyAllInputsSegWit(t *testing.T) {
 			"Ix4AIgYD+JGQAI4QCrosTiyXM7oLzJpUtMcT3Nng/uCCTx1TnkY" +
 			"MRm7c9AAAAAAAAAAAAAA=",
 	}, {
-		name: "Bitcoind p2wkh spend",
+		name: "Brocoind p2wkh spend",
 		packet: "cHNidP8BAHICAAAAAeEw64k3k+YEk5EgNTytvkGlpiF6iMSsm0o" +
 			"dCSm03dt7AAAAAAD+////AsSvp8oAAAAAFgAUzWRW/Ccwf/Cosy" +
 			"dy0uYe5fa/Gb0A4fUFAAAAABepFMD8Ngxk/Z7M5nJM2ltpszQZ4" +
@@ -740,7 +740,7 @@ func TestVerifyAllInputsSegWit(t *testing.T) {
 			"3usQBp+HNQAAAIABAACADwAAgAAiAgJ9LOXb4MwHRoq31B9fQ2U" +
 			"0K+Uj8BBJzy+MWc0OOOVuQxAGn4c1AAAAgAEAAIARAACAAAA=",
 	}, {
-		name: "Bitcoind p2pkh spend",
+		name: "Brocoind p2pkh spend",
 		packet: "cHNidP8BAHICAAAAAdp3QE/zv3Q7RhkAR0JyzBWLttUqRHJ" +
 			"pAYmHLIqJzGXOAQAAAAD/////AoDw+gIAAAAAF6kUwPw2DGT9ns" +
 			"zmckzaW2mzNBngoZqHUN/6AgAAAAAWABRLzlCRi8BozkTClLcIN" +
@@ -753,7 +753,7 @@ func TestVerifyAllInputsSegWit(t *testing.T) {
 			"AAIAVAACAAA==",
 		shouldFail: true,
 	}, {
-		name: "Bitcoind p2sh multisig spend",
+		name: "Brocoind p2sh multisig spend",
 		packet: "cHNidP8BAHICAAAAAQvO6z5f4wghsQ2c5+Zcw2qdZ4FOYkyWBFe" +
 			"U/jiIKcwdAAAAAAD/////AkTc+gIAAAAAFgAU2kWEYfMLfgwVQ0" +
 			"2wJwFNsOmorBWA8PoCAAAAABepFMD8Ngxk/Z7M5nJM2ltpszQZ4" +

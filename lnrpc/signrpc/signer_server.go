@@ -86,8 +86,8 @@ type ServerShell struct {
 
 // Server is a sub-server of the main RPC server: the signer RPC. This sub RPC
 // server allows external callers to access the full signing capabilities of
-// lnd. This allows callers to create custom protocols, external to lnd, even
-// backed by multiple distinct lnd across independent failure domains.
+// broln. This allows callers to create custom protocols, external to broln, even
+// backed by multiple distinct broln across independent failure domains.
 type Server struct {
 	// Required by the grpc-gateway/v2 library for forward compatibility.
 	UnimplementedSignerServer

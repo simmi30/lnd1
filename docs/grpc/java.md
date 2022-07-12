@@ -2,12 +2,12 @@
 # How to write a Java gRPC client for the Lightning Network Daemon
 
 This section enumerates what you need to do to write a client that communicates
-with lnd in Java. We'll be using Maven as our build tool.
+with broln in Java. We'll be using Maven as our build tool.
 
 ### Prerequisites
  - Maven
- - running lnd
- - running btcd
+ - running broln
+ - running brond
 
 ### Setup and Installation
 #### Project Structure
@@ -102,9 +102,9 @@ In the build section,  we'll need to configure the following things :
 </build>
 ```
 #### Main.java
-Use the code below to set up a channel and client to connect to your `lnd` node.
+Use the code below to set up a channel and client to connect to your `broln` node.
 
-Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `lnd` configuration and re-generate the certificate (delete tls.cert and tls.key and restart lnd).
+Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `broln` configuration and re-generate the certificate (delete tls.cert and tls.key and restart broln).
 
 ```java
 import io.grpc.Attributes;
@@ -161,8 +161,8 @@ public class Main {
     }
   }
 
-  private static final String CERT_PATH = "/Users/user/Library/Application Support/Lnd/tls.cert";
-  private static final String MACAROON_PATH = "/Users/user/Library/Application Support/Lnd/data/chain/bitcoin/simnet/admin.macaroon";
+  private static final String CERT_PATH = "/Users/user/Library/Application Support/broln/tls.cert";
+  private static final String MACAROON_PATH = "/Users/user/Library/Application Support/broln/data/chain/brocoin/simnet/admin.macaroon";
   private static final String HOST = "localhost";
   private static final int PORT = 10019;
 

@@ -40,7 +40,7 @@ var (
 	ErrAMPMissingMPP = errors.New("cannot send AMP without MPP record")
 )
 
-// Vertex is a simple alias for the serialization of a compressed Bitcoin
+// Vertex is a simple alias for the serialization of a compressed Brocoin
 // public key.
 type Vertex [VertexSize]byte
 

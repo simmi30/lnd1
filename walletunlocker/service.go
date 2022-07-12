@@ -29,7 +29,7 @@ var (
 )
 
 // WalletUnlockParams holds the variables used to parameterize the unlocking of
-// lnd's wallet after it has already been created.
+// broln's wallet after it has already been created.
 type WalletUnlockParams struct {
 	// Password is the public and private wallet passphrase.
 	Password []byte
@@ -45,7 +45,7 @@ type WalletUnlockParams struct {
 	// Wallet is the loaded and unlocked Wallet. This is returned
 	// from the unlocker service to avoid it being unlocked twice (once in
 	// the unlocker service to check if the password is correct and again
-	// later when lnd actually uses it). Because unlocking involves scrypt
+	// later when broln actually uses it). Because unlocking involves scrypt
 	// which is resource intensive, we want to avoid doing it twice.
 	Wallet *wallet.Wallet
 
@@ -150,7 +150,7 @@ type WalletUnlockMsg struct {
 	// Wallet is the loaded and unlocked Wallet. This is returned through
 	// the channel to avoid it being unlocked twice (once to check if the
 	// password is correct, here in the WalletUnlocker and again later when
-	// lnd actually uses it). Because unlocking involves scrypt which is
+	// broln actually uses it). Because unlocking involves scrypt which is
 	// resource intensive, we want to avoid doing it twice.
 	Wallet *wallet.Wallet
 
@@ -168,7 +168,7 @@ type WalletUnlockMsg struct {
 	StatelessInit bool
 }
 
-// UnlockerService implements the WalletUnlocker service used to provide lnd
+// UnlockerService implements the WalletUnlocker service used to provide broln
 // with a password for wallet encryption at startup. Additionally, during
 // initial setup, users can provide their own source of entropy which will be
 // used to generate the seed that's ultimately used within the wallet.
@@ -192,7 +192,7 @@ type UnlockerService struct {
 
 	// macaroonFiles is the path to the three generated macaroons with
 	// different access permissions. These might not exist in a stateless
-	// initialization of lnd.
+	// initialization of broln.
 	macaroonFiles []string
 
 	// resetWalletTransactions indicates that the wallet state should be
@@ -217,7 +217,7 @@ func New(params *chaincfg.Params, macaroonFiles []string,
 		InitMsgs:   make(chan *WalletInitMsg, 1),
 		UnlockMsgs: make(chan *WalletUnlockMsg, 1),
 
-		// Make sure we buffer the channel is buffered so the main lnd
+		// Make sure we buffer the channel is buffered so the main broln
 		// goroutine isn't blocking on writing to it.
 		MacResponseChan:         make(chan []byte, 1),
 		netParams:               params,
@@ -257,7 +257,7 @@ func (u *UnlockerService) WalletExists() (bool, error) {
 	return loader.WalletExists()
 }
 
-// GenSeed is the first method that should be used to instantiate a new lnd
+// GenSeed is the first method that should be used to instantiate a new broln
 // instance. This method allows a caller to generate a new aezeed cipher seed
 // given an optional passphrase. If provided, the passphrase will be necessary
 // to decrypt the cipherseed to expose the internal wallet seed.
@@ -370,7 +370,7 @@ func extractChanBackups(chanBackups *lnrpc.ChanBackupSnapshot) *ChannelsToRecove
 	return &backups
 }
 
-// InitWallet is used when lnd is starting up for the first time to fully
+// InitWallet is used when broln is starting up for the first time to fully
 // initialize the daemon and its internal wallet. At the very least a wallet
 // password must be provided. This will be used to encrypt sensitive material
 // on disk.
@@ -449,7 +449,7 @@ func (u *UnlockerService) InitWallet(ctx context.Context,
 		initMsg.WalletSeed = cipherSeed
 
 	// To support restoring a wallet where the seed isn't known or a wallet
-	// created externally to lnd, we also allow the extended master key
+	// created externally to broln, we also allow the extended master key
 	// (xprv) to be imported directly. This is what'll be stored in the
 	// btcwallet database anyway.
 	case len(in.ExtendedMasterKey) > 0:
@@ -460,7 +460,7 @@ func (u *UnlockerService) InitWallet(ctx context.Context,
 			return nil, err
 		}
 
-		// The on-chain wallet of lnd is going to derive keys based on
+		// The on-chain wallet of broln is going to derive keys based on
 		// the BIP49/84 key derivation paths from this root key. To make
 		// sure we use default derivation paths, we want to avoid
 		// deriving keys from something other than the master key (at
@@ -494,7 +494,7 @@ func (u *UnlockerService) InitWallet(ctx context.Context,
 		// don't know the birthday as that information is not encoded in
 		// that format. We therefore must set an arbitrary date to start
 		// rescanning at if the user doesn't provide an explicit value
-		// for it. Since lnd only uses SegWit addresses, we pick the
+		// for it. Since broln only uses SegWit addresses, we pick the
 		// date of the first block that contained SegWit transactions
 		// (481824).
 		initMsg.ExtendedKeyBirthday = time.Date(
@@ -514,7 +514,7 @@ func (u *UnlockerService) InitWallet(ctx context.Context,
 	// hardened derivation path up to the account (depth 3), it is not
 	// possible to create a master root extended _public_ key. Therefore, an
 	// xpub must be derived and passed into the unlocker for _every_ account
-	// lnd expects.
+	// broln expects.
 	case in.WatchOnly != nil && len(in.WatchOnly.Accounts) > 0:
 		initMsg.WatchOnlyAccounts = make(
 			map[waddrmgr.ScopedIndex]*hdkeychain.ExtendedKey,
@@ -555,7 +555,7 @@ func (u *UnlockerService) InitWallet(ctx context.Context,
 		// don't know the birthday as that information is not encoded in
 		// that format. We therefore must set an arbitrary date to start
 		// rescanning at if the user doesn't provide an explicit value
-		// for it. Since lnd only uses SegWit addresses, we pick the
+		// for it. Since broln only uses SegWit addresses, we pick the
 		// date of the first block that contained SegWit transactions
 		// (481824).
 		initMsg.WatchOnlyBirthday = time.Date(
@@ -702,7 +702,7 @@ func (u *UnlockerService) UnlockWallet(ctx context.Context,
 
 	// At this point we were able to open the existing wallet with the
 	// provided password. We send the password over the UnlockMsgs
-	// channel, such that it can be used by lnd to open the wallet.
+	// channel, such that it can be used by broln to open the wallet.
 	select {
 	case u.UnlockMsgs <- walletUnlockMsg:
 		// We need to read from the channel to let the daemon continue
@@ -808,7 +808,7 @@ func (u *UnlockerService) ChangePassword(ctx context.Context,
 	// Attempt to open the macaroon DB, unlock it and then change
 	// the passphrase.
 	macaroonService, err := macaroons.NewService(
-		u.macaroonDB, "lnd", in.StatelessInit,
+		u.macaroonDB, "broln", in.StatelessInit,
 	)
 	if err != nil {
 		return nil, err

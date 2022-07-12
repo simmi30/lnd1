@@ -163,7 +163,7 @@ type LightningClient interface {
 	//
 	//ChannelAcceptor dispatches a bi-directional streaming RPC in which
 	//OpenChannel requests are sent to the client and the client responds with
-	//a boolean that tells LND whether or not to accept the channel. This allows
+	//a boolean that tells broln whether or not to accept the channel. This allows
 	//node operators to specify their own criteria for accepting inbound channels
 	//through a single persistent connection.
 	ChannelAcceptor(ctx context.Context, opts ...grpc.CallOption) (Lightning_ChannelAcceptorClient, error)
@@ -179,7 +179,7 @@ type LightningClient interface {
 	// lncli: `abandonchannel`
 	//AbandonChannel removes all channel state from the database except for a
 	//close summary. This method can be used to get rid of permanently unusable
-	//channels due to bugs fixed in newer versions of lnd. This method can also be
+	//channels due to bugs fixed in newer versions of broln. This method can also be
 	//used to remove externally funded channels where the funding transaction was
 	//never broadcast. Only available for non-externally funded channels in dev
 	//build.
@@ -308,7 +308,7 @@ type LightningClient interface {
 	SubscribeChannelGraph(ctx context.Context, in *GraphTopologySubscription, opts ...grpc.CallOption) (Lightning_SubscribeChannelGraphClient, error)
 	// lncli: `debuglevel`
 	//DebugLevel allows a caller to programmatically set the logging verbosity of
-	//lnd. The logging can be targeted according to a coarse daemon-wide logging
+	//broln. The logging can be targeted according to a coarse daemon-wide logging
 	//level, or in a granular fashion to specify the logging for a target
 	//sub-system.
 	DebugLevel(ctx context.Context, in *DebugLevelRequest, opts ...grpc.CallOption) (*DebugLevelResponse, error)
@@ -338,12 +338,12 @@ type LightningClient interface {
 	//for the target channel identified by it channel point. The backup is
 	//encrypted with a key generated from the aezeed seed of the user. The
 	//returned backup can either be restored using the RestoreChannelBackup
-	//method once lnd is running, or via the InitWallet and UnlockWallet methods
+	//method once broln is running, or via the InitWallet and UnlockWallet methods
 	//from the WalletUnlocker service.
 	ExportChannelBackup(ctx context.Context, in *ExportChannelBackupRequest, opts ...grpc.CallOption) (*ChannelBackup, error)
 	//
 	//ExportAllChannelBackups returns static channel backups for all existing
-	//channels known to lnd. A set of regular singular static channel backups for
+	//channels known to broln. A set of regular singular static channel backups for
 	//each channel are returned. Additionally, a multi-channel backup is returned
 	//as well, which contains a single encrypted blob containing the backups of
 	//each channel.
@@ -391,8 +391,8 @@ type LightningClient interface {
 	CheckMacaroonPermissions(ctx context.Context, in *CheckMacPermRequest, opts ...grpc.CallOption) (*CheckMacPermResponse, error)
 	//
 	//RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A
-	//gRPC middleware is software component external to lnd that aims to add
-	//additional business logic to lnd by observing/intercepting/validating
+	//gRPC middleware is software component external to broln that aims to add
+	//additional business logic to broln by observing/intercepting/validating
 	//incoming gRPC client requests and (if needed) replacing/overwriting outgoing
 	//messages before they're sent to the client. When registering the middleware
 	//must identify itself and indicate what custom macaroon caveats it wants to
@@ -1451,7 +1451,7 @@ type LightningServer interface {
 	//
 	//ChannelAcceptor dispatches a bi-directional streaming RPC in which
 	//OpenChannel requests are sent to the client and the client responds with
-	//a boolean that tells LND whether or not to accept the channel. This allows
+	//a boolean that tells broln whether or not to accept the channel. This allows
 	//node operators to specify their own criteria for accepting inbound channels
 	//through a single persistent connection.
 	ChannelAcceptor(Lightning_ChannelAcceptorServer) error
@@ -1467,7 +1467,7 @@ type LightningServer interface {
 	// lncli: `abandonchannel`
 	//AbandonChannel removes all channel state from the database except for a
 	//close summary. This method can be used to get rid of permanently unusable
-	//channels due to bugs fixed in newer versions of lnd. This method can also be
+	//channels due to bugs fixed in newer versions of broln. This method can also be
 	//used to remove externally funded channels where the funding transaction was
 	//never broadcast. Only available for non-externally funded channels in dev
 	//build.
@@ -1596,7 +1596,7 @@ type LightningServer interface {
 	SubscribeChannelGraph(*GraphTopologySubscription, Lightning_SubscribeChannelGraphServer) error
 	// lncli: `debuglevel`
 	//DebugLevel allows a caller to programmatically set the logging verbosity of
-	//lnd. The logging can be targeted according to a coarse daemon-wide logging
+	//broln. The logging can be targeted according to a coarse daemon-wide logging
 	//level, or in a granular fashion to specify the logging for a target
 	//sub-system.
 	DebugLevel(context.Context, *DebugLevelRequest) (*DebugLevelResponse, error)
@@ -1626,12 +1626,12 @@ type LightningServer interface {
 	//for the target channel identified by it channel point. The backup is
 	//encrypted with a key generated from the aezeed seed of the user. The
 	//returned backup can either be restored using the RestoreChannelBackup
-	//method once lnd is running, or via the InitWallet and UnlockWallet methods
+	//method once broln is running, or via the InitWallet and UnlockWallet methods
 	//from the WalletUnlocker service.
 	ExportChannelBackup(context.Context, *ExportChannelBackupRequest) (*ChannelBackup, error)
 	//
 	//ExportAllChannelBackups returns static channel backups for all existing
-	//channels known to lnd. A set of regular singular static channel backups for
+	//channels known to broln. A set of regular singular static channel backups for
 	//each channel are returned. Additionally, a multi-channel backup is returned
 	//as well, which contains a single encrypted blob containing the backups of
 	//each channel.
@@ -1679,8 +1679,8 @@ type LightningServer interface {
 	CheckMacaroonPermissions(context.Context, *CheckMacPermRequest) (*CheckMacPermResponse, error)
 	//
 	//RegisterRPCMiddleware adds a new gRPC middleware to the interceptor chain. A
-	//gRPC middleware is software component external to lnd that aims to add
-	//additional business logic to lnd by observing/intercepting/validating
+	//gRPC middleware is software component external to broln that aims to add
+	//additional business logic to broln by observing/intercepting/validating
 	//incoming gRPC client requests and (if needed) replacing/overwriting outgoing
 	//messages before they're sent to the client. When registering the middleware
 	//must identify itself and indicate what custom macaroon caveats it wants to

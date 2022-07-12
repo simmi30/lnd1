@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	// DefaultConfigFilename is the default configuration file name lnd
+	// DefaultConfigFilename is the default configuration file name broln
 	// tries to load.
-	DefaultConfigFilename = "lnd.conf"
+	DefaultConfigFilename = "broln.conf"
 
 	// DefaultMaxPendingChannels is the default maximum number of incoming
 	// pending channels permitted per peer.

@@ -1,11 +1,11 @@
 channeldb
 ==========
 
-[![Build Status](http://img.shields.io/travis/lightningnetwork/lnd.svg)](https://travis-ci.org/lightningnetwork/lnd) 
+[![Build Status](http://img.shields.io/travis/lightningnetwork/broln.svg)](https://travis-ci.org/lightningnetwork/broln) 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/brolightningnetwork/broln/blob/master/LICENSE)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/brolightningnetwork/broln/channeldb)
 
-The channeldb implements the persistent storage engine for `lnd` and
+The channeldb implements the persistent storage engine for `broln` and
 generically a data storage layer for the required state within the Lightning
 Network. The backing storage engine is
 [boltdb](https://github.com/coreos/bbolt), an embedded pure-go key-value store

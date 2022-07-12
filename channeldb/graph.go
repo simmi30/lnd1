@@ -3040,13 +3040,13 @@ type ChannelEdgeInfo struct {
 	NodeKey2Bytes [33]byte
 	nodeKey2      *btcec.PublicKey
 
-	// BitcoinKey1Bytes is the raw public key of the first node.
-	BitcoinKey1Bytes [33]byte
-	bitcoinKey1      *btcec.PublicKey
+	// BrocoinKey1Bytes is the raw public key of the first node.
+	BrocoinKey1Bytes [33]byte
+	brocoinKey1      *btcec.PublicKey
 
-	// BitcoinKey2Bytes is the raw public key of the first node.
-	BitcoinKey2Bytes [33]byte
-	bitcoinKey2      *btcec.PublicKey
+	// BrocoinKey2Bytes is the raw public key of the first node.
+	BrocoinKey2Bytes [33]byte
+	brocoinKey2      *btcec.PublicKey
 
 	// Features is an opaque byte slice that encodes the set of channel
 	// specific features that this channel edge supports.
@@ -3078,8 +3078,8 @@ type ChannelEdgeInfo struct {
 
 // AddNodeKeys is a setter-like method that can be used to replace the set of
 // keys for the target ChannelEdgeInfo.
-func (c *ChannelEdgeInfo) AddNodeKeys(nodeKey1, nodeKey2, bitcoinKey1,
-	bitcoinKey2 *btcec.PublicKey) {
+func (c *ChannelEdgeInfo) AddNodeKeys(nodeKey1, nodeKey2, brocoinKey1,
+	brocoinKey2 *btcec.PublicKey) {
 
 	c.nodeKey1 = nodeKey1
 	copy(c.NodeKey1Bytes[:], c.nodeKey1.SerializeCompressed())
@@ -3087,11 +3087,11 @@ func (c *ChannelEdgeInfo) AddNodeKeys(nodeKey1, nodeKey2, bitcoinKey1,
 	c.nodeKey2 = nodeKey2
 	copy(c.NodeKey2Bytes[:], nodeKey2.SerializeCompressed())
 
-	c.bitcoinKey1 = bitcoinKey1
-	copy(c.BitcoinKey1Bytes[:], c.bitcoinKey1.SerializeCompressed())
+	c.brocoinKey1 = brocoinKey1
+	copy(c.BrocoinKey1Bytes[:], c.brocoinKey1.SerializeCompressed())
 
-	c.bitcoinKey2 = bitcoinKey2
-	copy(c.BitcoinKey2Bytes[:], bitcoinKey2.SerializeCompressed())
+	c.brocoinKey2 = brocoinKey2
+	copy(c.BrocoinKey2Bytes[:], brocoinKey2.SerializeCompressed())
 }
 
 // NodeKey1 is the identity public key of the "first" node that was involved in
@@ -3137,42 +3137,42 @@ func (c *ChannelEdgeInfo) NodeKey2() (*btcec.PublicKey, error) {
 	return key, nil
 }
 
-// BitcoinKey1 is the Bitcoin multi-sig key belonging to the first
+// BrocoinKey1 is the Brocoin multi-sig key belonging to the first
 // node, that was involved in the funding transaction that originally
 // created the channel that this struct represents.
 //
 // NOTE: By having this method to access an attribute, we ensure we only need
 // to fully deserialize the pubkey if absolutely necessary.
-func (c *ChannelEdgeInfo) BitcoinKey1() (*btcec.PublicKey, error) {
-	if c.bitcoinKey1 != nil {
-		return c.bitcoinKey1, nil
+func (c *ChannelEdgeInfo) BrocoinKey1() (*btcec.PublicKey, error) {
+	if c.brocoinKey1 != nil {
+		return c.brocoinKey1, nil
 	}
 
-	key, err := btcec.ParsePubKey(c.BitcoinKey1Bytes[:], btcec.S256())
+	key, err := btcec.ParsePubKey(c.BrocoinKey1Bytes[:], btcec.S256())
 	if err != nil {
 		return nil, err
 	}
-	c.bitcoinKey1 = key
+	c.brocoinKey1 = key
 
 	return key, nil
 }
 
-// BitcoinKey2 is the Bitcoin multi-sig key belonging to the second
+// BrocoinKey2 is the Brocoin multi-sig key belonging to the second
 // node, that was involved in the funding transaction that originally
 // created the channel that this struct represents.
 //
 // NOTE: By having this method to access an attribute, we ensure we only need
 // to fully deserialize the pubkey if absolutely necessary.
-func (c *ChannelEdgeInfo) BitcoinKey2() (*btcec.PublicKey, error) {
-	if c.bitcoinKey2 != nil {
-		return c.bitcoinKey2, nil
+func (c *ChannelEdgeInfo) BrocoinKey2() (*btcec.PublicKey, error) {
+	if c.brocoinKey2 != nil {
+		return c.brocoinKey2, nil
 	}
 
-	key, err := btcec.ParsePubKey(c.BitcoinKey2Bytes[:], btcec.S256())
+	key, err := btcec.ParsePubKey(c.BrocoinKey2Bytes[:], btcec.S256())
 	if err != nil {
 		return nil, err
 	}
-	c.bitcoinKey2 = key
+	c.brocoinKey2 = key
 
 	return key, nil
 }
@@ -3246,7 +3246,7 @@ func (c *ChannelEdgeInfo) FetchOtherNode(tx kvdb.RTx, thisNodeKey []byte) (*Ligh
 // auxiliary knowledge (the funding script, node identities, and outpoint) nodes
 // on the network are able to validate the authenticity and existence of a
 // channel. Each of these signatures signs the following digest: chanID ||
-// nodeID1 || nodeID2 || bitcoinKey1|| bitcoinKey2 || 2-byte-feature-len ||
+// nodeID1 || nodeID2 || brocoinKey1|| brocoinKey2 || 2-byte-feature-len ||
 // features.
 type ChannelAuthProof struct {
 	// nodeSig1 is a cached instance of the first node signature.
@@ -3263,19 +3263,19 @@ type ChannelAuthProof struct {
 	// encoded in DER format.
 	NodeSig2Bytes []byte
 
-	// bitcoinSig1 is a cached instance of the first bitcoin signature.
-	bitcoinSig1 *btcec.Signature
+	// brocoinSig1 is a cached instance of the first brocoin signature.
+	brocoinSig1 *btcec.Signature
 
-	// BitcoinSig1Bytes are the raw bytes of the first bitcoin signature
+	// BrocoinSig1Bytes are the raw bytes of the first brocoin signature
 	// encoded in DER format.
-	BitcoinSig1Bytes []byte
+	BrocoinSig1Bytes []byte
 
-	// bitcoinSig2 is a cached instance of the second bitcoin signature.
-	bitcoinSig2 *btcec.Signature
+	// brocoinSig2 is a cached instance of the second brocoin signature.
+	brocoinSig2 *btcec.Signature
 
-	// BitcoinSig2Bytes are the raw bytes of the second bitcoin signature
+	// BrocoinSig2Bytes are the raw bytes of the second brocoin signature
 	// encoded in DER format.
-	BitcoinSig2Bytes []byte
+	BrocoinSig2Bytes []byte
 }
 
 // Node1Sig is the signature using the identity key of the node that is first
@@ -3320,42 +3320,42 @@ func (c *ChannelAuthProof) Node2Sig() (*btcec.Signature, error) {
 	return sig, nil
 }
 
-// BitcoinSig1 is the signature using the public key of the first node that was
+// BrocoinSig1 is the signature using the public key of the first node that was
 // used in the channel's multi-sig output.
 //
 // NOTE: By having this method to access an attribute, we ensure we only need
 // to fully deserialize the signature if absolutely necessary.
-func (c *ChannelAuthProof) BitcoinSig1() (*btcec.Signature, error) {
-	if c.bitcoinSig1 != nil {
-		return c.bitcoinSig1, nil
+func (c *ChannelAuthProof) BrocoinSig1() (*btcec.Signature, error) {
+	if c.brocoinSig1 != nil {
+		return c.brocoinSig1, nil
 	}
 
-	sig, err := btcec.ParseSignature(c.BitcoinSig1Bytes, btcec.S256())
+	sig, err := btcec.ParseSignature(c.BrocoinSig1Bytes, btcec.S256())
 	if err != nil {
 		return nil, err
 	}
 
-	c.bitcoinSig1 = sig
+	c.brocoinSig1 = sig
 
 	return sig, nil
 }
 
-// BitcoinSig2 is the signature using the public key of the second node that
+// BrocoinSig2 is the signature using the public key of the second node that
 // was used in the channel's multi-sig output.
 //
 // NOTE: By having this method to access an attribute, we ensure we only need
 // to fully deserialize the signature if absolutely necessary.
-func (c *ChannelAuthProof) BitcoinSig2() (*btcec.Signature, error) {
-	if c.bitcoinSig2 != nil {
-		return c.bitcoinSig2, nil
+func (c *ChannelAuthProof) BrocoinSig2() (*btcec.Signature, error) {
+	if c.brocoinSig2 != nil {
+		return c.brocoinSig2, nil
 	}
 
-	sig, err := btcec.ParseSignature(c.BitcoinSig2Bytes, btcec.S256())
+	sig, err := btcec.ParseSignature(c.BrocoinSig2Bytes, btcec.S256())
 	if err != nil {
 		return nil, err
 	}
 
-	c.bitcoinSig2 = sig
+	c.brocoinSig2 = sig
 
 	return sig, nil
 }
@@ -3365,8 +3365,8 @@ func (c *ChannelAuthProof) BitcoinSig2() (*btcec.Signature, error) {
 func (c *ChannelAuthProof) IsEmpty() bool {
 	return len(c.NodeSig1Bytes) == 0 ||
 		len(c.NodeSig2Bytes) == 0 ||
-		len(c.BitcoinSig1Bytes) == 0 ||
-		len(c.BitcoinSig2Bytes) == 0
+		len(c.BrocoinSig1Bytes) == 0 ||
+		len(c.BrocoinSig2Bytes) == 0
 }
 
 // ChannelEdgePolicy represents a *directed* edge within the channel graph. For
@@ -3815,8 +3815,8 @@ func (c *ChannelGraph) ChannelView() ([]EdgePoint, error) {
 			}
 
 			pkScript, err := genMultiSigP2WSH(
-				edgeInfo.BitcoinKey1Bytes[:],
-				edgeInfo.BitcoinKey2Bytes[:],
+				edgeInfo.BrocoinKey1Bytes[:],
+				edgeInfo.BrocoinKey2Bytes[:],
 			)
 			if err != nil {
 				return err
@@ -4322,10 +4322,10 @@ func putChanEdgeInfo(edgeIndex kvdb.RwBucket, edgeInfo *ChannelEdgeInfo, chanID 
 	if _, err := b.Write(edgeInfo.NodeKey2Bytes[:]); err != nil {
 		return err
 	}
-	if _, err := b.Write(edgeInfo.BitcoinKey1Bytes[:]); err != nil {
+	if _, err := b.Write(edgeInfo.BrocoinKey1Bytes[:]); err != nil {
 		return err
 	}
-	if _, err := b.Write(edgeInfo.BitcoinKey2Bytes[:]); err != nil {
+	if _, err := b.Write(edgeInfo.BrocoinKey2Bytes[:]); err != nil {
 		return err
 	}
 
@@ -4334,12 +4334,12 @@ func putChanEdgeInfo(edgeIndex kvdb.RwBucket, edgeInfo *ChannelEdgeInfo, chanID 
 	}
 
 	authProof := edgeInfo.AuthProof
-	var nodeSig1, nodeSig2, bitcoinSig1, bitcoinSig2 []byte
+	var nodeSig1, nodeSig2, brocoinSig1, brocoinSig2 []byte
 	if authProof != nil {
 		nodeSig1 = authProof.NodeSig1Bytes
 		nodeSig2 = authProof.NodeSig2Bytes
-		bitcoinSig1 = authProof.BitcoinSig1Bytes
-		bitcoinSig2 = authProof.BitcoinSig2Bytes
+		brocoinSig1 = authProof.BrocoinSig1Bytes
+		brocoinSig2 = authProof.BrocoinSig2Bytes
 	}
 
 	if err := wire.WriteVarBytes(&b, 0, nodeSig1); err != nil {
@@ -4348,10 +4348,10 @@ func putChanEdgeInfo(edgeIndex kvdb.RwBucket, edgeInfo *ChannelEdgeInfo, chanID 
 	if err := wire.WriteVarBytes(&b, 0, nodeSig2); err != nil {
 		return err
 	}
-	if err := wire.WriteVarBytes(&b, 0, bitcoinSig1); err != nil {
+	if err := wire.WriteVarBytes(&b, 0, brocoinSig1); err != nil {
 		return err
 	}
-	if err := wire.WriteVarBytes(&b, 0, bitcoinSig2); err != nil {
+	if err := wire.WriteVarBytes(&b, 0, brocoinSig2); err != nil {
 		return err
 	}
 
@@ -4403,10 +4403,10 @@ func deserializeChanEdgeInfo(r io.Reader) (ChannelEdgeInfo, error) {
 	if _, err := io.ReadFull(r, edgeInfo.NodeKey2Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	if _, err := io.ReadFull(r, edgeInfo.BitcoinKey1Bytes[:]); err != nil {
+	if _, err := io.ReadFull(r, edgeInfo.BrocoinKey1Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	if _, err := io.ReadFull(r, edgeInfo.BitcoinKey2Bytes[:]); err != nil {
+	if _, err := io.ReadFull(r, edgeInfo.BrocoinKey2Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
 
@@ -4425,11 +4425,11 @@ func deserializeChanEdgeInfo(r io.Reader) (ChannelEdgeInfo, error) {
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	proof.BitcoinSig1Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
+	proof.BrocoinSig1Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	proof.BitcoinSig2Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
+	proof.BrocoinSig2Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}

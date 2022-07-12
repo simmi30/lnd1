@@ -28,7 +28,7 @@ func testRPCMiddlewareInterceptor(net *lntest.NetworkHarness, t *harnessTest) {
 	// Let's set up a channel between Alice and Bob, just to get some useful
 	// data to inspect when doing RPC calls to Alice later.
 	net.EnsureConnected(t.t, net.Alice, net.Bob)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, net.Alice)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, net.Alice)
 	_ = openChannelAndAssert(
 		t, net, net.Alice, net.Bob, lntest.OpenChannelParams{
 			Amt: 1_234_567,
@@ -186,7 +186,7 @@ func middlewareInterceptionTest(t *testing.T, node *lntest.HarnessNode,
 	defer cancel()
 
 	// Create a client connection that we'll use to simulate user requests
-	// to lnd with.
+	// to broln with.
 	cleanup, client := macaroonClient(t, node, userMac)
 	defer cleanup()
 
@@ -306,7 +306,7 @@ func middlewareManipulationTest(t *testing.T, node *lntest.HarnessNode,
 	defer cancel()
 
 	// Create a client connection that we'll use to simulate user requests
-	// to lnd with.
+	// to broln with.
 	cleanup, client := macaroonClient(t, node, userMac)
 	defer cleanup()
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT_MODULE="github.com/brolightningnetwork/lnd"
+ROOT_MODULE="github.com/brolightningnetwork/broln"
 
 # The command 'go list -m all' returns all imports in the following format:
 #   github.com/brolightningnetwork/broln/cert v1.1.0 => ./cert

@@ -209,7 +209,7 @@ func newTestWallet(t *testing.T, netParams *chaincfg.Params,
 	return w, cleanup
 }
 
-// getChainBackend returns a simple btcd based chain backend to back the wallet.
+// getChainBackend returns a simple brond based chain backend to back the wallet.
 func getChainBackend(t *testing.T, netParams *chaincfg.Params) (chain.Interface,
 	func()) {
 

@@ -15,7 +15,7 @@ import (
 var (
 	testRootKey                 = []byte("dummyRootKey")
 	testID                      = []byte("dummyId")
-	testLocation                = "lnd"
+	testLocation                = "broln"
 	testVersion                 = macaroon.LatestVersion
 	expectedTimeCaveatSubstring = fmt.Sprintf("time-before %d", time.Now().Year())
 )
@@ -124,7 +124,7 @@ func TestCustomConstraint(t *testing.T) {
 	require.NoError(t, constraintFunc(testMacaroon))
 
 	require.Equal(
-		t, []byte("lnd-custom unit-test test-value"),
+		t, []byte("broln-custom unit-test test-value"),
 		testMacaroon.Caveats()[0].Id,
 	)
 	require.True(t, macaroons.HasCustomCaveat(testMacaroon, "unit-test"))
@@ -144,7 +144,7 @@ func TestCustomConstraint(t *testing.T) {
 	require.NoError(t, constraintFunc(testMacaroon))
 
 	require.Equal(
-		t, []byte("lnd-custom unit-test"), testMacaroon.Caveats()[0].Id,
+		t, []byte("broln-custom unit-test"), testMacaroon.Caveats()[0].Id,
 	)
 	require.True(t, macaroons.HasCustomCaveat(testMacaroon, "unit-test"))
 	require.False(t, macaroons.HasCustomCaveat(testMacaroon, "test-value"))

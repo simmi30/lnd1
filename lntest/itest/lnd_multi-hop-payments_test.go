@@ -50,7 +50,7 @@ func testMultiHopPayments(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, dave)
 
 	net.ConnectNodes(t.t, dave, net.Alice)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, dave)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, dave)
 
 	chanPointDave := openChannelAndAssert(
 		t, net, dave, net.Alice,
@@ -74,7 +74,7 @@ func testMultiHopPayments(net *lntest.NetworkHarness, t *harnessTest) {
 	defer shutdownAndAssert(net, t, carol)
 
 	net.ConnectNodes(t.t, carol, dave)
-	net.SendCoins(t.t, btcutil.SatoshiPerBitcoin, carol)
+	net.SendCoins(t.t, btcutil.SatoshiPerBrocoin, carol)
 
 	chanPointCarol := openChannelAndAssert(
 		t, net, carol, dave,
@@ -149,7 +149,7 @@ func testMultiHopPayments(net *lntest.NetworkHarness, t *harnessTest) {
 	const aliceFeeRatePPM = 100000
 	updateChannelPolicy(
 		t, net.Alice, chanPointAlice, aliceBaseFeeSat*1000,
-		aliceFeeRatePPM, chainreg.DefaultBitcoinTimeLockDelta, maxHtlc,
+		aliceFeeRatePPM, chainreg.DefaultBrocoinTimeLockDelta, maxHtlc,
 		carol,
 	)
 
@@ -157,7 +157,7 @@ func testMultiHopPayments(net *lntest.NetworkHarness, t *harnessTest) {
 	const daveFeeRatePPM = 150000
 	updateChannelPolicy(
 		t, dave, chanPointDave, daveBaseFeeSat*1000, daveFeeRatePPM,
-		chainreg.DefaultBitcoinTimeLockDelta, maxHtlc, carol,
+		chainreg.DefaultBrocoinTimeLockDelta, maxHtlc, carol,
 	)
 
 	// Before we start sending payments, subscribe to htlc events for each

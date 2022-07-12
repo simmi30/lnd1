@@ -231,7 +231,7 @@ func testMacaroonAuthentication(net *lntest.NetworkHarness, ht *harnessTest) {
 
 			// Test that CheckMacaroonPermissions accurately
 			// characterizes macaroon as valid, even if the
-			// permissions are not native to LND.
+			// permissions are not native to broln.
 			checkResp, err := testNode.CheckMacaroonPermissions(
 				ctxt, checkReq,
 			)
@@ -453,7 +453,7 @@ func testBakeMacaroon(net *lntest.NetworkHarness, t *harnessTest) {
 	}, {
 		// Seventh test: check that if the allow_external_permissions
 		// flag is set, we are able to feed BakeMacaroons permissions
-		// that LND is not familiar with.
+		// that broln is not familiar with.
 		name: "allow external macaroon permissions",
 		run: func(ctxt context.Context, t *testing.T,
 			adminClient lnrpc.LightningClient) {

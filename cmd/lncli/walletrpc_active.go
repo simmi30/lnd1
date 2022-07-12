@@ -24,7 +24,7 @@ var (
 	// operations.
 	psbtCommand = cli.Command{
 		Name: "psbt",
-		Usage: "Interact with partially signed bitcoin transactions " +
+		Usage: "Interact with partially signed brocoin transactions " +
 			"(PSBTs).",
 		Subcommands: []cli.Command{
 			fundPsbtCommand,
@@ -96,10 +96,10 @@ func getWalletClient(ctx *cli.Context) (walletrpc.WalletKitClient, func()) {
 
 var pendingSweepsCommand = cli.Command{
 	Name:      "pendingsweeps",
-	Usage:     "List all outputs that are pending to be swept within lnd.",
+	Usage:     "List all outputs that are pending to be swept within broln.",
 	ArgsUsage: "",
 	Description: `
-	List all on-chain outputs that lnd is currently attempting to sweep
+	List all on-chain outputs that broln is currently attempting to sweep
 	within its central batching engine. Outputs with similar fee rates are
 	batched together in order to sweep them within a single transaction.
 	`,
@@ -147,15 +147,15 @@ var bumpFeeCommand = cli.Command{
 	Usage:     "Bumps the fee of an arbitrary input/transaction.",
 	ArgsUsage: "outpoint",
 	Description: `
-	This command takes a different approach than bitcoind's bumpfee command.
-	lnd has a central batching engine in which inputs with similar fee rates
+	This command takes a different approach than brocoind's bumpfee command.
+	broln has a central batching engine in which inputs with similar fee rates
 	are batched together to save on transaction fees. Due to this, we cannot
 	rely on bumping the fee on a specific transaction, since transactions
 	can change at any point with the addition of new inputs. The list of
-	inputs that currently exist within lnd's central batching engine can be
+	inputs that currently exist within broln's central batching engine can be
 	retrieved through lncli pendingsweeps.
 
-	When bumping the fee of an input that currently exists within lnd's
+	When bumping the fee of an input that currently exists within broln's
 	central batching engine, a higher fee transaction will be created that
 	replaces the lower fee transaction through the Replace-By-Fee (RBF)
 	policy.
@@ -560,7 +560,7 @@ type fundPsbtResponse struct {
 
 var fundPsbtCommand = cli.Command{
 	Name:  "fund",
-	Usage: "Fund a Partially Signed Bitcoin Transaction (PSBT).",
+	Usage: "Fund a Partially Signed Brocoin Transaction (PSBT).",
 	ArgsUsage: "[--template_psbt=T | [--outputs=O [--inputs=I]]] " +
 		"[--conf_target=C | --sat_per_vbyte=S]",
 	Description: `
@@ -772,15 +772,15 @@ type finalizePsbtResponse struct {
 
 var finalizePsbtCommand = cli.Command{
 	Name:      "finalize",
-	Usage:     "Finalize a Partially Signed Bitcoin Transaction (PSBT).",
+	Usage:     "Finalize a Partially Signed Brocoin Transaction (PSBT).",
 	ArgsUsage: "funded_psbt",
 	Description: `
 	The finalize command expects a partial transaction with all inputs
 	and outputs fully declared and tries to sign all inputs that belong to
-	the wallet. Lnd must be the last signer of the transaction. That means,
+	the wallet. broln must be the last signer of the transaction. That means,
 	if there are any unsigned non-witness inputs or inputs without UTXO
 	information attached or inputs without witness data that do not belong
-	to lnd's wallet, this method will fail. If no error is returned, the
+	to broln's wallet, this method will fail. If no error is returned, the
 	PSBT is ready to be extracted and the final TX within to be broadcast.
 
 	This method does NOT publish the transaction after it's been finalized
@@ -849,13 +849,13 @@ func finalizePsbt(ctx *cli.Context) error {
 
 var releaseOutputCommand = cli.Command{
 	Name:      "releaseoutput",
-	Usage:     "Release an output previously locked by lnd.",
+	Usage:     "Release an output previously locked by broln.",
 	ArgsUsage: "outpoint",
 	Description: `
 	The releaseoutput command unlocks an output, allowing it to be available
 	for coin selection if it remains unspent.
 
-	The internal lnd app lock ID is used when releasing the output.
+	The internal broln app lock ID is used when releasing the output.
 	Therefore only UTXOs locked by the fundpsbt command can currently be
 	released with this command.
 	`,
@@ -896,7 +896,7 @@ func releaseOutput(ctx *cli.Context) error {
 	}
 	req := &walletrpc.ReleaseOutputRequest{
 		Outpoint: outpoint,
-		Id:       walletrpc.LndInternalLockID[:],
+		Id:       walletrpc.brolnInternalLockID[:],
 	}
 
 	walletClient, cleanUp := getWalletClient(ctx)
@@ -1015,7 +1015,7 @@ var importAccountCommand = cli.Command{
 	pubkeys externally, witness pubkeys internally).
 
 	NOTE: Events (deposits/spends) for keys derived from an account will
-	only be detected by lnd if they happen after the import. Rescans to
+	only be detected by broln if they happen after the import. Rescans to
 	detect past events will be supported later on.
 	`,
 	Flags: []cli.Flag{
@@ -1090,7 +1090,7 @@ var importPubKeyCommand = cli.Command{
 	Imports a public key represented in hex as watch-only into the wallet.
 	The address type must be one of the following: np2wkh, p2wkh.
 
-	NOTE: Events (deposits/spends) for a key will only be detected by lnd if
+	NOTE: Events (deposits/spends) for a key will only be detected by broln if
 	they happen after the import. Rescans to detect past events will be
 	supported later on.
 	`,

@@ -20,7 +20,7 @@ import (
 	"github.com/brsuite/brond/txscript"
 	"github.com/brsuite/brond/wire"
 	"github.com/brsuite/bronutil"
-	"github.com/brolightningnetwork/lnd"
+	"github.com/brolightningnetwork/broln"
 	"github.com/brolightningnetwork/broln/kvdb/etcd"
 	"github.com/brolightningnetwork/broln/lnrpc"
 	"github.com/brolightningnetwork/broln/lntest/wait"
@@ -48,15 +48,15 @@ type NetworkHarness struct {
 	// currentTestCase holds the name for the currently run test case.
 	currentTestCase string
 
-	// lndBinary is the full path to the lnd binary that was specifically
+	// brolnBinary is the full path to the broln binary that was specifically
 	// compiled with all required itest flags.
-	lndBinary string
+	brolnBinary string
 
 	// Miner is a reference to a running full node that can be used to
 	// create new blocks on the network.
 	Miner *HarnessMiner
 
-	// BackendCfg houses the information necessary to use a node as LND
+	// BackendCfg houses the information necessary to use a node as broln
 	// chain backend, such as rpc configuration, P2P information etc.
 	BackendCfg BackendConfig
 
@@ -74,10 +74,10 @@ type NetworkHarness struct {
 
 	// Channel for transmitting stderr output from failed lightning node
 	// to main process.
-	lndErrorChan chan error
+	brolnErrorChan chan error
 
 	// feeService is a web service that provides external fee estimates to
-	// lnd.
+	// broln.
 	feeService *feeService
 
 	// runCtx is a context with cancel method. It's used to signal when the
@@ -93,7 +93,7 @@ type NetworkHarness struct {
 // TODO(roasbeef): add option to use golang's build library to a binary of the
 // current repo. This will save developers from having to manually `go install`
 // within the repo each time before changes
-func NewNetworkHarness(m *HarnessMiner, b BackendConfig, lndBinary string,
+func NewNetworkHarness(m *HarnessMiner, b BackendConfig, brolnBinary string,
 	dbBackend DatabaseBackend) (*NetworkHarness, error) {
 
 	feeService := startFeeService()
@@ -103,14 +103,14 @@ func NewNetworkHarness(m *HarnessMiner, b BackendConfig, lndBinary string,
 	n := NetworkHarness{
 		activeNodes:  make(map[int]*HarnessNode),
 		nodesByPub:   make(map[string]*HarnessNode),
-		lndErrorChan: make(chan error),
+		brolnErrorChan: make(chan error),
 		netParams:    m.ActiveNet,
 		Miner:        m,
 		BackendCfg:   b,
 		feeService:   feeService,
 		runCtx:       ctxt,
 		cancel:       cancel,
-		lndBinary:    lndBinary,
+		brolnBinary:    brolnBinary,
 		dbBackend:    dbBackend,
 	}
 	return &n, nil
@@ -135,7 +135,7 @@ func (n *NetworkHarness) LookUpNodeByPub(pubStr string) (*HarnessNode, error) {
 // If any of the active nodes within the harness' test network incur a fatal
 // error, that error is sent over this channel.
 func (n *NetworkHarness) ProcessErrors() <-chan error {
-	return n.lndErrorChan
+	return n.brolnErrorChan
 }
 
 // SetUp starts the initial seeder nodes within the test harness. The initial
@@ -144,7 +144,7 @@ func (n *NetworkHarness) ProcessErrors() <-chan error {
 // created. Nodes are initialized with the given extra command line flags, which
 // should be formatted properly - "--arg=value".
 func (n *NetworkHarness) SetUp(t *testing.T,
-	testCase string, lndArgs []string) error {
+	testCase string, brolnArgs []string) error {
 
 	// Swap out grpc's default logger with out fake logger which drops the
 	// statements on the floor.
@@ -158,14 +158,14 @@ func (n *NetworkHarness) SetUp(t *testing.T,
 	eg.Go(func() error {
 		var err error
 		n.Alice, err = n.newNode(
-			"Alice", lndArgs, false, nil, n.dbBackend, true,
+			"Alice", brolnArgs, false, nil, n.dbBackend, true,
 		)
 		return err
 	})
 	eg.Go(func() error {
 		var err error
 		n.Bob, err = n.newNode(
-			"Bob", lndArgs, false, nil, n.dbBackend, true,
+			"Bob", brolnArgs, false, nil, n.dbBackend, true,
 		)
 		return err
 	})
@@ -199,7 +199,7 @@ func (n *NetworkHarness) SetUp(t *testing.T,
 
 			output := &wire.TxOut{
 				PkScript: addrScript,
-				Value:    btcutil.SatoshiPerBitcoin,
+				Value:    btcutil.SatoshiPerBrocoin,
 			}
 			_, err = n.Miner.SendOutputs([]*wire.TxOut{output}, 7500)
 			if err != nil {
@@ -223,7 +223,7 @@ func (n *NetworkHarness) SetUp(t *testing.T,
 	}
 
 	// Now block until both wallets have fully synced up.
-	expectedBalance := int64(btcutil.SatoshiPerBitcoin * 10)
+	expectedBalance := int64(btcutil.SatoshiPerBrocoin * 10)
 	balReq := &lnrpc.WalletBalanceRequest{}
 	balanceTicker := time.NewTicker(time.Millisecond * 200)
 	defer balanceTicker.Stop()
@@ -266,13 +266,13 @@ func (n *NetworkHarness) TearDown() error {
 
 // Stop stops the test harness.
 func (n *NetworkHarness) Stop() {
-	close(n.lndErrorChan)
+	close(n.brolnErrorChan)
 	n.cancel()
 
 	n.feeService.stop()
 }
 
-// extraArgsEtcd returns extra args for configuring LND to use an external etcd
+// extraArgsEtcd returns extra args for configuring broln to use an external etcd
 // database (for remote channel DB and wallet DB).
 func extraArgsEtcd(etcdCfg *etcd.Config, name string, cluster bool) []string {
 	extraArgs := []string{
@@ -515,7 +515,7 @@ func (n *NetworkHarness) newNode(name string, extraArgs []string, hasSeed bool,
 	n.activeNodes[node.NodeID] = node
 	n.mtx.Unlock()
 
-	err = node.start(n.lndBinary, n.lndErrorChan, wait)
+	err = node.start(n.brolnBinary, n.brolnErrorChan, wait)
 	if err != nil {
 		return nil, err
 	}
@@ -550,7 +550,7 @@ func (n *NetworkHarness) connect(ctx context.Context,
 tryconnect:
 	if _, err := a.ConnectPeer(ctx, req); err != nil {
 		// If the chain backend is still syncing, retry.
-		if strings.Contains(err.Error(), lnd.ErrServerNotActive.Error()) ||
+		if strings.Contains(err.Error(), broln.ErrServerNotActive.Error()) ||
 			strings.Contains(err.Error(), "i/o timeout") {
 
 			select {
@@ -843,7 +843,7 @@ func (n *NetworkHarness) RestartNodeNoUnlock(node *HarnessNode,
 		}
 	}
 
-	return node.start(n.lndBinary, n.lndErrorChan, wait)
+	return node.start(n.brolnBinary, n.brolnErrorChan, wait)
 }
 
 // SuspendNode stops the given node and returns a callback that can be used to
@@ -854,13 +854,13 @@ func (n *NetworkHarness) SuspendNode(node *HarnessNode) (func() error, error) {
 	}
 
 	restart := func() error {
-		return node.start(n.lndBinary, n.lndErrorChan, true)
+		return node.start(n.brolnBinary, n.brolnErrorChan, true)
 	}
 
 	return restart, nil
 }
 
-// ShutdownNode stops an active lnd process and returns when the process has
+// ShutdownNode stops an active broln process and returns when the process has
 // exited and any temporary directories have been cleaned up.
 func (n *NetworkHarness) ShutdownNode(node *HarnessNode) error {
 	if err := node.shutdown(); err != nil {
@@ -1397,7 +1397,7 @@ func (n *NetworkHarness) AssertChannelExists(node *HarnessNode,
 // Logs from lightning node being generated with delay - you should
 // add time.Sleep() in order to get all logs.
 func (n *NetworkHarness) DumpLogs(node *HarnessNode) (string, error) {
-	logFile := fmt.Sprintf("%v/simnet/lnd.log", node.Cfg.LogDir)
+	logFile := fmt.Sprintf("%v/simnet/broln.log", node.Cfg.LogDir)
 
 	buf, err := ioutil.ReadFile(logFile)
 	if err != nil {

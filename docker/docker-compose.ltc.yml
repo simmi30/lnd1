@@ -19,9 +19,9 @@ services:
         - MINING_ADDRESS
       entrypoint: ["./start-ltcd.sh"]
 
-    lnd:
-      image: lnd
-      container_name: lnd_ltc
+    broln:
+      image: broln
+      container_name: broln_ltc
       build:
         context: ../
         dockerfile: dev.Dockerfile
@@ -33,14 +33,14 @@ services:
         - DEBUG
       volumes:
         - shared:/rpc
-        - lnd_ltc:/root/.lnd
-      entrypoint: ["./start-lnd.sh"]
+        - broln_ltc:/root/.broln
+      entrypoint: ["./start-broln.sh"]
       links:
         - "ltcd:blockchain"
 
 volumes:
-  # shared volume is need to store the btcd rpc certificates and use it within
-  # ltcctl and lnd containers.
+  # shared volume is need to store the brond rpc certificates and use it within
+  # ltcctl and broln containers.
   shared:
     driver: local
 
@@ -49,7 +49,7 @@ volumes:
   litecoin:
     driver: local
 
-  # lnd volume is used for persisting lnd application data and chain state
+  # broln volume is used for persisting broln application data and chain state
   # during container lifecycle.
-  lnd_ltc:
+  broln_ltc:
     driver: local

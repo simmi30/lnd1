@@ -17,7 +17,7 @@ import (
 
 // Config contains configuration settings for our monitor.
 type Config struct {
-	// Checks is a set of health checks that assert that lnd has access to
+	// Checks is a set of health checks that assert that broln has access to
 	// critical resources.
 	Checks []*Observation
 
@@ -31,7 +31,7 @@ type Config struct {
 type shutdownFunc func(format string, params ...interface{})
 
 // Monitor periodically checks a series of configured liveliness checks to
-// ensure that lnd has access to all critical resources.
+// ensure that broln has access to all critical resources.
 type Monitor struct {
 	started int32 // To be used atomically.
 	stopped int32 // To be used atomically.

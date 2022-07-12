@@ -1,6 +1,6 @@
 # How to write a C# gRPC client for the Lightning Network Daemon
 
-This section enumerates what you need to do to write a client that communicates with `lnd` in C#.
+This section enumerates what you need to do to write a client that communicates with `broln` in C#.
 
 
 ### Prerequisites
@@ -11,19 +11,19 @@ This section enumerates what you need to do to write a client that communicates 
 
 ### Setup and Installation
 
-`lnd` uses the `gRPC` protocol for communication with clients like `lncli`.
+`broln` uses the `gRPC` protocol for communication with clients like `lncli`.
 
 .NET natively supports gRPC proto files and generates the necessary C# classes. You can see the official Microsoft gRPC documentation [here](https://docs.microsoft.com/en-gb/aspnet/core/grpc/?view=aspnetcore-5.0)
 
 This assumes you are using a Windows machine, but it applies equally to Mac and Linux.
 
-Create a new `.net core` console application called `lndclient` at your root directory (On Windows : `C:/`).
+Create a new `.net core` console application called `brolnclient` at your root directory (On Windows : `C:/`).
 
-Create a folder `Grpc` in the root of your project and fetch the lnd proto files
+Create a folder `Grpc` in the root of your project and fetch the broln proto files
 
 ```shell
 ⛰  mkdir Grpc
-⛰  curl -o Grpc/lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/lightning.proto
+⛰  curl -o Grpc/lightning.proto -s https://raw.githubusercontent.com/lightningnetwork/broln/master/lnrpc/lightning.proto
 ```
 
 Install `Grpc.Tools`, `Google.Protobuf`, `Grpc.Net.Client` using NuGet or manually with `dotnet add`:
@@ -55,9 +55,9 @@ You're done! Build the project and verify that it works.
 
 #### Imports and Client
 
-Use the code below to set up a channel and client to connect to your `lnd` node.
+Use the code below to set up a channel and client to connect to your `broln` node.
 
-Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `lnd` configuration and re-generate the certificate (delete tls.cert and tls.key and restart lnd).
+Note that when an IP address is used to connect to the node (e.g. 192.168.1.21 instead of localhost) you need to add `--tlsextraip=192.168.1.21` to your `broln` configuration and re-generate the certificate (delete tls.cert and tls.key and restart broln).
 
 ```cs
 using System.IO;
@@ -69,11 +69,11 @@ using Grpc.Net.Client;
 
 // Due to updated ECDSA generated tls.cert we need to let gprc know that
 // we need to use that cipher suite otherwise there will be a handshake
-// error when we communicate with the lnd rpc server.
+// error when we communicate with the broln rpc server.
 System.Environment.SetEnvironmentVariable("GRPC_SSL_CIPHER_SUITES", "HIGH+ECDSA");
             
-// Lnd cert is at AppData/Local/Lnd/tls.cert on Windows
-// ~/.lnd/tls.cert on Linux and ~/Library/Application Support/Lnd/tls.cert on Mac
+// broln cert is at AppData/Local/broln/tls.cert on Windows
+// ~/.broln/tls.cert on Linux and ~/Library/Application Support/broln/tls.cert on Mac
 var rawCert = File.ReadAllBytes(<Tls_Cert_Location>);
 var x509Cert = new X509Certificate2(rawCert);
 var httpClientHandler = new HttpClientHandler
@@ -95,7 +95,7 @@ var client = new Lnrpc.Lightning.LightningClient(channel);
 
 ### Examples
 
-Let's walk through some examples of C# `gRPC` clients. These examples assume that you have at least two `lnd` nodes running, the RPC location of one of which is at the default `localhost:10019`, with an open channel between the two nodes.
+Let's walk through some examples of C# `gRPC` clients. These examples assume that you have at least two `broln` nodes running, the RPC location of one of which is at the default `localhost:10019`, with an open channel between the two nodes.
 
 #### Simple RPC
 
@@ -177,9 +177,9 @@ This example will send a payment of 100 satoshis every 2 seconds.
 To authenticate using macaroons you need to include the macaroon in the metadata of the request.
 
 ```cs
-// Lnd admin macaroon is at <LND_DIR>/data/chain/bitcoin/simnet/admin.macaroon on Windows
-// ~/.lnd/data/chain/bitcoin/simnet/admin.macaroon on Linux and ~/Library/Application Support/Lnd/data/chain/bitcoin/simnet/admin.macaroon on Mac
-byte[] macaroonBytes = File.ReadAllBytes("<LND_DIR>/data/chain/bitcoin/simnet/admin.macaroon");
+// broln admin macaroon is at <broln_DIR>/data/chain/brocoin/simnet/admin.macaroon on Windows
+// ~/.broln/data/chain/brocoin/simnet/admin.macaroon on Linux and ~/Library/Application Support/broln/data/chain/brocoin/simnet/admin.macaroon on Mac
+byte[] macaroonBytes = File.ReadAllBytes("<broln_DIR>/data/chain/brocoin/simnet/admin.macaroon");
 var macaroon = BitConverter.ToString(macaroonBytes).Replace("-", ""); // hex format stripped of "-" chars
 ```
 
@@ -219,4 +219,4 @@ client.GetInfo(new GetInfoRequest());
 
 ### Conclusion
 
-With the above, you should have all the `lnd` related `gRPC` dependencies installed locally in your project. In order to get up to speed with `protobuf` usage from C#, see [this official `protobuf` tutorial for C#](https://developers.google.com/protocol-buffers/docs/csharptutorial). Additionally, [this official gRPC resource](http://www.grpc.io/docs/tutorials/basic/csharp.html) provides more details around how to drive `gRPC` from C#.
+With the above, you should have all the `broln` related `gRPC` dependencies installed locally in your project. In order to get up to speed with `protobuf` usage from C#, see [this official `protobuf` tutorial for C#](https://developers.google.com/protocol-buffers/docs/csharptutorial). Additionally, [this official gRPC resource](http://www.grpc.io/docs/tutorials/basic/csharp.html) provides more details around how to drive `gRPC` from C#.

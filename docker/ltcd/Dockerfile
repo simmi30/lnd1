@@ -37,11 +37,11 @@ RUN apk add --no-cache \
 &&  chmod +x start-ltcd.sh \
 &&  mkdir "/rpc" "/root/.ltcd" "/root/.ltcctl" \
 &&  touch "/root/.ltcd/ltcd.conf" \
-# "ltcctl" and "lnd" to "ltcd" over docker links.
+# "ltcctl" and "broln" to "ltcd" over docker links.
 &&  "/bin/gencerts" --host="*" --directory="/rpc" --force
 
 # Create a volume to house pregenerated RPC credentials. This will be
-# shared with any lnd, btcctl containers so they can securely query ltcd's RPC
+# shared with any broln, bronctl containers so they can securely query ltcd's RPC
 # server.
 # You should NOT do this before certificate generation!
 # Otherwise manually generated certificate will be overridden with shared

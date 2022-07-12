@@ -52,7 +52,7 @@ const (
 var (
 	// ErrPsbtFundingRequired is the error that is returned during the
 	// contribution handling process if the process should be paused for
-	// the construction of a PSBT outside of lnd's wallet.
+	// the construction of a PSBT outside of broln's wallet.
 	ErrPsbtFundingRequired = errors.New("PSBT funding required")
 
 	// ErrReservedValueInvalidated is returned if we try to publish a
@@ -232,7 +232,7 @@ type addCounterPartySigsMsg struct {
 
 	// Should be order of sorted inputs that are theirs. Sorting is done
 	// in accordance to BIP-69:
-	// https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki.
+	// https://github.com/brocoin/bips/blob/master/bip-0069.mediawiki.
 	theirFundingInputScripts []*input.Script
 
 	// This should be 1/2 of the signatures needed to successfully spend our
@@ -286,23 +286,23 @@ type CheckReservedValueTxReq struct {
 	ChangeIndex *int
 }
 
-// LightningWallet is a domain specific, yet general Bitcoin wallet capable of
+// LightningWallet is a domain specific, yet general Brocoin wallet capable of
 // executing workflow required to interact with the Lightning Network. It is
 // domain specific in the sense that it understands all the fancy scripts used
 // within the Lightning Network, channel lifetimes, etc. However, it embeds a
-// general purpose Bitcoin wallet within it. Therefore, it is also able to
-// serve as a regular Bitcoin wallet which uses HD keys. The wallet is highly
+// general purpose Brocoin wallet within it. Therefore, it is also able to
+// serve as a regular Brocoin wallet which uses HD keys. The wallet is highly
 // concurrent internally. All communication, and requests towards the wallet
 // are dispatched as messages over channels, ensuring thread safety across all
 // operations. Interaction has been designed independent of any peer-to-peer
 // communication protocol, allowing the wallet to be self-contained and
 // embeddable within future projects interacting with the Lightning Network.
 //
-// NOTE: At the moment the wallet requires a btcd full node, as it's dependent
-// on btcd's websockets notifications as event triggers during the lifetime of a
+// NOTE: At the moment the wallet requires a brond full node, as it's dependent
+// on brond's websockets notifications as event triggers during the lifetime of a
 // channel. However, once the chainntnfs package is complete, the wallet will
 // be compatible with multiple RPC/notification services such as Electrum,
-// Bitcoin Core + ZeroMQ, etc. Eventually, the wallet won't require a full-node
+// Brocoin Core + ZeroMQ, etc. Eventually, the wallet won't require a full-node
 // at all, as SPV support is integrated into btcwallet.
 type LightningWallet struct {
 	started  int32 // To be used atomically.

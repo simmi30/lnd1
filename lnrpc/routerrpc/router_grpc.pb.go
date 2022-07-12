@@ -94,7 +94,7 @@ type RouterClient interface {
 	//*
 	//HtlcInterceptor dispatches a bi-directional streaming RPC in which
 	//Forwarded HTLC requests are sent to the client and the client responds with
-	//a boolean that tells LND if this htlc should be intercepted.
+	//a boolean that tells broln if this htlc should be intercepted.
 	//In case of interception, the htlc can be either settled, cancelled or
 	//resumed later by using the ResolveHoldForward endpoint.
 	HtlcInterceptor(ctx context.Context, opts ...grpc.CallOption) (Router_HtlcInterceptorClient, error)
@@ -486,7 +486,7 @@ type RouterServer interface {
 	//*
 	//HtlcInterceptor dispatches a bi-directional streaming RPC in which
 	//Forwarded HTLC requests are sent to the client and the client responds with
-	//a boolean that tells LND if this htlc should be intercepted.
+	//a boolean that tells broln if this htlc should be intercepted.
 	//In case of interception, the htlc can be either settled, cancelled or
 	//resumed later by using the ResolveHoldForward endpoint.
 	HtlcInterceptor(Router_HtlcInterceptorServer) error

@@ -25,14 +25,14 @@ type AnnounceSignatures struct {
 
 	// NodeSignature is the signature which contains the signed announce
 	// channel message, by this signature we proof that we possess of the
-	// node pub key and creating the reference node_key -> bitcoin_key.
+	// node pub key and creating the reference node_key -> brocoin_key.
 	NodeSignature Sig
 
-	// BitcoinSignature is the signature which contains the signed node
+	// BrocoinSignature is the signature which contains the signed node
 	// public key, by this signature we proof that we possess of the
-	// bitcoin key and and creating the reverse reference bitcoin_key ->
+	// brocoin key and and creating the reverse reference brocoin_key ->
 	// node_key.
-	BitcoinSignature Sig
+	BrocoinSignature Sig
 
 	// ExtraOpaqueData is the set of data that was appended to this
 	// message, some of which we may not actually know how to iterate or
@@ -56,7 +56,7 @@ func (a *AnnounceSignatures) Decode(r io.Reader, pver uint32) error {
 		&a.ChannelID,
 		&a.ShortChannelID,
 		&a.NodeSignature,
-		&a.BitcoinSignature,
+		&a.BrocoinSignature,
 	)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (a *AnnounceSignatures) Encode(w io.Writer, pver uint32) error {
 		a.ChannelID,
 		a.ShortChannelID,
 		a.NodeSignature,
-		a.BitcoinSignature,
+		a.BrocoinSignature,
 		a.ExtraOpaqueData,
 	)
 }

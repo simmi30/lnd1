@@ -24,13 +24,13 @@ func createNewWallet(args ...interface{}) (lnwallet.WalletController, error) {
 
 	config, ok := args[0].(*Config)
 	if !ok {
-		return nil, fmt.Errorf("first argument to btcdnotifier.New is " +
+		return nil, fmt.Errorf("first argument to brondnotifier.New is " +
 			"incorrect, expected a *rpcclient.ConnConfig")
 	}
 
 	blockCache, ok := args[1].(*blockcache.BlockCache)
 	if !ok {
-		return nil, fmt.Errorf("second argument to btcdnotifier.New is " +
+		return nil, fmt.Errorf("second argument to brondnotifier.New is " +
 			"incorrect, expected a *blockcache.BlockCache")
 	}
 

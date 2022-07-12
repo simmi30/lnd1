@@ -1,6 +1,6 @@
 # Release verification keys
 
-This directory contains all keys that are currently signing `lnd` releases.
+This directory contains all keys that are currently signing `broln` releases.
 
 The name of the file must match exactly the suffix that user is going to use
 when signing a release.

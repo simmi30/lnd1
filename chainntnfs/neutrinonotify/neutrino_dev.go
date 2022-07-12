@@ -15,7 +15,7 @@ import (
 
 // UnsafeStart starts the notifier with a specified best height and optional
 // best hash. Its bestHeight, txNotifier and neutrino node are initialized with
-// bestHeight. The parameter generateBlocks is necessary for the bitcoind
+// bestHeight. The parameter generateBlocks is necessary for the brocoind
 // notifier to ensure we drain all notifications up to syncHeight, since if they
 // are generated ahead of UnsafeStart the chainConn may start up with an
 // outdated best block and miss sending ntfns. Used for testing.

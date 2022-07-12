@@ -191,7 +191,7 @@ func testChannelUnsettledBalance(net *lntest.NetworkHarness, t *harnessTest) {
 					Dest:           carolPubKey,
 					Amt:            int64(payAmt),
 					PaymentHash:    makeFakePayHash(t),
-					FinalCltvDelta: chainreg.DefaultBitcoinTimeLockDelta,
+					FinalCltvDelta: chainreg.DefaultBrocoinTimeLockDelta,
 					TimeoutSeconds: 60,
 					FeeLimitMsat:   noFeeLimitMsat,
 				})

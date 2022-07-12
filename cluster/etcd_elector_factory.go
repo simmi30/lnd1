@@ -11,7 +11,7 @@ import (
 )
 
 // makeEtcdElector will construct a new etcdLeaderElector. It expects a cancel
-// context a unique (in the cluster) LND id and a *etcd.Config as arguments.
+// context a unique (in the cluster) broln id and a *etcd.Config as arguments.
 func makeEtcdElector(ctx context.Context, args ...interface{}) (LeaderElector,
 	error) {
 

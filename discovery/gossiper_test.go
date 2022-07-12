@@ -57,14 +57,14 @@ var (
 		KeyLocator: testKeyLoc,
 	}
 
-	bitcoinKeyPriv1, _ = btcec.NewPrivateKey(btcec.S256())
-	bitcoinKeyPub1     = bitcoinKeyPriv1.PubKey()
+	brocoinKeyPriv1, _ = btcec.NewPrivateKey(btcec.S256())
+	brocoinKeyPub1     = brocoinKeyPriv1.PubKey()
 
 	remoteKeyPriv1, _ = btcec.NewPrivateKey(btcec.S256())
 	remoteKeyPub1     = remoteKeyPriv1.PubKey()
 
-	bitcoinKeyPriv2, _ = btcec.NewPrivateKey(btcec.S256())
-	bitcoinKeyPub2     = bitcoinKeyPriv2.PubKey()
+	brocoinKeyPriv2, _ = btcec.NewPrivateKey(btcec.S256())
+	brocoinKeyPub2     = brocoinKeyPriv2.PubKey()
 
 	remoteKeyPriv2, _ = btcec.NewPrivateKey(btcec.S256())
 
@@ -522,7 +522,7 @@ func createAnnouncements(blockHeight uint32, key1, key2 *btcec.PrivateKey) (*ann
 			BlockHeight: blockHeight,
 		},
 		NodeSignature:    batch.chanAnn.NodeSig2,
-		BitcoinSignature: batch.chanAnn.BitcoinSig2,
+		BrocoinSignature: batch.chanAnn.BrocoinSig2,
 	}
 
 	batch.localProofAnn = &lnwire.AnnounceSignatures{
@@ -530,7 +530,7 @@ func createAnnouncements(blockHeight uint32, key1, key2 *btcec.PrivateKey) (*ann
 			BlockHeight: blockHeight,
 		},
 		NodeSignature:    batch.chanAnn.NodeSig1,
-		BitcoinSignature: batch.chanAnn.BitcoinSig1,
+		BrocoinSignature: batch.chanAnn.BrocoinSig1,
 	}
 
 	batch.chanUpdAnn1, err = createUpdateAnnouncement(
@@ -651,8 +651,8 @@ func createAnnouncementWithoutProof(blockHeight uint32,
 	}
 	copy(a.NodeID1[:], key1.SerializeCompressed())
 	copy(a.NodeID2[:], key2.SerializeCompressed())
-	copy(a.BitcoinKey1[:], bitcoinKeyPub1.SerializeCompressed())
-	copy(a.BitcoinKey2[:], bitcoinKeyPub2.SerializeCompressed())
+	copy(a.BrocoinKey1[:], brocoinKeyPub1.SerializeCompressed())
+	copy(a.BrocoinKey2[:], brocoinKeyPub2.SerializeCompressed())
 	if len(extraBytes) == 1 {
 		a.ExtraOpaqueData = extraBytes[0]
 	}
@@ -691,22 +691,22 @@ func createChannelAnnouncement(blockHeight uint32, key1, key2 *btcec.PrivateKey,
 		return nil, err
 	}
 
-	signer = mock.SingleSigner{Privkey: bitcoinKeyPriv1}
+	signer = mock.SingleSigner{Privkey: brocoinKeyPriv1}
 	sig, err = netann.SignAnnouncement(&signer, testKeyLoc, a)
 	if err != nil {
 		return nil, err
 	}
-	a.BitcoinSig1, err = lnwire.NewSigFromSignature(sig)
+	a.BrocoinSig1, err = lnwire.NewSigFromSignature(sig)
 	if err != nil {
 		return nil, err
 	}
 
-	signer = mock.SingleSigner{Privkey: bitcoinKeyPriv2}
+	signer = mock.SingleSigner{Privkey: brocoinKeyPriv2}
 	sig, err = netann.SignAnnouncement(&signer, testKeyLoc, a)
 	if err != nil {
 		return nil, err
 	}
-	a.BitcoinSig2, err = lnwire.NewSigFromSignature(sig)
+	a.BrocoinSig2, err = lnwire.NewSigFromSignature(sig)
 	if err != nil {
 		return nil, err
 	}
@@ -1804,7 +1804,7 @@ func TestDeDuplicatedAnnouncements(t *testing.T) {
 		t.Fatalf("can't create remote channel announcement: %v", err)
 	}
 
-	nodePeer := &mockPeer{bitcoinKeyPub2, nil, nil}
+	nodePeer := &mockPeer{brocoinKeyPub2, nil, nil}
 	announcements.AddMsgs(networkMsg{
 		msg:    ca,
 		peer:   nodePeer,

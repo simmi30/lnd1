@@ -23,7 +23,7 @@ const VertexSize = 33
 // sphinx packet, but provides an empty set of hops for each route.
 var ErrNoRouteHopsProvided = fmt.Errorf("empty route hops provided")
 
-// Vertex is a simple alias for the serialization of a compressed Bitcoin
+// Vertex is a simple alias for the serialization of a compressed Brocoin
 // public key.
 type Vertex [VertexSize]byte
 

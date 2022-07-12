@@ -29,7 +29,7 @@ RUN apk add --no-cache --update alpine-sdk \
 FROM alpine as final
 
 # Define a root volume for data persistence.
-VOLUME /root/.lnd
+VOLUME /root/.broln
 
 # Add utilities for quality of life and SSL-related reasons. We also require
 # curl and gpg for the signature verification script.
@@ -51,8 +51,8 @@ COPY --from=builder /go/src/github.com/brolightningnetwork/broln/scripts/keys/* 
 RUN sha256sum /bin/broln /bin/brolncli > /shasums.txt \
   && cat /shasums.txt
 
-# Expose lnd ports (p2p, rpc).
+# Expose broln ports (p2p, rpc).
 EXPOSE 9782 10019
 
-# Specify the start command and entrypoint as the lnd daemon.
-ENTRYPOINT ["lnd"]
+# Specify the start command and entrypoint as the broln daemon.
+ENTRYPOINT ["broln"]

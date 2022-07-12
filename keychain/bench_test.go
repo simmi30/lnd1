@@ -9,13 +9,13 @@ import (
 
 func BenchmarkDerivePrivKey(t *testing.B) {
 	cleanUp, wallet, err := createTestBtcWallet(
-		CoinTypeBitcoin,
+		CoinTypeBrocoin,
 	)
 	if err != nil {
 		t.Fatalf("unable to create wallet: %v", err)
 	}
 
-	keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBitcoin)
+	keyRing := NewBtcWalletKeyRing(wallet, CoinTypeBrocoin)
 
 	defer cleanUp()
 

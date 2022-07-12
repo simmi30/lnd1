@@ -1,10 +1,10 @@
-// Package labels contains labels used to label transactions broadcast by lnd.
+// Package labels contains labels used to label transactions broadcast by broln.
 // These labels are used across packages, so they are declared in a separate
 // package to avoid dependency issues.
 //
-// Labels for transactions broadcast by lnd have two set fields followed by an
+// Labels for transactions broadcast by broln have two set fields followed by an
 // optional set labelled data values, all separated by colons.
-// - Label version: an integer that indicates the version lnd used
+// - Label version: an integer that indicates the version broln used
 // - Label type: the type of transaction we are labelling
 // - {field name}-{value}: a named field followed by its value, these items are
 //   optional, and there may be more than field present.

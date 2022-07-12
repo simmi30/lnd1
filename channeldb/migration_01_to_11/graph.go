@@ -418,11 +418,11 @@ type ChannelEdgeInfo struct {
 	// NodeKey2Bytes is the raw public key of the first node.
 	NodeKey2Bytes [33]byte
 
-	// BitcoinKey1Bytes is the raw public key of the first node.
-	BitcoinKey1Bytes [33]byte
+	// BrocoinKey1Bytes is the raw public key of the first node.
+	BrocoinKey1Bytes [33]byte
 
-	// BitcoinKey2Bytes is the raw public key of the first node.
-	BitcoinKey2Bytes [33]byte
+	// BrocoinKey2Bytes is the raw public key of the first node.
+	BrocoinKey2Bytes [33]byte
 
 	// Features is an opaque byte slice that encodes the set of channel
 	// specific features that this channel edge supports.
@@ -455,7 +455,7 @@ type ChannelEdgeInfo struct {
 // auxiliary knowledge (the funding script, node identities, and outpoint) nodes
 // on the network are able to validate the authenticity and existence of a
 // channel. Each of these signatures signs the following digest: chanID ||
-// nodeID1 || nodeID2 || bitcoinKey1|| bitcoinKey2 || 2-byte-feature-len ||
+// nodeID1 || nodeID2 || brocoinKey1|| brocoinKey2 || 2-byte-feature-len ||
 // features.
 type ChannelAuthProof struct {
 	// NodeSig1Bytes are the raw bytes of the first node signature encoded
@@ -466,13 +466,13 @@ type ChannelAuthProof struct {
 	// encoded in DER format.
 	NodeSig2Bytes []byte
 
-	// BitcoinSig1Bytes are the raw bytes of the first bitcoin signature
+	// BrocoinSig1Bytes are the raw bytes of the first brocoin signature
 	// encoded in DER format.
-	BitcoinSig1Bytes []byte
+	BrocoinSig1Bytes []byte
 
-	// BitcoinSig2Bytes are the raw bytes of the second bitcoin signature
+	// BrocoinSig2Bytes are the raw bytes of the second brocoin signature
 	// encoded in DER format.
-	BitcoinSig2Bytes []byte
+	BrocoinSig2Bytes []byte
 }
 
 // IsEmpty check is the authentication proof is empty Proof is empty if at
@@ -480,8 +480,8 @@ type ChannelAuthProof struct {
 func (c *ChannelAuthProof) IsEmpty() bool {
 	return len(c.NodeSig1Bytes) == 0 ||
 		len(c.NodeSig2Bytes) == 0 ||
-		len(c.BitcoinSig1Bytes) == 0 ||
-		len(c.BitcoinSig2Bytes) == 0
+		len(c.BrocoinSig1Bytes) == 0 ||
+		len(c.BrocoinSig2Bytes) == 0
 }
 
 // ChannelEdgePolicy represents a *directed* edge within the channel graph. For
@@ -800,10 +800,10 @@ func deserializeChanEdgeInfo(r io.Reader) (ChannelEdgeInfo, error) {
 	if _, err := io.ReadFull(r, edgeInfo.NodeKey2Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	if _, err := io.ReadFull(r, edgeInfo.BitcoinKey1Bytes[:]); err != nil {
+	if _, err := io.ReadFull(r, edgeInfo.BrocoinKey1Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	if _, err := io.ReadFull(r, edgeInfo.BitcoinKey2Bytes[:]); err != nil {
+	if _, err := io.ReadFull(r, edgeInfo.BrocoinKey2Bytes[:]); err != nil {
 		return ChannelEdgeInfo{}, err
 	}
 
@@ -822,11 +822,11 @@ func deserializeChanEdgeInfo(r io.Reader) (ChannelEdgeInfo, error) {
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	proof.BitcoinSig1Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
+	proof.BrocoinSig1Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}
-	proof.BitcoinSig2Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
+	proof.BrocoinSig2Bytes, err = wire.ReadVarBytes(r, 0, 80, "sigs")
 	if err != nil {
 		return ChannelEdgeInfo{}, err
 	}

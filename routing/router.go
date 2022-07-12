@@ -51,7 +51,7 @@ const (
 
 	// DefaultFirstTimePruneDelay is the time we'll wait after startup
 	// before attempting to prune the graph for zombie channels. We don't
-	// do it immediately after startup to allow lnd to start up without
+	// do it immediately after startup to allow broln to start up without
 	// getting blocked by this job.
 	DefaultFirstTimePruneDelay = 30 * time.Second
 
@@ -60,7 +60,7 @@ const (
 	// announcements.
 	defaultStatInterval = time.Minute
 
-	// MinCLTVDelta is the minimum CLTV value accepted by LND for all
+	// MinCLTVDelta is the minimum CLTV value accepted by broln for all
 	// timelock deltas. This includes both forwarding CLTV deltas set on
 	// channel updates, as well as final CLTV deltas used to create BOLT 11
 	// payment requests.
@@ -74,10 +74,10 @@ const (
 	// invalid due to their timelock not meeting the required delta.
 	//
 	// We skirt this by always setting an explicit CLTV delta when creating
-	// invoices. This allows LND nodes to freely update the minimum without
+	// invoices. This allows broln nodes to freely update the minimum without
 	// creating incompatibilities during the upgrade process. For some time
-	// LND has used an explicit default final CLTV delta of 40 blocks for
-	// bitcoin (160 for litecoin), though we now clamp the lower end of this
+	// broln has used an explicit default final CLTV delta of 40 blocks for
+	// brocoin (160 for litecoin), though we now clamp the lower end of this
 	// range for user-chosen deltas to 18 blocks to be conservative.
 	MinCLTVDelta = 18
 )
@@ -324,7 +324,7 @@ type Config struct {
 
 	// FirstTimePruneDelay is the time we'll wait after startup before
 	// attempting to prune the graph for zombie channels. We don't do it
-	// immediately after startup to allow lnd to start up without getting
+	// immediately after startup to allow broln to start up without getting
 	// blocked by this job.
 	FirstTimePruneDelay time.Duration
 
@@ -378,7 +378,7 @@ func (e *EdgeLocator) String() string {
 }
 
 // ChannelRouter is the layer 3 router within the Lightning stack. Below the
-// ChannelRouter is the HtlcSwitch, and below that is the Bitcoin blockchain
+// ChannelRouter is the HtlcSwitch, and below that is the Brocoin blockchain
 // itself. The primary role of the ChannelRouter is to respond to queries for
 // potential routes that can support a payment amount, and also general graph
 // reachability questions. The router will prune the channel graph
@@ -522,7 +522,7 @@ func (r *ChannelRouter) Start() error {
 	// If AssumeChannelValid is present, then we won't rely on pruning
 	// channels from the graph based on their spentness, but whether they
 	// are considered zombies or not. We will start zombie pruning after a
-	// small delay, to avoid slowing down startup of lnd.
+	// small delay, to avoid slowing down startup of broln.
 	if r.cfg.AssumeChannelValid {
 		time.AfterFunc(r.cfg.FirstTimePruneDelay, func() {
 			select {
@@ -1013,7 +1013,7 @@ func (r *ChannelRouter) networkHandler() {
 	//
 	// However, we dial back to use multiple of the number of cores when
 	// fully validating, to avoid fetching up to 1000 blocks from the
-	// backend. On bitcoind, this will empirically cause massive latency
+	// backend. On brocoind, this will empirically cause massive latency
 	// spikes when executing this many concurrent RPC calls. Critical
 	// subsystems or basic rpc calls that rely on calls such as GetBestBlock
 	// will hang due to excessive load.
@@ -1480,12 +1480,12 @@ func (r *ChannelRouter) processUpdate(msg interface{},
 			// channel as a zombie due to an RPC failure, we'll
 			// attempt to string match for the relevant errors.
 			//
-			// * btcd:
+			// * brond:
 			//    * https://github.com/brsuite/brond/blob/master/rpcserver.go#L1316
 			//    * https://github.com/brsuite/brond/blob/master/rpcserver.go#L1086
-			// * bitcoind:
-			//    * https://github.com/bitcoin/bitcoin/blob/7fcf53f7b4524572d1d0c9a5fdc388e87eb02416/src/rpc/blockchain.cpp#L770
-			//     * https://github.com/bitcoin/bitcoin/blob/7fcf53f7b4524572d1d0c9a5fdc388e87eb02416/src/rpc/blockchain.cpp#L954
+			// * brocoind:
+			//    * https://github.com/brocoin/brocoin/blob/7fcf53f7b4524572d1d0c9a5fdc388e87eb02416/src/rpc/blockchain.cpp#L770
+			//     * https://github.com/brocoin/brocoin/blob/7fcf53f7b4524572d1d0c9a5fdc388e87eb02416/src/rpc/blockchain.cpp#L954
 			switch {
 			case strings.Contains(err.Error(), "not found"):
 				fallthrough
@@ -1509,10 +1509,10 @@ func (r *ChannelRouter) processUpdate(msg interface{},
 		}
 
 		// Recreate witness output to be sure that declared in channel
-		// edge bitcoin keys and channel value corresponds to the
+		// edge brocoin keys and channel value corresponds to the
 		// reality.
 		witnessScript, err := input.GenMultiSigScript(
-			msg.BitcoinKey1Bytes[:], msg.BitcoinKey2Bytes[:],
+			msg.BrocoinKey1Bytes[:], msg.BrocoinKey2Bytes[:],
 		)
 		if err != nil {
 			return err

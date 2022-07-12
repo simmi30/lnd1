@@ -26,8 +26,8 @@ func CreateChanAnnouncement(chanProof *channeldb.ChannelAuthProof,
 		NodeID1:         chanInfo.NodeKey1Bytes,
 		NodeID2:         chanInfo.NodeKey2Bytes,
 		ChainHash:       chanInfo.ChainHash,
-		BitcoinKey1:     chanInfo.BitcoinKey1Bytes,
-		BitcoinKey2:     chanInfo.BitcoinKey2Bytes,
+		BrocoinKey1:     chanInfo.BrocoinKey1Bytes,
+		BrocoinKey2:     chanInfo.BrocoinKey2Bytes,
 		Features:        lnwire.NewRawFeatureVector(),
 		ExtraOpaqueData: chanInfo.ExtraOpaqueData,
 	}
@@ -36,14 +36,14 @@ func CreateChanAnnouncement(chanProof *channeldb.ChannelAuthProof,
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	chanAnn.BitcoinSig1, err = lnwire.NewSigFromRawSignature(
-		chanProof.BitcoinSig1Bytes,
+	chanAnn.BrocoinSig1, err = lnwire.NewSigFromRawSignature(
+		chanProof.BrocoinSig1Bytes,
 	)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	chanAnn.BitcoinSig2, err = lnwire.NewSigFromRawSignature(
-		chanProof.BitcoinSig2Bytes,
+	chanAnn.BrocoinSig2, err = lnwire.NewSigFromRawSignature(
+		chanProof.BrocoinSig2Bytes,
 	)
 	if err != nil {
 		return nil, nil, nil, err

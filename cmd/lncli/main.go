@@ -34,8 +34,8 @@ const (
 )
 
 var (
-	defaultLndDir      = btcutil.AppDataDir("lnd", false)
-	defaultTLSCertPath = filepath.Join(defaultLndDir, defaultTLSCertFilename)
+	defaultbrolnDir      = btcutil.AppDataDir("broln", false)
+	defaultTLSCertPath = filepath.Join(defaultbrolnDir, defaultTLSCertFilename)
 
 	// maxMsgRecvSize is the largest message our client will receive. We
 	// set this to 200MiB atm.
@@ -196,7 +196,7 @@ func extractPathArgs(ctx *cli.Context) (string, string, error) {
 	// specified.
 	chain := strings.ToLower(ctx.GlobalString("chain"))
 	switch chain {
-	case "bitcoin", "litecoin":
+	case "brocoin", "litecoin":
 	default:
 		return "", "", fmt.Errorf("unknown chain: %v", chain)
 	}
@@ -208,11 +208,11 @@ func extractPathArgs(ctx *cli.Context) (string, string, error) {
 		return "", "", fmt.Errorf("unknown network: %v", network)
 	}
 
-	// We'll now fetch the lnddir so we can make a decision  on how to
+	// We'll now fetch the brolndir so we can make a decision  on how to
 	// properly read the macaroons (if needed) and also the cert. This will
 	// either be the default, or will have been overwritten by the end
 	// user.
-	lndDir := lncfg.CleanAndExpandPath(ctx.GlobalString("lnddir"))
+	brolnDir := lncfg.CleanAndExpandPath(ctx.GlobalString("brolndir"))
 
 	// If the macaroon path as been manually provided, then we'll only
 	// target the specified file.
@@ -221,23 +221,23 @@ func extractPathArgs(ctx *cli.Context) (string, string, error) {
 		macPath = lncfg.CleanAndExpandPath(ctx.GlobalString("macaroonpath"))
 	} else {
 		// Otherwise, we'll go into the path:
-		// lnddir/data/chain/<chain>/<network> in order to fetch the
+		// brolndir/data/chain/<chain>/<network> in order to fetch the
 		// macaroon that we need.
 		macPath = filepath.Join(
-			lndDir, defaultDataDir, defaultChainSubDir, chain,
+			brolnDir, defaultDataDir, defaultChainSubDir, chain,
 			network, defaultMacaroonFilename,
 		)
 	}
 
 	tlsCertPath := lncfg.CleanAndExpandPath(ctx.GlobalString("tlscertpath"))
 
-	// If a custom lnd directory was set, we'll also check if custom paths
+	// If a custom broln directory was set, we'll also check if custom paths
 	// for the TLS cert and macaroon file were set as well. If not, we'll
-	// override their paths so they can be found within the custom lnd
-	// directory set. This allows us to set a custom lnd directory, along
+	// override their paths so they can be found within the custom broln
+	// directory set. This allows us to set a custom broln directory, along
 	// with custom paths to the TLS cert and macaroon file.
-	if lndDir != defaultLndDir {
-		tlsCertPath = filepath.Join(lndDir, defaultTLSCertFilename)
+	if brolnDir != defaultbrolnDir {
+		tlsCertPath = filepath.Join(brolnDir, defaultTLSCertFilename)
 	}
 
 	return tlsCertPath, macPath, nil
@@ -264,7 +264,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "lncli"
 	app.Version = build.Version() + " commit=" + build.Commit
-	app.Usage = "control plane for your Lightning Network Daemon (lnd)"
+	app.Usage = "control plane for your Lightning Network Daemon (broln)"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "rpcserver",
@@ -272,23 +272,23 @@ func main() {
 			Usage: "The host:port of LN daemon.",
 		},
 		cli.StringFlag{
-			Name:  "lnddir",
-			Value: defaultLndDir,
-			Usage: "The path to lnd's base directory.",
+			Name:  "brolndir",
+			Value: defaultbrolnDir,
+			Usage: "The path to broln's base directory.",
 		},
 		cli.StringFlag{
 			Name:  "tlscertpath",
 			Value: defaultTLSCertPath,
-			Usage: "The path to lnd's TLS certificate.",
+			Usage: "The path to broln's TLS certificate.",
 		},
 		cli.StringFlag{
 			Name:  "chain, c",
-			Usage: "The chain lnd is running on, e.g. bitcoin.",
-			Value: "bitcoin",
+			Usage: "The chain broln is running on, e.g. brocoin.",
+			Value: "brocoin",
 		},
 		cli.StringFlag{
 			Name: "network, n",
-			Usage: "The network lnd is running on, e.g. mainnet, " +
+			Usage: "The network broln is running on, e.g. mainnet, " +
 				"testnet, etc.",
 			Value: "mainnet",
 		},

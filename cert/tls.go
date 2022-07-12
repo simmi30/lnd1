@@ -13,7 +13,7 @@ var (
 	 * - Don't use ECB mode or other insecure symmetric methods
 	 * - Included in the TLS v1.2 suite
 	 * - Are available in the Go 1.7.6 standard library (more are
-	 *   available in 1.8.3 and will be added after lnd no longer
+	 *   available in 1.8.3 and will be added after broln no longer
 	 *   supports 1.7, including suites that support CBC mode)
 	**/
 	tlsCipherSuites = []uint16{

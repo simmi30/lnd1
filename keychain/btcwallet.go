@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	// CoinTypeBitcoin specifies the BIP44 coin type for Bitcoin key
+	// CoinTypeBrocoin specifies the BIP44 coin type for Brocoin key
 	// derivation.
-	CoinTypeBitcoin uint32 = 0
+	CoinTypeBrocoin uint32 = 0
 
 	// CoinTypeTestnet specifies the BIP44 coin type for all testnet key
 	// derivation.

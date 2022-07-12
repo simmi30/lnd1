@@ -11,7 +11,7 @@ const PollInterval = 200 * time.Millisecond
 // Predicate is a helper test function that will wait for a timeout period of
 // time until the passed predicate returns true. This function is helpful as
 // timing doesn't always line up well when running integration tests with
-// several running lnd nodes. This function gives callers a way to assert that
+// several running broln nodes. This function gives callers a way to assert that
 // some property is upheld within a particular time frame.
 func Predicate(pred func() bool, timeout time.Duration) error {
 	exitTimer := time.After(timeout)
@@ -55,7 +55,7 @@ func NoError(f func() error, timeout time.Duration) error {
 // Invariant is a helper test function that will wait for a timeout period of
 // time, verifying that a statement remains true for the entire duration.  This
 // function is helpful as timing doesn't always line up well when running
-// integration tests with several running lnd nodes. This function gives callers
+// integration tests with several running broln nodes. This function gives callers
 // a way to assert that some property is maintained over a particular time
 // frame.
 func Invariant(statement func() bool, timeout time.Duration) error {

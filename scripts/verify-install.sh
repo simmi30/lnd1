@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPO=lightningnetwork
-PROJECT=lnd
+PROJECT=broln
 
 RELEASE_URL=https://github.com/$REPO/$PROJECT/releases
 API_URL=https://api.github.com/repos/$REPO/$PROJECT/releases
@@ -11,7 +11,7 @@ HEADER_JSON="Accept: application/json"
 HEADER_GH_JSON="Accept: application/vnd.github.v3+json"
 MIN_REQUIRED_SIGNATURES=5
 
-# All keys that can sign lnd releases. The key must be added as a file to the
+# All keys that can sign broln releases. The key must be added as a file to the
 # keys directory, for example: scripts/keys/<username>.asc
 # The username in the key file must match the username used for signing a
 # manifest (manifest-<username>-v0.xx.yy-beta.sig), otherwise the signature
@@ -30,7 +30,7 @@ KEYS+=("9FC6B0BFD597A94DBF09708280E5375C094198D8 bhandras")
 KEYS+=("E97A1AB6C77A1D2B72F50A6F90E00CCB1C74C611 arshbot")
 KEYS+=("EB13A98091E8D67CDD7FC5A7E9FE7FE00AD163A4 positiveblue")
 
-TEMP_DIR=$(mktemp -d /tmp/lnd-sig-verification-XXXXXX)
+TEMP_DIR=$(mktemp -d /tmp/broln-sig-verification-XXXXXX)
 
 function check_command() {
   echo -n "Checking if $1 is installed... "
@@ -241,13 +241,13 @@ function check_hash() {
   fi
 }
 
-# By default we're picking up lnd and lncli from the system $PATH.
-LND_BIN=$(which lnd)
+# By default we're picking up broln and lncli from the system $PATH.
+broln_BIN=$(which broln)
 LNCLI_BIN=$(which lncli)
 
 if [[ $# -eq 0 ]]; then
   echo "ERROR: missing expected version!"
-  echo "Usage: verify-install.sh expected-version [path-to-lnd-binary-or-download-archive [path-to-lncli-binary]]"
+  echo "Usage: verify-install.sh expected-version [path-to-broln-binary-or-download-archive [path-to-lncli-binary]]"
   exit 1
 fi
 
@@ -263,17 +263,17 @@ check_command curl
 check_command jq
 check_command gpg
 
-# If exactly two parameters are specified, we expect the first one to be lnd and
+# If exactly two parameters are specified, we expect the first one to be broln and
 # the second one to be lncli. One parameter is either just a single binary or a
-# packaged release archive. No parameters means picking up lnd and lncli from
+# packaged release archive. No parameters means picking up broln and lncli from
 # the system path.
 if [[ $# -eq 2 ]]; then
-  LND_BIN=$(realpath $1)
+  broln_BIN=$(realpath $1)
   LNCLI_BIN=$(realpath $2)
 
   # Make sure both files actually exist.
-  if [[ ! -f $LND_BIN ]]; then
-    echo "ERROR: $LND_BIN not found!"
+  if [[ ! -f $broln_BIN ]]; then
+    echo "ERROR: $broln_BIN not found!"
     exit 1
   fi
   if [[ ! -f $LNCLI_BIN ]]; then
@@ -282,7 +282,7 @@ if [[ $# -eq 2 ]]; then
   fi
 
   # Make sure both binaries can be found and are executable.
-  check_command "$LND_BIN"
+  check_command "$broln_BIN"
   check_command "$LNCLI_BIN"
 
 elif [[ $# -eq 1 ]]; then
@@ -290,17 +290,17 @@ elif [[ $# -eq 1 ]]; then
   PACKAGE_BIN=$(realpath $1)
 
 elif [[ $# -eq 0 ]]; then
-  # By default we're picking up lnd and lncli from the system $PATH.
-  LND_BIN=$(which lnd)
+  # By default we're picking up broln and lncli from the system $PATH.
+  broln_BIN=$(which broln)
   LNCLI_BIN=$(which lncli)
 
   # Make sure both binaries can be found and are executable.
-  check_command "$LND_BIN"
+  check_command "$broln_BIN"
   check_command "$LNCLI_BIN"
 
 else
   echo "ERROR: invalid number of parameters!"
-  echo "Usage: verify-install.sh [lnd-binary lncli-binary]"
+  echo "Usage: verify-install.sh [broln-binary lncli-binary]"
   exit 1
 fi
 
@@ -321,9 +321,9 @@ if [[ "$PACKAGE_BIN" != "" ]]; then
   echo "SUCCESS! Verified $PACKAGE_BIN against $MANIFEST signed by $NUM_CHECKS developers."
 
 else
-  check_hash "$LND_BIN" "lnd"
+  check_hash "$broln_BIN" "broln"
   check_hash "$LNCLI_BIN" "lncli"
 
   echo ""
-  echo "SUCCESS! Verified lnd and lncli against $MANIFEST signed by $NUM_CHECKS developers."
+  echo "SUCCESS! Verified broln and lncli against $MANIFEST signed by $NUM_CHECKS developers."
 fi

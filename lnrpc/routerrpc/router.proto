@@ -124,7 +124,7 @@ service Router {
     /**
     HtlcInterceptor dispatches a bi-directional streaming RPC in which
     Forwarded HTLC requests are sent to the client and the client responds with
-    a boolean that tells LND if this htlc should be intercepted.
+    a boolean that tells broln if this htlc should be intercepted.
     In case of interception, the htlc can be either settled, cancelled or
     resumed later by using the ResolveHoldForward endpoint.
     */
@@ -229,7 +229,7 @@ message SendPaymentRequest {
 
     /*
     An optional maximum total time lock for the route. This should not exceed
-    lnd's `--max-cltv-expiry` setting. If zero, then the value of
+    broln's `--max-cltv-expiry` setting. If zero, then the value of
     `--max-cltv-expiry` is enforced.
     */
     int32 cltv_limit = 9;
@@ -274,7 +274,7 @@ message SendPaymentRequest {
 
     /*
     The largest payment split that should be attempted when making a payment if
-    splitting is necessary. Setting this value will effectively cause lnd to
+    splitting is necessary. Setting this value will effectively cause broln to
     split more aggressively, vs only when it thinks it needs to. Note that this
     value is in milli-satoshis.
     */

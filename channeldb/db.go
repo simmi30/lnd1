@@ -217,7 +217,7 @@ var (
 	channelOpeningStateBucket = []byte("channelOpeningState")
 )
 
-// DB is the primary datastore for the lnd daemon. The database stores
+// DB is the primary datastore for the broln daemon. The database stores
 // information related to nodes, routing data, open/closed channels, fee
 // schedules, and reputation data.
 type DB struct {
@@ -1287,7 +1287,7 @@ func (d *DB) syncVersions(versions []version) error {
 	switch {
 
 	// If the database reports a higher version that we are aware of, the
-	// user is probably trying to revert to a prior version of lnd. We fail
+	// user is probably trying to revert to a prior version of broln. We fail
 	// here to prevent reversions and unintended corruption.
 	case meta.DbVersionNumber > latestVersion:
 		log.Errorf("Refusing to revert from db_version=%d to "+
